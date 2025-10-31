@@ -10,8 +10,8 @@ def html():
 def index():
     return 'stoel'
 
-@app.route('/add/<int:n1>/<int:n2>')
-def add(n1, n2):
+@app.route('/multiply/<int:n1>/<int:n2>')
+def multiply(n1, n2):
     return f'{n1} * {n2} = {n1*n2}'
 
 if __name__ == '__main__':
