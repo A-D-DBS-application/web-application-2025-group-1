@@ -16,6 +16,3 @@ def multiply(n1, n2):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-Arthur test
