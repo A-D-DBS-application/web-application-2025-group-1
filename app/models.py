@@ -11,7 +11,7 @@ class User(db.Model):
     phone_number = db.Column(db.Numeric)
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return f'<User {self.user_id}>'
     
 class Trip(db.Model):
     __tablename__ = 'Trip'
