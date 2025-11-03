@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from datetime import datetime
-from .models import db, User
-# (voeg Trip en Travellers hier ook toe als die bestaan)
-# from .models import Trip, Travellers
+from .models import db, User, Traveller, Trip
+
 
 # ⬇️ Maak een Blueprint aan i.p.v. rechtstreeks met app werken
 main = Blueprint('main', __name__)
@@ -74,7 +73,7 @@ def create_trip():
         db.session.commit()
 
         for i in range(num_travellers):
-            traveller = Travellers(
+            traveller = Traveller(
                 created_at=datetime.now(),
                 age=None,
                 fitness=None,
@@ -92,7 +91,7 @@ def create_trip():
 @main.route('/edit_travellers/<int:trip_id>', methods=['GET', 'POST'])
 def edit_travellers(trip_id):
     trip = Trip.query.get_or_404(trip_id)
-    travellers = Travellers.query.filter_by(Trip_id=trip_id).all()
+    travellers = Traveller.query.filter_by(Trip_id=trip_id).all()
 
     if request.method == 'POST':
         for traveller in travellers:
