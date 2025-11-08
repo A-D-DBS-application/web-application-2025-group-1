@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from datetime import datetime
 from .models import db, User, Traveller, Trip
 
@@ -10,37 +10,55 @@ main = Blueprint('main', __name__)
 def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
-        return f'Logged in as {user.email}'
+        return render_template('Dashboard.html')
     return render_template('index.html')
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        email = request.form['email']
-        if User.query.filter_by(email=email).first() is None:
-            new_user = User(email=email)
-            db.session.add(new_user)
-            db.session.commit()
-            session['user_id'] = new_user.id
-            return redirect(url_for('main.index'))
-        return 'Email already registered'
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone_number = request.form.get('phone_number')
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash("Email already registered.")
+            return redirect(url_for('main.register'))
+        
+        new_user = User(
+            name=name,
+            email=email,
+            phone_number=phone_number,
+            created_at=datetime.now(),
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        session['user_id'] = new_user.user_id
+        flash("Registration successful!")
+        return redirect(url_for('main.index'))
+        
     return render_template('register.html')
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form.get('email')
         user = User.query.filter_by(email=email).first()
         if user:
-            session['user_id'] = user.id
+            session['user_id'] = user.user_id
+            flash("Logged in successfully!")
             return redirect(url_for('main.index'))
-        return 'User not found'
+        else:
+            flash("User not found.")
+            return redirect(url_for('main.login'))
+        
     return render_template('login.html')
 
 @main.route('/logout') 
 def logout():
     session.pop('user_id', None)
-    session.clear
+    flash("You have been logged out.")
     return redirect(url_for('main.index'))
 
 #hiermee kan de user de itinerary zien

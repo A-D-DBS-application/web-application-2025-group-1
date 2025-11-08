@@ -47,8 +47,8 @@
     <h1>Welcome</h1>
     <p>Log in to manage your travel plans or explore new destinations.</p>
 
-    <form>
-      <input type="text" placeholder="Email or name" required>
+    <form method="POST" action="{{ url_for('main.login') }}">
+      <input type="email" name="email" placeholder="Email address" required>
       <button type="submit">Login</button>
     </form>
 

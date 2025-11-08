@@ -25,13 +25,14 @@ class BaseModel(db.Model):
 # -----------------------------
 # GEBRUIKERS EN REIZEN
 # -----------------------------
-class User(BaseModel):
+class User(db.Model):  # niet van BaseModel erven omdat created_at/updated_at anders niet matchen
     __tablename__ = 'User'
 
     user_id = db.Column(BigInteger, primary_key=True)
-    name = db.Column(db.Text, nullable=True)
-    email = db.Column(db.Text, nullable=True)
-    phone_number = db.Column(db.Text, nullable=True)
+    name = db.Column(db.Text, nullable=True, name='Name')
+    email = db.Column(db.Text, nullable=True, unique=True, name='Email')
+    phone_number = db.Column(db.Text, nullable=True, name='Phone_Number')
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
     trips = db.relationship('Trip', backref='user', lazy=True)
 
