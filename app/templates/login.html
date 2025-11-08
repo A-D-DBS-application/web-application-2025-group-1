@@ -1,16 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AfriGuide | Login</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
+    body {
+      background: linear-gradient(135deg, #f4a261, #2a9d8f);
+      display: flex; justify-content: center; align-items: center; height: 100vh; color: #fff;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 45px;
+      border-radius: 16px;
+      width: 370px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    }
+    .logo {
+      width: 60px; height: 60px; background: #e9c46a; border-radius: 50%;
+      margin: 0 auto 20px; display: flex; justify-content: center; align-items: center;
+      font-weight: 700; color: #264653; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    h1 { font-size: 2rem; margin-bottom: 10px; }
+    p { margin-bottom: 25px; font-size: 0.95rem; opacity: 0.9; }
+    input {
+      width: 100%; padding: 10px; margin: 8px 0; border: none; border-radius: 8px; outline: none;
+      background: rgba(255, 255, 255, 0.25); color: #fff;
+    }
+    input::placeholder { color: #f1f1f1; }
+    button {
+      width: 100%; padding: 10px; background: #264653; border: none; color: white;
+      font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 10px;
+    }
+    button:hover { background: #1f3b47; }
+    .register { margin-top: 18px; font-size: 0.9rem; }
+    .register a { color: #fff; font-weight: 600; text-decoration: none; }
+    .register a:hover { text-decoration: underline; }
+  </style>
 </head>
 <body>
-    <h1>Login</h1>
-    <form action="/login" method="post">
-        <label>Username:</label>
-        <input type="text" name="username" required><br><br>
-        <button type="submit">Login</button>
+  <div class="container">
+    <div class="logo">AG</div>
+    <h1>Welcome</h1>
+    <p>Log in to manage your travel plans or explore new destinations.</p>
+
+    <form>
+      <input type="text" placeholder="Email or name" required>
+      <button type="submit">Login</button>
     </form>
-    <p>Don't have an account? <a href="/register">Register here</a></p>
+
+    <div class="register">
+      Don't have an account? <a href="register.html">Register here</a>
+    </div>
+  </div>
 </body>
 </html>

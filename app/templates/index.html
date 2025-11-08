@@ -1,12 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AfriGuide | Travel Planner</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
+    body {
+      background: linear-gradient(135deg, #f4a261, #2a9d8f);
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh; color: #fff;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 50px;
+      border-radius: 16px;
+      text-align: center;
+      width: 400px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    }
+    .logo {
+      width: 70px; height: 70px; background: #e9c46a; border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex; justify-content: center; align-items: center;
+      font-weight: 700; color: #264653; font-size: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    h1 { font-size: 2rem; margin-bottom: 10px; }
+    p { margin-bottom: 30px; font-size: 1rem; opacity: 0.9; }
+    .btn {
+      display: block;
+      background: #264653;
+      color: #fff;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      margin: 10px 0;
+      transition: 0.3s;
+    }
+    .btn:hover { background: #1f3b47; }
+  </style>
 </head>
 <body>
-    <h1>Welcome!</h1>
-    <p>You are logged in.</p>
-    <p><a href="/logout">Logout</a></p>
+  <div class="container">
+    <div class="logo">AG</div>
+    <h1>Welcome to AfriGuide</h1>
+    <p>Your personal guide to plan the most amazing African adventures.</p>
+
+    <a href="login.html" class="btn">Login</a>
+    <a href="register.html" class="btn">Register</a>
+  </div>
 </body>
 </html>
