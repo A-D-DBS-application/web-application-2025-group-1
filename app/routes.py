@@ -22,7 +22,7 @@ def register():
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            flash("Email already registered.")
+            flash("Email already registered.", "error")
             return redirect(url_for('main.register'))
         
         new_user = User(
@@ -35,8 +35,8 @@ def register():
         db.session.commit()
 
         session['user_id'] = new_user.user_id
-        flash("Registration successful!")
-        return redirect(url_for('main.index'))
+        flash("Registration successful!", "success")
+        return redirect(url_for('main.dashboard'))
         
     return render_template('register.html')
 
@@ -47,10 +47,10 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user:
             session['user_id'] = user.user_id
-            flash("Logged in successfully!")
+            flash(f"Logged in successfully as {user.name} !", "success")
             return redirect(url_for('main.index'))
         else:
-            flash("User not found.")
+            flash("User not found.", "error")
             return redirect(url_for('main.login'))
         
     return render_template('login.html')

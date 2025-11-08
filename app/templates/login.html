@@ -39,6 +39,10 @@
     .register { margin-top: 18px; font-size: 0.9rem; }
     .register a { color: #fff; font-weight: 600; text-decoration: none; }
     .register a:hover { text-decoration: underline; }
+
+    .flash-message { font-weight: 600; font-size: 0.95rem; margin-bottom: 15px; }
+    .flash-error { color: #ff6b6b; }
+    .flash-success { color: #4caf50; }
   </style>
 </head>
 <body>
@@ -46,6 +50,18 @@
     <div class="logo">AG</div>
     <h1>Welcome</h1>
     <p>Log in to manage your travel plans or explore new destinations.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div>
+          {% for category, message in messages %}
+            <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+              {{ message }}
+            </p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
     <form method="POST" action="{{ url_for('main.login') }}">
       <input type="email" name="email" placeholder="Email address" required>
