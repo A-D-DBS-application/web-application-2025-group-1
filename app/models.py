@@ -21,7 +21,7 @@ class User(BaseModel):
     user_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
-    phone_number = db.Column(db.Numeric)
+    phone_number = db.Column(db.String)
 
     # Relatie: één gebruiker → meerdere trips
     trips = db.relationship('Trip', backref='user', lazy=True)
@@ -52,7 +52,7 @@ class Traveller(BaseModel):
     __tablename__ = 'Travellers'
 
     traveller_id = db.Column(db.Integer, primary_key=True)
-    age = db.Column(db.Date)
+    age = db.Column(db.Integer)
     fitness = db.Column(db.String)
     trip_id = db.Column(db.Integer, db.ForeignKey('Trip.trip_id'), nullable=False)
 
