@@ -11,7 +11,7 @@ def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
         return f'Logged in as {user.email}'
-    return 'You are not logged in <a href="/login">login</a> <a href="/register">register</a>'
+    return render_template('index.html')
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
