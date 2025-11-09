@@ -36,7 +36,7 @@ def register():
 
         session['user_id'] = new_user.user_id
         flash("Registration successful!", "success")
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('main.index'))
         
     return render_template('register.html')
 
