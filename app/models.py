@@ -54,7 +54,7 @@ class Traveller(db.Model):
     traveller_id = db.Column(BigInteger, primary_key=True, name='Traveller_id')
     age = db.Column(db.Date, nullable=True)
     fitness = db.Column(fitness_level_enum, nullable=True)
-    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.trip_id'), nullable=True, name='Trip_id')
+    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.Trip_id'), nullable=True, name='Trip_id')
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
     def __repr__(self):
@@ -91,7 +91,7 @@ class ActivityType(db.Model):
     type = db.Column(db.Text, nullable=False)
     destination = db.Column(db.Text, nullable=False)
     difficulty = db.Column(activity_difficulty_enum, nullable=True)
-    agency_id = db.Column(BigInteger, db.ForeignKey('Travel_agencies.agency_id'), nullable=False, name='Agency_id')
+    agency_id = db.Column(BigInteger, db.ForeignKey('Travel_agencies.Agency_id'), nullable=False, name='Agency_id')
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at') 
     updated_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
@@ -104,8 +104,8 @@ class ActivityType(db.Model):
 class ActivityPlanned(db.Model):
     __tablename__ = 'Activity_planned'
 
-    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.trip_id'), primary_key=True, nullable=False, name='Trip_id')
-    activity_type_id = db.Column(BigInteger, db.ForeignKey('Activity_type.activity_type_id'), primary_key=True, nullable=False, name='Activity_type_id')
+    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.Trip_id'), primary_key=True, nullable=False, name='Trip_id')
+    activity_type_id = db.Column(BigInteger, db.ForeignKey('Activity_type.Activity_type_id'), primary_key=True, nullable=False, name='Activity_type_id')
     date = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
@@ -133,10 +133,10 @@ class HotelBooking(db.Model):
     __tablename__ = 'Hotel_Booking'
 
     booking_id = db.Column(BigInteger, primary_key=True, name='Booking_id')
-    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.trip_id'), nullable=False, name='Trip_id')
+    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.Trip_id'), nullable=False, name='Trip_id')
     check_in_time = db.Column(db.DateTime(timezone=True), nullable=True, name='check-in time')
     check_out_time = db.Column(db.DateTime(timezone=True), nullable=True, name='check-out time')
-    hotel_id = db.Column(BigInteger, db.ForeignKey('Hotel.hotel_id'), nullable=False, name='Hotel_id')
+    hotel_id = db.Column(BigInteger, db.ForeignKey('Hotel.Hotel_id'), nullable=False, name='Hotel_id')
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
     def __repr__(self):
