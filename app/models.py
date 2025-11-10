@@ -11,17 +11,6 @@ pref_kind_enum = Enum('ADVENTURE', 'CULTURE', 'RELAX', name='pref_kind', create_
 fitness_level_enum = Enum('LOW', 'MEDIUM', 'HIGH', name='fitness_level', create_type=False)
 activity_difficulty_enum = Enum('EASY', 'MODERATE', 'HARD', name='activity_difficulty', create_type=False)
 
-
-# -----------------------------
-# BASISMODEL met tijdstempels
-# -----------------------------
-class BaseModel(db.Model):
-    __abstract__ = True
-
-    created_at = db.Column(db.DateTime(timezone=True), nullable=False)
-    updated_at = db.Column(db.DateTime(timezone=True), nullable=True)
-
-
 # -----------------------------
 # GEBRUIKERS EN REIZEN
 # -----------------------------
@@ -40,15 +29,16 @@ class User(db.Model):  # niet van BaseModel erven omdat created_at/updated_at an
         return f'<User {self.name}>'
 
 
-class Trip(BaseModel):
+class Trip(db.Model):
     __tablename__ = 'Trip'
 
-    trip_id = db.Column(BigInteger, primary_key=True)
-    start_date = db.Column(db.Date, nullable=True)
-    end_date = db.Column(db.Date, nullable=True)
-    number_of_travelers = db.Column(Numeric, nullable=True)
+    trip_id = db.Column(BigInteger, primary_key=True, name='Trip_id')
+    start_date = db.Column(db.Date, nullable=True, name='Start_Date')
+    end_date = db.Column(db.Date, nullable=True, name='End_Date')
+    number_of_travelers = db.Column(Numeric, nullable=True, name='Number_Of_Travellers')
     preferences = db.Column(pref_kind_enum, nullable=True)
-    user_id = db.Column(BigInteger, db.ForeignKey('User.user_id'), nullable=True)
+    user_id = db.Column(BigInteger, db.ForeignKey('User.user_id'), nullable=True, name='User_id')
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
     travellers = db.relationship('Traveller', backref='trip', lazy=True)
     planned_activities = db.relationship('ActivityPlanned', backref='trip', lazy=True)
@@ -58,13 +48,14 @@ class Trip(BaseModel):
         return f'<Trip {self.trip_id}>'
 
 
-class Traveller(BaseModel):
+class Traveller(db.Model):
     __tablename__ = 'Travellers'
 
-    traveller_id = db.Column(BigInteger, primary_key=True)
+    traveller_id = db.Column(BigInteger, primary_key=True, name='Traveller_id')
     age = db.Column(db.Date, nullable=True)
     fitness = db.Column(fitness_level_enum, nullable=True)
-    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.trip_id'), nullable=True)
+    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.trip_id'), nullable=True, name='Trip_id')
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
     def __repr__(self):
         return f'<Traveller {self.traveller_id}>'
@@ -73,13 +64,15 @@ class Traveller(BaseModel):
 # -----------------------------
 # TRAVEL AGENCIES
 # -----------------------------
-class TravelAgency(BaseModel):
+class TravelAgency(db.Model):
     __tablename__ = 'Travel_agencies'
 
-    agency_id = db.Column(BigInteger, primary_key=True)
+    agency_id = db.Column(BigInteger, primary_key=True, name='Agency_id')
     name = db.Column(db.Text, nullable=False)
     contact_info = db.Column(db.Text, nullable=True)
     website = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
+    updated_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
     activities = db.relationship('ActivityType', backref='agency', lazy=True)
 
@@ -90,15 +83,17 @@ class TravelAgency(BaseModel):
 # -----------------------------
 # ACTIVITEITEN
 # -----------------------------
-class ActivityType(BaseModel):
+class ActivityType(db.Model):
     __tablename__ = 'Activity_type'
 
-    activity_type_id = db.Column(BigInteger, primary_key=True)
+    activity_type_id = db.Column(BigInteger, primary_key=True, name='Activity_type_id')
     name = db.Column(db.Text, nullable=False)
     type = db.Column(db.Text, nullable=False)
     destination = db.Column(db.Text, nullable=False)
     difficulty = db.Column(activity_difficulty_enum, nullable=True)
-    agency_id = db.Column(BigInteger, db.ForeignKey('Travel_agencies.agency_id'), nullable=False)
+    agency_id = db.Column(BigInteger, db.ForeignKey('Travel_agencies.agency_id'), nullable=False, name='Agency_id')
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at') 
+    updated_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
     planned_activities = db.relationship('ActivityPlanned', backref='activity_type', lazy=True)
 
@@ -106,12 +101,13 @@ class ActivityType(BaseModel):
         return f'<ActivityType {self.name}>'
 
 
-class ActivityPlanned(BaseModel):
+class ActivityPlanned(db.Model):
     __tablename__ = 'Activity_planned'
 
-    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.trip_id'), primary_key=True, nullable=False)
-    activity_type_id = db.Column(BigInteger, db.ForeignKey('Activity_type.activity_type_id'), primary_key=True, nullable=False)
+    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.trip_id'), primary_key=True, nullable=False, name='Trip_id')
+    activity_type_id = db.Column(BigInteger, db.ForeignKey('Activity_type.activity_type_id'), primary_key=True, nullable=False, name='Activity_type_id')
     date = db.Column(db.Date, nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
     def __repr__(self):
         return f'<ActivityPlanned trip={self.trip_id} activity={self.activity_type_id}>'
@@ -120,11 +116,12 @@ class ActivityPlanned(BaseModel):
 # -----------------------------
 # HOTELS EN BOEKINGEN
 # -----------------------------
-class Hotel(BaseModel):
+class Hotel(db.Model):
     __tablename__ = 'Hotel'
 
-    hotel_id = db.Column(BigInteger, primary_key=True)
+    hotel_id = db.Column(BigInteger, primary_key=True, name='Hotel_id')
     adress = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
     bookings = db.relationship('HotelBooking', backref='hotel', lazy=True)
 
@@ -132,14 +129,15 @@ class Hotel(BaseModel):
         return f'<Hotel {self.hotel_id}>'
 
 
-class HotelBooking(BaseModel):
+class HotelBooking(db.Model):
     __tablename__ = 'Hotel_Booking'
 
-    booking_id = db.Column(BigInteger, primary_key=True)
-    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.trip_id'), nullable=False)
-    check_in_time = db.Column(db.DateTime(timezone=True), nullable=True)
-    check_out_time = db.Column(db.DateTime(timezone=True), nullable=True)
-    hotel_id = db.Column(BigInteger, db.ForeignKey('Hotel.hotel_id'), nullable=False)
+    booking_id = db.Column(BigInteger, primary_key=True, name='Booking_id')
+    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.trip_id'), nullable=False, name='Trip_id')
+    check_in_time = db.Column(db.DateTime(timezone=True), nullable=True, name='check-in time')
+    check_out_time = db.Column(db.DateTime(timezone=True), nullable=True, name='check-out time')
+    hotel_id = db.Column(BigInteger, db.ForeignKey('Hotel.hotel_id'), nullable=False, name='Hotel_id')
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
     def __repr__(self):
         return f'<HotelBooking {self.booking_id}>'
