@@ -34,22 +34,22 @@
 
       <!-- Trip aanmaken -->
       <form method="POST" action="{{ url_for('main.trips') }}">
-        <label>Bestemming</label>
+        <label>Destination</label>
         <input type="text" name="destination" placeholder="Bijv. Marrakesh">
 
-        <label>Startdatum</label>
+        <label>Start Date</label>
         <input type="date" name="start_date">
 
-        <label>Einddatum</label>
+        <label>End Date</label>
         <input type="date" name="end_date">
 
-        <label>Aantal reizigers</label>
+        <label>Number of travellers</label>
         <input type="number" name="num_travellers" min="1" value="1">
 
       
-        <label>Voorkeuren</label>
+        <label>Preferences</label>
 <select name="preference">
-  <option value="">Kies een voorkeur</option>
+  <option value="">Choose your preference</option>
   <option value="CULTURE">Culture</option>
   <option value="ADVENTURE">Adventure</option>
   <option value="RELAXATION">Relaxation</option>
@@ -66,13 +66,13 @@
       <hr style="margin:25px 0; border:0; border-top:1px solid rgba(255,255,255,0.3);">
 
       <!-- Traveller toevoegen -->
-      <h2>Travellers toevoegen</h2>
-      <p class="muted">Selecteer een trip en voeg een traveller toe.</p>
+      <h2>Add Travellers</h2>
+      <p class="muted">Select a trip and add a traveller</p>
 
       <form method="POST" action="{{ url_for('main.add_traveller') }}">
         <label>Trip</label>
         <select name="trip_id" required>
-          <option value="">Kies een trip</option>
+          <option value="">Choose a trip</option>
           {% for trip in trips %}
             <option value="{{ trip.trip_id }}">Trip #{{ trip.trip_id }} — {{ trip.preferences or 'geen voorkeur' }}</option>
           {% endfor %}
