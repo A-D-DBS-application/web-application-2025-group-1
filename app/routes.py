@@ -83,12 +83,26 @@ def trips():
         num_travellers = int(request.form.get('num_travellers'))
         preference = request.form.get('preference')
 
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
+
+        if start_date and end_date and end_date < start_date:
+            flash("End date cannot be before start date.", "error")
+            return redirect(url_for('main.trips'))
+
+        try:
+            num_travellers = int(num_travellers)
+        except (TypeError, ValueError):
+            num_travellers = 1
+
+
         new_trip = Trip(
             created_at=datetime.now(),
             start_date=start_date,
             end_date=end_date,
             number_of_travelers=num_travellers,
             preferences=preference if preference else None,
+            destination=destination,
             user_id=user.user_id
         )
         db.session.add(new_trip)
@@ -103,10 +117,15 @@ def trips():
 @main.route('/add_traveller', methods=['POST'])
 def add_traveller():
     trip_id = request.form.get('trip_id')
+    traveller_name = request.form.get('name')
     birth_date_str = request.form.get('birth_date')
     fitness = request.form.get('fitness')
 
     trip = Trip.query.get_or_404(trip_id)
+
+    if trip.user_id != session['user_id']:
+        flash("You cannot modify this trip.", "error")
+        return redirect(url_for('main.trips'))
 
     # ⏳ Zet de datum-string van het formulier om naar een echte date
     birth_date = None
@@ -119,6 +138,7 @@ def add_traveller():
 
     # ✅ Maak nieuwe traveller aan
     new_traveller = Traveller(
+        name=traveller_name,
         birth_date=birth_date,
         fitness=fitness if fitness else None,
         trip_id=trip.trip_id,
