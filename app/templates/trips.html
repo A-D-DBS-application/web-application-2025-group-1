@@ -5,17 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AfriGuide | Trips</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
-    body { background: linear-gradient(135deg, #f4a261, #2a9d8f); display:flex; justify-content:center; padding:40px 0; color:#fff; }
-    .container { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding:30px; border-radius:16px; width:1000px; box-shadow:0 8px 25px rgba(0,0,0,0.25); display:grid; grid-template-columns:1fr 1fr; gap:24px;}
-    .main-col { text-align:left; padding:10px; }
-    h1{font-size:2rem;margin-bottom:10px;}
-    h2{font-size:1.4rem;margin-top:20px;margin-bottom:10px;}
-    label{display:block;margin-top:8px;margin-bottom:4px;font-weight:500;}
-    input, select, textarea{width:100%;padding:8px 10px;border-radius:8px;border:none;margin-bottom:8px;}
-    .btn{ background:#264653; color:#fff; padding:8px 14px; border-radius:8px; text-decoration:none; border:none; cursor:pointer; }
-    .trip-card{ background: rgba(0,0,0,0.12); padding:12px; border-radius:8px; margin-bottom:12px; }
-    .muted { opacity:0.9; font-size:0.95rem; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f4a261, #2a9d8f);
+      display: flex;
+      justify-content: center;
+      padding: 40px 0;
+      color: #fff;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 16px;
+      width: 1000px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .btn {
+      background: #264653;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .trip-card {
+      background: rgba(0, 0, 0, 0.12);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .flash-success {
+      background: #2a9d8f;
+      padding: 6px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .flash-error {
+      background: #e76f51;
+      padding: 6px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    hr {
+      margin: 25px 0;
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -24,11 +90,11 @@
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, message in messages %}
-            <div style="margin-bottom:10px;" class="{{ 'flash-success' if category == 'success' else 'flash-danger' }}">{{ message }}</div>
+            <div class="flash-{{ category }}">{{ message }}</div>
           {% endfor %}
         {% endif %}
       {% endwith %}
-
+      
       <h1>Trips aanmaken</h1>
       <p class="muted">Maak hier nieuwe trips aan of bekijk bestaande trips.</p>
 
@@ -48,13 +114,13 @@
 
       
         <label>Preferences</label>
-<select name="preference">
-  <option value="">Choose your preference</option>
-  <option value="CULTURE">Culture</option>
-  <option value="ADVENTURE">Adventure</option>
-  <option value="RELAXATION">Relaxation</option>
-  <option value="NATURE">Nature</option>
-</select>
+        <select name="preference">
+          <option value="">Choose your preference</option>
+          <option value="CULTURE">Culture</option>
+          <option value="ADVENTURE">Adventure</option>
+          <option value="RELAXATION">Relaxation</option>
+          <option value="NATURE">Nature</option>
+        </select>
 
 
         <div style="margin-top:10px;">
@@ -74,12 +140,15 @@
         <select name="trip_id" required>
           <option value="">Choose a trip</option>
           {% for trip in trips %}
-            <option value="{{ trip.trip_id }}">Trip #{{ trip.trip_id }} — {{ trip.preferences or 'geen voorkeur' }}</option>
+            <option value="{{ trip.trip_id }}">Trip #{{ trip.trip_id }} — {{ trip.destination or 'no destination' }}</option>
           {% endfor %}
         </select>
 
+        <label for="name">Traveller Name</label>
+        <input type="text" id="name" name="name" placeholder="Name of Traveller">
+        
         <label for="birth_date">Date of Birth</label>
-<input type="date" id="birth_date" name="birth_date" required>
+        <input type="date" id="birth_date" name="birth_date" required>
 
 
         <label>Fitness level</label>
@@ -103,8 +172,9 @@
           {% for trip in trips %}
             <div class="trip-card" id="trip-{{ trip.trip_id }}">
               <strong>Trip #<span class="trip-id">{{ trip.trip_id }}</span></strong>
-              <small class="muted"> — aangemaakt op {{ trip.created_at.strftime('%Y-%m-%d') }}</small>
-              <div class="muted">Destination: {{ trip.preferences or '–' }}</div>
+              <small class="muted"> — created at {{ trip.created_at.strftime('%Y-%m-%d') }}</small>
+              <div> class="muted">Preference: {{ trip.preferences or '–' }}</div> 
+              <div class="muted">Destination: {{ trip.destination or '–' }}</div>
               <div class="muted">Start: {{ trip.start_date or '–' }} — End: {{ trip.end_date or '–' }}</div>
               <div class="muted">Number of Travellers: {{ trip.number_of_travelers or 0 }}</div>
 
@@ -112,7 +182,10 @@
               <ul style="margin-top:5px; padding-left:20px;">
                 {% if trip.travellers %}
                   {% for t in trip.travellers %}
-                    <li>👤 Traveller {{ loop.index }}{% if t.age %} — Age: {{ t.age }}{% endif %}{% if t.fitness %} — Fitness: {{ t.fitness }}{% endif %}</li>
+                    <li>👤 {{ t.name or 'Traveller ' ~ loop.index }}
+                    {% if t.age %} — Age: {{ t.age }}{% endif %}
+                    {% if t.fitness %} — Fitness: {{ t.fitness }}{% endif %}
+                  </li>
                   {% endfor %}
                 {% else %}
                   <li class="muted">No travellers added</li>
