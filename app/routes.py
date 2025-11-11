@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from datetime import datetime
 from .models import db, User, Traveller, Trip
 
@@ -10,8 +10,10 @@ main = Blueprint('main', __name__)
 def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
-        return render_template('trips.html')
+        trips = Trip.query.filter_by(user_id=user.user_id).all()
+        return render_template('trips.html', trips=trips)
     return render_template('index.html')
+
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -86,7 +88,7 @@ def trips():
             start_date=start_date,
             end_date=end_date,
             number_of_travelers=num_travellers,
-            preferences=preference,
+            preferences=preference if preference else None,
             user_id=user.user_id
         )
         db.session.add(new_trip)
@@ -97,6 +99,46 @@ def trips():
 
     trips = Trip.query.filter_by(user_id=user.user_id).all()
     return render_template('trips.html', trips=trips)
+
+@main.route('/add_traveller', methods=['POST'])
+def add_traveller():
+    trip_id = request.form.get('trip_id')
+    birth_date_str = request.form.get('birth_date')
+    fitness = request.form.get('fitness')
+
+    trip = Trip.query.get_or_404(trip_id)
+
+    # ⏳ Zet de datum-string van het formulier om naar een echte date
+    birth_date = None
+    if birth_date_str:
+        try:
+            birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            flash("Ongeldige geboortedatum.", "danger")
+            return redirect(url_for('main.trips'))
+
+    # ✅ Maak nieuwe traveller aan
+    new_traveller = Traveller(
+        birth_date=birth_date,
+        fitness=fitness if fitness else None,
+        trip_id=trip.trip_id,
+        created_at=datetime.utcnow()
+    )
+
+    db.session.add(new_traveller)
+
+    # ✅ Update aantal reizigers op de trip
+    try:
+        current = int(trip.number_of_travelers) if trip.number_of_travelers else 0
+    except Exception:
+        current = 0
+    trip.number_of_travelers = current + 1
+
+    db.session.commit()
+
+    flash("Traveller toegevoegd!", "success")
+    return redirect(url_for('main.trips'))
+
 
 
 #hiermee kan een user de travellers age en fitness level aanpassen

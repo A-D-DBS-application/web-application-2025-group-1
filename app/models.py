@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum, Numeric, BigInteger
-from datetime import datetime #om trip aan te maken
+from datetime import datetime, date  #om trip aan te maken
 
 
 
@@ -10,9 +10,10 @@ db = SQLAlchemy()
 # ENUM TYPES (USER-DEFINED)
 # -----------------------------
 # Deze moet je definiëren overeenkomstig wat je in Supabase hebt ingesteld.
-pref_kind_enum = Enum('ADVENTURE', 'CULTURE', 'RELAX', name='pref_kind', create_type=False)
-fitness_level_enum = Enum('LOW', 'MEDIUM', 'HIGH', name='fitness_level', create_type=False)
-activity_difficulty_enum = Enum('EASY', 'MODERATE', 'HARD', name='activity_difficulty', create_type=False)
+pref_kind_enum = Enum('ADVENTURE', 'CULTURE', 'RELAXATION', 'NATURE', name='pref_kind', create_type=True)
+fitness_level_enum = Enum('LOW', 'MEDIUM', 'HIGH', name='fitness_level_enum', create_type=True)
+activity_difficulty_enum = Enum('EASY', 'MODERATE', 'HARD', name='activity_difficulty_enum', create_type=True)
+
 
 # -----------------------------
 # GEBRUIKERS EN REIZEN
@@ -39,7 +40,11 @@ class Trip(db.Model):
     start_date = db.Column(db.Date, nullable=True, name='Start_Date')
     end_date = db.Column(db.Date, nullable=True, name='End_Date')
     number_of_travelers = db.Column(Numeric, nullable=True, name='Number_Of_Travellers')
-    preferences = db.Column(pref_kind_enum, nullable=True)
+    preferences = db.Column(
+    db.Enum('CULTURE', 'ADVENTURE', 'RELAXATION', 'NATURE', name='pref_kind'),
+    nullable=True
+)
+    destination = db.Column(db.Text, nullable=True, name='Destination')
     user_id = db.Column(BigInteger, db.ForeignKey('User.user_id'), nullable=True, name='User_id')
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
 
@@ -54,15 +59,22 @@ class Trip(db.Model):
 class Traveller(db.Model):
     __tablename__ = 'Travellers'
 
-    traveller_id = db.Column(BigInteger, primary_key=True, name='Traveller_id')
-    age = db.Column(db.Date, nullable=True)
+    traveller_id = db.Column(db.BigInteger, primary_key=True, name='Traveller_id')
+    birth_date = db.Column(db.Date, nullable=False)  
     fitness = db.Column(fitness_level_enum, nullable=True)
-    trip_id = db.Column(BigInteger, db.ForeignKey('Trip.Trip_id'), nullable=True, name='Trip_id')
-    created_at = db.Column(db.DateTime(timezone=True), nullable=False, name='created_at')
+    trip_id = db.Column(db.BigInteger, db.ForeignKey('Trip.Trip_id'), nullable=True, name='Trip_id')
+    created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, nullable=False, name='created_at')
+
+    # ✅ Automatisch leeftijd berekenen
+    @property
+    def age(self):
+        today = date.today()
+        return today.year - self.birth_date.year - (
+            (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
+        )
 
     def __repr__(self):
         return f'<Traveller {self.traveller_id}>'
-
 
 # -----------------------------
 # TRAVEL AGENCIES

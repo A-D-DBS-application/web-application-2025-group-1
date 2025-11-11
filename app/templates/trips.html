@@ -3,41 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AfriGuide | Dashboard</title>
+  <title>AfriGuide | Trips</title>
   <style>
-    /* jouw bestaande styles + wat extra layout */
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
-    body {
-      background: linear-gradient(135deg, #f4a261, #2a9d8f);
-      display: flex; justify-content: center; align-items: flex-start;
-      min-height: 100vh; color: #fff; padding: 40px 0;
-    }
-    .container {
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(10px);
-      padding: 30px;
-      border-radius: 16px;
-      text-align: center;
-      width: 900px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
-    .main-col { text-align: left; padding: 10px; }
-    h1 { font-size: 2rem; margin-bottom: 10px; }
-    p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 20px; }
-    .btn { background: #264653; color: #fff; padding: 10px 18px; border-radius: 8px; font-weight: 600; text-decoration: none; }
-    .flash-success { background-color: rgba(34,139,34,0.85); color: #f0fff0; padding: 10px 15px; margin-bottom: 15px; border-radius: 8px; font-weight:bold; text-align:center; }
-
-    form label { display:block; margin:8px 0 4px; font-weight:600; color:#fff; }
-    input[type="date"], input[type="number"], input[type="text"], select, textarea {
-      width:100%; padding:8px 10px; border-radius:6px; border: none; margin-bottom:8px;
-    }
-
-    .trips-list { max-height: 400px; overflow:auto; padding: 8px; }
-    .trip-card { background: rgba(0,0,0,0.12); padding:12px; border-radius:8px; margin-bottom:10px; }
-    .trip-card small { opacity:0.9; }
+    body { background: linear-gradient(135deg, #f4a261, #2a9d8f); display:flex; justify-content:center; padding:40px 0; color:#fff; }
+    .container { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding:30px; border-radius:16px; width:1000px; box-shadow:0 8px 25px rgba(0,0,0,0.25); display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+    .main-col { text-align:left; padding:10px; }
+    h1{font-size:2rem;margin-bottom:10px;}
+    h2{font-size:1.4rem;margin-top:20px;margin-bottom:10px;}
+    label{display:block;margin-top:8px;margin-bottom:4px;font-weight:500;}
+    input, select, textarea{width:100%;padding:8px 10px;border-radius:8px;border:none;margin-bottom:8px;}
+    .btn{ background:#264653; color:#fff; padding:8px 14px; border-radius:8px; text-decoration:none; border:none; cursor:pointer; }
+    .trip-card{ background: rgba(0,0,0,0.12); padding:12px; border-radius:8px; margin-bottom:12px; }
+    .muted { opacity:0.9; font-size:0.95rem; }
   </style>
 </head>
 <body>
@@ -46,54 +24,100 @@
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, message in messages %}
-            {% if category == 'success' %}
-              <div class="flash-success">{{ message }}</div>
-            {% elif category == 'danger' %}
-              <div class="flash-danger">{{ message }}</div>
-            {% endif %}
+            <div style="margin-bottom:10px;" class="{{ 'flash-success' if category == 'success' else 'flash-danger' }}">{{ message }}</div>
           {% endfor %}
         {% endif %}
       {% endwith %}
 
-      <h1>Dashboard</h1>
-      <p>Maak hier nieuwe trips aan of bekijk bestaande trips.</p>
+      <h1>Trips aanmaken</h1>
+      <p class="muted">Maak hier nieuwe trips aan of bekijk bestaande trips.</p>
 
+      <!-- Trip aanmaken -->
       <form method="POST" action="{{ url_for('main.trips') }}">
-        <label for="destination">Bestemming</label>
-        <input type="text" id="destination" name="destination" placeholder="Bijv. Marrakesh">
+        <label>Bestemming</label>
+        <input type="text" name="destination" placeholder="Bijv. Marrakesh">
 
-        <label for="start_date">Startdatum</label>
-        <input type="date" id="start_date" name="start_date">
+        <label>Startdatum</label>
+        <input type="date" name="start_date">
 
-        <label for="end_date">Einddatum</label>
-        <input type="date" id="end_date" name="end_date">
+        <label>Einddatum</label>
+        <input type="date" name="end_date">
 
-        <label for="num_travellers">Aantal reizigers</label>
-        <input type="number" id="num_travellers" name="num_travellers" min="1" value="1">
+        <label>Aantal reizigers</label>
+        <input type="number" name="num_travellers" min="1" value="1">
 
-        <label for="preference">Voorkeuren</label>
-        <textarea id="preference" name="preference" rows="3" placeholder="Bijv. 'actief, natuur'"></textarea>
+      
+        <label>Voorkeuren</label>
+<select name="preference">
+  <option value="">Kies een voorkeur</option>
+  <option value="CULTURE">Culture</option>
+  <option value="ADVENTURE">Adventure</option>
+  <option value="RELAXATION">Relaxation</option>
+  <option value="NATURE">Nature</option>
+</select>
+
 
         <div style="margin-top:10px;">
           <button type="submit" class="btn">Maak trip aan</button>
           <a href="{{ url_for('main.logout') }}" class="btn" style="background:#a33; margin-left:8px;">Uitloggen</a>
         </div>
       </form>
+
+      <hr style="margin:25px 0; border:0; border-top:1px solid rgba(255,255,255,0.3);">
+
+      <!-- Traveller toevoegen -->
+      <h2>Travellers toevoegen</h2>
+      <p class="muted">Selecteer een trip en voeg een traveller toe.</p>
+
+      <form method="POST" action="{{ url_for('main.add_traveller') }}">
+        <label>Trip</label>
+        <select name="trip_id" required>
+          <option value="">Kies een trip</option>
+          {% for trip in trips %}
+            <option value="{{ trip.trip_id }}">Trip #{{ trip.trip_id }} — {{ trip.preferences or 'geen voorkeur' }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="birth_date">Geboortedatum</label>
+<input type="date" id="birth_date" name="birth_date" required>
+
+
+        <label>Fitness niveau</label>
+        <select name="fitness">
+          <option value="">Selecteer</option>
+          <option value="LOW">Laag</option>
+          <option value="MEDIUM">Gemiddeld</option>
+          <option value="HIGH">Hoog</option>
+        </select>
+
+        <div style="margin-top:10px;">
+          <button type="submit" class="btn">Voeg traveller toe</button>
+        </div>
+      </form>
     </div>
 
     <div class="main-col">
       <h2>Jouw trips</h2>
-      <div class="trips-list">
+      <div id="trips-list" class="trips-list">
         {% if trips %}
           {% for trip in trips %}
-            <div class="trip-card">
-              <strong>Trip #{{ trip.trip_id }}</strong> — <small>gemaakt op {{ trip.created_at.strftime('%Y-%m-%d') }}</small>
-              <div>Bestemming: {{ trip.preferences or '–' }}</div>
-              <div>Start: {{ trip.start_date or '–' }} — Eind: {{ trip.end_date or '–' }}</div>
-              <div>Aantal reizigers: {{ trip.number_of_travelers }}</div>
-              <div style="margin-top:8px;">
-                <a class="btn" href="{{ url_for('main.itinerary', trip_id=trip.trip_id) }}">Bekijk / Bewerk</a>
-              </div>
+            <div class="trip-card" id="trip-{{ trip.trip_id }}">
+              <strong>Trip #<span class="trip-id">{{ trip.trip_id }}</span></strong>
+              <small class="muted"> — aangemaakt op {{ trip.created_at.strftime('%Y-%m-%d') }}</small>
+              <div class="muted">Bestemming: {{ trip.preferences or '–' }}</div>
+              <div class="muted">Start: {{ trip.start_date or '–' }} — Eind: {{ trip.end_date or '–' }}</div>
+              <div class="muted">Aantal reizigers: {{ trip.number_of_travelers or 0 }}</div>
+
+              <h4 style="margin-top:10px;">Travellers:</h4>
+              <ul style="margin-top:5px; padding-left:20px;">
+                {% if trip.travellers %}
+                  {% for t in trip.travellers %}
+                    <li>👤 Traveller {{ loop.index }}{% if t.age %} — Leeftijd: {{ t.age }}{% endif %}{% if t.fitness %} — Fitness: {{ t.fitness }}{% endif %}</li>
+                  {% endfor %}
+                {% else %}
+                  <li class="muted">Geen travellers toegevoegd</li>
+                {% endif %}
+              </ul>
             </div>
           {% endfor %}
         {% else %}
@@ -101,7 +125,6 @@
         {% endif %}
       </div>
     </div>
-
   </div>
 </body>
 </html>
