@@ -58,8 +58,8 @@
 
 
         <div style="margin-top:10px;">
-          <button type="submit" class="btn">Maak trip aan</button>
-          <a href="{{ url_for('main.logout') }}" class="btn" style="background:#a33; margin-left:8px;">Uitloggen</a>
+          <button type="submit" class="btn">Create trip</button>
+          <a href="{{ url_for('main.logout') }}" class="btn" style="background:#a33; margin-left:8px;">Log out</a>
         </div>
       </form>
 
@@ -78,50 +78,50 @@
           {% endfor %}
         </select>
 
-        <label for="birth_date">Geboortedatum</label>
+        <label for="birth_date">Date of Birth</label>
 <input type="date" id="birth_date" name="birth_date" required>
 
 
-        <label>Fitness niveau</label>
+        <label>Fitness level</label>
         <select name="fitness">
-          <option value="">Selecteer</option>
-          <option value="LOW">Laag</option>
-          <option value="MEDIUM">Gemiddeld</option>
-          <option value="HIGH">Hoog</option>
+          <option value="">Select</option>
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Average</option>
+          <option value="HIGH">High</option>
         </select>
 
         <div style="margin-top:10px;">
-          <button type="submit" class="btn">Voeg traveller toe</button>
+          <button type="submit" class="btn">Add Traveller</button>
         </div>
       </form>
     </div>
 
     <div class="main-col">
-      <h2>Jouw trips</h2>
+      <h2>Your Trips</h2>
       <div id="trips-list" class="trips-list">
         {% if trips %}
           {% for trip in trips %}
             <div class="trip-card" id="trip-{{ trip.trip_id }}">
               <strong>Trip #<span class="trip-id">{{ trip.trip_id }}</span></strong>
               <small class="muted"> — aangemaakt op {{ trip.created_at.strftime('%Y-%m-%d') }}</small>
-              <div class="muted">Bestemming: {{ trip.preferences or '–' }}</div>
-              <div class="muted">Start: {{ trip.start_date or '–' }} — Eind: {{ trip.end_date or '–' }}</div>
-              <div class="muted">Aantal reizigers: {{ trip.number_of_travelers or 0 }}</div>
+              <div class="muted">Destination: {{ trip.preferences or '–' }}</div>
+              <div class="muted">Start: {{ trip.start_date or '–' }} — End: {{ trip.end_date or '–' }}</div>
+              <div class="muted">Number of Travellers: {{ trip.number_of_travelers or 0 }}</div>
 
               <h4 style="margin-top:10px;">Travellers:</h4>
               <ul style="margin-top:5px; padding-left:20px;">
                 {% if trip.travellers %}
                   {% for t in trip.travellers %}
-                    <li>👤 Traveller {{ loop.index }}{% if t.age %} — Leeftijd: {{ t.age }}{% endif %}{% if t.fitness %} — Fitness: {{ t.fitness }}{% endif %}</li>
+                    <li>👤 Traveller {{ loop.index }}{% if t.age %} — Age: {{ t.age }}{% endif %}{% if t.fitness %} — Fitness: {{ t.fitness }}{% endif %}</li>
                   {% endfor %}
                 {% else %}
-                  <li class="muted">Geen travellers toegevoegd</li>
+                  <li class="muted">No travellers added</li>
                 {% endif %}
               </ul>
             </div>
           {% endfor %}
         {% else %}
-          <p>Je hebt nog geen trips.</p>
+          <p>You don't have any trips yet</p>
         {% endif %}
       </div>
     </div>
