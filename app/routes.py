@@ -78,8 +78,8 @@ def trips():
 
     if request.method == 'POST':
         destination = request.form.get('destination')
-        start_date = request.form.get('start_date')
-        end_date = request.form.get('end_date')
+        start_date_str = request.form.get('start_date')
+        end_date_str = request.form.get('end_date')
         num_travellers = int(request.form.get('num_travellers'))
 
         preferences_list = request.form.getlist('preferences')  # ✅ haalt meerdere waarden op
