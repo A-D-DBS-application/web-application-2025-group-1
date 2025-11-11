@@ -10,7 +10,7 @@ main = Blueprint('main', __name__)
 def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
-        return render_template('Dashboard.html')
+        return render_template('trips.html')
     return render_template('index.html')
 
 @main.route('/register', methods=['GET', 'POST'])
