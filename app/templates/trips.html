@@ -174,7 +174,13 @@
         {% if trips %}
           {% for trip in trips %}
             <div class="trip-card" id="trip-{{ trip.trip_id }}">
-              <strong>Trip #<span class="trip-id">{{ trip.trip_id }}</span></strong>
+              <strong>
+                {% if trip.destination %}
+                  Trip to {{ trip.destination }}
+                {% else %}
+                  Trip #{{ trip.trip_id }}
+                {% endif %}
+              </strong>
               <small class="muted"> — created at {{ trip.created_at.strftime('%Y-%m-%d') }}</small>
               <div class="muted">Preference(s): {{ trip.preferences or '–' }}</div> 
               <div class="muted">Destination: {{ trip.destination or '–' }}</div>
