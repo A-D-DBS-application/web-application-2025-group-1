@@ -92,6 +92,10 @@ def trips():
             flash("End date cannot be before start date.", "error")
             return redirect(url_for('main.trips'))
 
+        if not destination:
+            flash("Please enter a destination.", "error")
+            return redirect(url_for('main.trips'))
+
         try:
             num_travellers = int(num_travellers)
         except (TypeError, ValueError):
@@ -102,8 +106,8 @@ def trips():
             created_at=datetime.now(),
             start_date=start_date,
             end_date=end_date,
-            number_of_travelers=num_travellers,
-            preferences=preference if preference else None,
+            number_of_travellers=num_travellers,
+            preferences=preferences if preferences else None,
             destination=destination,
             user_id=user.user_id
         )
