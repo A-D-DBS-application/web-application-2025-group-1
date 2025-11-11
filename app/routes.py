@@ -81,7 +81,9 @@ def trips():
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
         num_travellers = int(request.form.get('num_travellers'))
-        preference = request.form.get('preference')
+
+        preferences_list = request.form.getlist('preferences')  # ✅ haalt meerdere waarden op
+        preferences = ", ".join(preferences_list) if preferences_list else None
 
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
