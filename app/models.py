@@ -60,6 +60,7 @@ class Traveller(db.Model):
     __tablename__ = 'Travellers'
 
     traveller_id = db.Column(db.BigInteger, primary_key=True, name='Traveller_id')
+    name = db.Column(db.Text, nullable=True, name='Name')
     birth_date = db.Column(db.Date, nullable=False)  
     fitness = db.Column(fitness_level_enum, nullable=True)
     trip_id = db.Column(db.BigInteger, db.ForeignKey('Trip.Trip_id'), nullable=True, name='Trip_id')
