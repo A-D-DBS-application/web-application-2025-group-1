@@ -63,6 +63,11 @@ def logout():
     flash("You have been logged out.")
     return redirect(url_for('main.index'))
 
+#hiermee kan de user de itinerary zien
+@main.route('/itinerary')
+def itinerary():
+    return render_template('itinerary.html')
+
 #hiermee kan de user een trip aanmaken
 @main.route('/trips', methods=['GET', 'POST'])
 def trips():
