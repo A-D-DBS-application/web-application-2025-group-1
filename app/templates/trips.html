@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -176,7 +176,7 @@
             <div class="trip-card" id="trip-{{ trip.trip_id }}">
               <strong>Trip #<span class="trip-id">{{ trip.trip_id }}</span></strong>
               <small class="muted"> — created at {{ trip.created_at.strftime('%Y-%m-%d') }}</small>
-              <div> class="muted">Preference: {{ trip.preferences or '–' }}</div> 
+              <div class="muted">Preference(s): {{ trip.preferences or '–' }}</div> 
               <div class="muted">Destination: {{ trip.destination or '–' }}</div>
               <div class="muted">Start: {{ trip.start_date or '–' }} — End: {{ trip.end_date or '–' }}</div>
               <div class="muted">Number of Travellers: {{ trip.number_of_travelers or 0 }}</div>
