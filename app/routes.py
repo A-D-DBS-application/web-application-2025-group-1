@@ -132,11 +132,11 @@ def add_traveller():
         current = int(trip.number_of_travelers) if trip.number_of_travelers else 0
     except Exception:
         current = 0
-    trip.number_of_travelers = current + 1
+    trip.number_of_travellers = current + 1
 
     db.session.commit()
 
-    flash("Traveller toegevoegd!", "success")
+    flash("Traveller added!", "success")
     return redirect(url_for('main.trips'))
 
 
