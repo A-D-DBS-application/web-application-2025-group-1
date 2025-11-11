@@ -1,5 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum, Numeric, BigInteger
+from datetime import datetime #om trip aan te maken
+
+
 
 db = SQLAlchemy()
 

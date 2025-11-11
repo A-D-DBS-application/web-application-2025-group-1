@@ -67,43 +67,37 @@ def itinerary():
     return render_template('itinerary.html')
 
 #hiermee kan de user een trip aanmaken
-@main.route('/create_trip', methods=['GET', 'POST'])
-def create_trip():
+@main.route('/trips', methods=['GET', 'POST'])
+def trips():
     if 'user_id' not in session:
         return redirect(url_for('main.login'))
 
+    user = User.query.get(session['user_id'])
+
     if request.method == 'POST':
+        destination = request.form.get('destination')
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
         num_travellers = int(request.form.get('num_travellers'))
         preference = request.form.get('preference')
-        destination = request.form.get('destination')
 
         new_trip = Trip(
             created_at=datetime.now(),
-            Start_Date=start_date,
-            End_Date=end_date,
-            Number_Of_Travelers=num_travellers,
+            start_date=start_date,
+            end_date=end_date,
+            number_of_travelers=num_travellers,
             preferences=preference,
-            User_id=session['user_id']
+            user_id=user.user_id
         )
         db.session.add(new_trip)
         db.session.commit()
 
-        for i in range(num_travellers):
-            traveller = Traveller(
-                created_at=datetime.now(),
-                age=None,
-                fitness=None,
-                Trip_id=new_trip.Trip_id
-            )
-            db.session.add(traveller)
+        flash("Trip succesvol aangemaakt!", "success")
+        return redirect(url_for('main.trips'))
 
-        db.session.commit()
+    trips = Trip.query.filter_by(user_id=user.user_id).all()
+    return render_template('trips.html', trips=trips)
 
-        return redirect(url_for('main.itinerary', trip_id=new_trip.Trip_id))
-
-    return render_template('create_trip.html')
 
 #hiermee kan een user de travellers age en fitness level aanpassen
 @main.route('/edit_travellers/<int:trip_id>', methods=['GET', 'POST'])
