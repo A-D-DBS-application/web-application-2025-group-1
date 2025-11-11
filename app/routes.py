@@ -167,19 +167,25 @@ def add_traveller():
 
 
 
-#hiermee kan een user de travellers age en fitness level aanpassen
-@main.route('/edit_travellers/<int:trip_id>', methods=['GET', 'POST'])
-def edit_travellers(trip_id):
-    trip = Trip.query.get_or_404(trip_id)
-    travellers = Traveller.query.filter_by(Trip_id=trip_id).all()
+@main.route('/edit_traveller/<int:traveller_id>', methods=['POST'])
+def edit_traveller(traveller_id):
+    traveller = Traveller.query.get_or_404(traveller_id)
 
-    if request.method == 'POST':
-        for traveller in travellers:
-            age_field = f"age_{traveller.Traveller_id}"
-            fitness_field = f"fitness_{traveller.Traveller_id}"
-            traveller.age = request.form.get(age_field)
-            traveller.fitness = request.form.get(fitness_field)
-        db.session.commit()
-        return redirect(url_for('main.itinerary', trip_id=trip_id))
+    # Controleer of de gebruiker eigenaar is van de trip
+    if traveller.trip.user_id != session.get('user_id'):
+        flash("You cannot edit this traveller.", "error")
+        return redirect(url_for('main.trips'))
 
-    return render_template('edit_travellers.html', trip=trip, travellers=travellers)
+    # Ophalen van de nieuwe gegevens
+    name = request.form.get('name')
+    date_of_birth = request.form.get('date_of_birth')
+    fitness_level = request.form.get('fitness_level')
+
+    # Bijwerken
+    traveller.name = name
+    traveller.date_of_birth = date_of_birth
+    traveller.fitness_level = fitness_level
+
+    db.session.commit()
+    flash("Traveller updated successfully!", "success")
+    return redirect(url_for('main.trips'))
