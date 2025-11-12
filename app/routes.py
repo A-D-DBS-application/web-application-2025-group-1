@@ -189,3 +189,15 @@ def edit_traveller(traveller_id):
     db.session.commit()
     flash("Traveller updated successfully!", "success")
     return redirect(url_for('main.trips'))
+
+@main.route('/activities')
+def activities():
+    return render_template('activities.html')
+
+@main.route('/hotels')
+def hotels():
+    return render_template('hotels.html')
+
+@main.route('/agencies')
+def agencies():
+    return render_template('agencies.html')
