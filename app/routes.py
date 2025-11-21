@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from datetime import datetime
-from .models import db, User, Traveller, Trip
+from .models import db, User, Traveller, Trip, ActivityPlanned, ActivityType
+from .utils import generate_itinerary
 
 
 # ⬇️ Maak een Blueprint aan i.p.v. rechtstreeks met app werken
@@ -63,10 +64,7 @@ def logout():
     flash("You have been logged out.")
     return redirect(url_for('main.index'))
 
-#hiermee kan de user de itinerary zien
-@main.route('/itinerary')
-def itinerary():
-    return render_template('itinerary.html')
+
 
 #hiermee kan de user een trip aanmaken
 @main.route('/trips', methods=['GET', 'POST'])
@@ -154,10 +152,7 @@ def add_traveller():
     db.session.add(new_traveller)
 
     # ✅ Update aantal reizigers op de trip
-    try:
-        current = int(trip.number_of_travelers) if trip.number_of_travelers else 0
-    except Exception:
-        current = 0
+    current = int(trip.number_of_travellers or 0)
     trip.number_of_travellers = current + 1
 
     db.session.commit()
@@ -183,8 +178,8 @@ def edit_traveller(traveller_id):
 
     # Bijwerken
     traveller.name = name
-    traveller.date_of_birth = date_of_birth
-    traveller.fitness_level = fitness_level
+    traveller.birth_date = date_of_birth
+    traveller.fitness = fitness_level
 
     db.session.commit()
     flash("Traveller updated successfully!", "success")
@@ -201,3 +196,34 @@ def hotels():
 @main.route('/agencies')
 def agencies():
     return render_template('agencies.html')
+
+@main.route('/generate_itinerary/<int:trip_id>')
+def generate(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+
+    if trip.user_id != session.get('user_id'):
+        flash("You cannot generate an itinerary for someone else's trip.", "error")
+        return redirect(url_for('main.trips'))
+
+    created = generate_itinerary(trip)
+
+    if not created:
+        flash("No suitable activities were found for this trip.", "error")
+        return redirect(url_for('main.trips'))
+
+    flash("Itinerary successfully generated!", "success")
+    return redirect(url_for('main.itinerary_view', trip_id=trip.trip_id))
+
+
+@main.route('/itinerary/<int:trip_id>')
+def itinerary_view(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+    activities = (
+        ActivityPlanned.query.filter_by(trip_id=trip_id)
+        .join(ActivityType)
+        .order_by(ActivityPlanned.date)
+        .all()
+    )
+    return render_template('itinerary.html', trip=trip, activities=activities)
+
+

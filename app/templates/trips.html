@@ -242,6 +242,14 @@
                   <li class="muted">No travellers added</li>
                 {% endif %}
               </ul>
+              <div style="margin-top: 10px;">
+                <a href="{{ url_for('main.generate', trip_id=trip.trip_id) }}" class="btn">
+                  Generate Itinerary
+                </a>
+                <a href="{{ url_for('main.itinerary_view', trip_id=trip.trip_id) }}" class="btn" style="margin-left:10px;">
+                  View Itinerary
+                </a>
+              </div>
             </div>
           {% endfor %}
         {% else %}

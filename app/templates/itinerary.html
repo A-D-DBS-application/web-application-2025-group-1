@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Itinerary</title>
+  <style>
+    body { background: #2a9d8f; font-family: Poppins, sans-serif; padding: 40px; color: white; }
+    .day-box { background: rgba(255,255,255,0.15); padding: 15px; margin-bottom: 15px; border-radius: 12px; }
+    h1, h2 { text-align: center; }
+  </style>
+</head>
+<body>
+
+<a href="{{ url_for('main.trips') }}" style="color:white;">← Back</a>
+
+<h1>Your Trip Itinerary</h1>
+<h2>{{ trip.destination }}</h2>
+
+{% for item in activities %}
+  <div class="day-box">
+    <strong>{{ item.date.strftime('%Y-%m-%d') }}</strong><br>
+    Activity: {{ item.activity_type.name }}<br>
+    Type: {{ item.activity_type.type }}<br>
+    Difficulty: {{ item.activity_type.difficulty or '—' }}
+  </div>
+{% endfor %}
+
+</body>
+</html>
