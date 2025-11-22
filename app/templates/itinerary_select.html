@@ -1,10 +1,179 @@
-<h2>Select a Trip to View Itinerary</h2>
-<ul>
-    {% for trip in trips %}
-        <li>
-            <a href="{{ url_for('main.itinerary_view', trip_id=trip.trip_id) }}">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Trip | AfriGuide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f4a261, #2a9d8f);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+            padding-top: 40px;
+        }
+
+        nav {
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            padding: 10px 30px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px;
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .flash-message {
+            margin-bottom: 20px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .flash-success {
+            background-color: #1e90ff;
+            color: #fff;
+        }
+
+        .flash-error {
+            background-color: #e63946;
+            color: #fff;
+        }
+
+        .trip-card {
+            background: linear-gradient(135deg, #fff, #f1f1f1);
+            color: #264653;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            transition: transform 0.25s, box-shadow 0.25s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .trip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-logout {
+            display: inline-block;
+            background: #1e90ff;
+            color: #fff;
+            padding: 14px 30px;
+            border-radius: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 15px;
+            transition: 0.25s;
+        }
+
+        .btn-logout:hover {
+            background: #1565c0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">AfriGuide</div>
+        <ul>
+            <li><a href="{{ url_for('main.home') }}">Home</a></li>
+            <li><a href="{{ url_for('main.trips') }}">Trips</a></li>
+            <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Select a Trip</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                    <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        {% for trip in trips %}
+            <a href="{{ url_for('main.itinerary_view', trip_id=trip.trip_id) }}" class="trip-card">
                 {{ trip.destination }} ({{ trip.start_date }} - {{ trip.end_date }})
             </a>
-        </li>
-    {% endfor %}
-</ul>
+        {% else %}
+            <p style="text-align:center; color:#fff;">You have no trips yet.</p>
+        {% endfor %}
+
+        <div style="text-align:center;">
+            <a href="{{ url_for('main.logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </div>
+</body>
+
+</html>
