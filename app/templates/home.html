@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfriGuide | Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f4a261, #2a9d8f);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+            padding-top: 40px;
+        }
+
+        nav {
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            padding: 10px 30px;
+            width: 1000px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px;
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 16px;
+            width: 1000px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        p {
+            color: #fff;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 35px;
+        }
+
+        .card {
+            background: #fff;
+            color: #264653;
+            padding: 30px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            transition: 0.25s;
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .group {
+            margin-bottom: 40px;
+        }
+
+        .logout-bottom {
+            background: #1e90ff;
+            padding: 14px 30px;
+            border-radius: 12px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .logout-bottom:hover { background: #1565c0; }
+
+        /* Flash messages */
+        .flash-message {
+            margin-bottom: 20px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .flash-success {
+            background-color: #1e90ff;
+            color: #fff;
+        }
+
+        .flash-error {
+            background-color: #e63946;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">AfriGuide</div>
+        <ul>
+            <li><a href="{{ url_for('main.trips') }}">Trips</a></li>
+            <li><a href="{{ url_for('main.activities') }}">Activities</a></li>
+            <li><a href="{{ url_for('main.hotels') }}">Hotels</a></li>
+            <li><a href="{{ url_for('main.agencies') }}">Agencies</a></li>
+            <li><a href="{{ url_for('main.logout') }}" class="logout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <!-- FLASH MESSAGES TOEGEVOEGD -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div>
+                    {% for category, message in messages %}
+                        {% if message.startswith('Logged in successfully') or message.startswith('Registered successfully') %}
+                            <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+                                {{ message }}
+                            </p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <h1>Welcome to AfriGuide</h1>
+        <p>Explore and manage your trips and travel activities!</p>
+
+        <!-- Group 1 -->
+        <div class="group">
+            <div class="cards">
+                <a href="{{ url_for('main.trips') }}" class="card">Your Trips</a>
+            </div>
+        </div>
+
+        <!-- Group 2 -->
+        <div class="group">
+            <div class="cards">
+                <a href="{{ url_for('main.activities') }}" class="card">Browse Activities</a>
+                <a href="{{ url_for('main.hotels') }}" class="card">Browse Hotels</a>
+                <a href="{{ url_for('main.agencies') }}" class="card">Travel Agencies</a>
+            </div>
+        </div>
+
+        <a href="{{ url_for('main.logout') }}" class="logout-bottom">Logout</a>
+
+    </div>
+
+</body>
+
+</html>

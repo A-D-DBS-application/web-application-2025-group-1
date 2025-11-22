@@ -15,6 +15,16 @@ def index():
         return render_template('trips.html', trips=trips)
     return render_template('index.html')
 
+@main.route('/home')
+def home():
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+    
+    user = User.query.get(session['user_id'])
+    trips = Trip.query.filter_by(user_id=user.user_id).all()
+    
+    return render_template('home.html', user=user, trips=trips)
+
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -39,7 +49,7 @@ def register():
 
         session['user_id'] = new_user.user_id
         flash("Registration successful!", "success")
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.home'))
         
     return render_template('register.html')
 
@@ -51,7 +61,7 @@ def login():
         if user:
             session['user_id'] = user.user_id
             flash(f"Logged in successfully as {user.name} !", "success")
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.home'))
         else:
             flash("User not found.", "error")
             return redirect(url_for('main.login'))
