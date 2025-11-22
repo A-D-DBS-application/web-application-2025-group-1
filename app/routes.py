@@ -236,4 +236,11 @@ def itinerary_view(trip_id):
     )
     return render_template('itinerary.html', trip=trip, activities=activities)
 
+@main.route('/itinerary/select')
+def itinerary_select():
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
 
+    user = User.query.get(session['user_id'])
+    trips = Trip.query.filter_by(user_id=user.user_id).all()
+    return render_template('itinerary_select.html', trips=trips)

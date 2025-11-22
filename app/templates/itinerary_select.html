@@ -1,0 +1,10 @@
+<h2>Select a Trip to View Itinerary</h2>
+<ul>
+    {% for trip in trips %}
+        <li>
+            <a href="{{ url_for('main.itinerary_view', trip_id=trip.trip_id) }}">
+                {{ trip.destination }} ({{ trip.start_date }} - {{ trip.end_date }})
+            </a>
+        </li>
+    {% endfor %}
+</ul>
