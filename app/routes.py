@@ -89,9 +89,7 @@ def trips():
         start_date_str = request.form.get('start_date')
         end_date_str = request.form.get('end_date')
         num_travellers = int(request.form.get('num_travellers'))
-
-        preferences_list = request.form.getlist('preferences')  # ✅ haalt meerdere waarden op
-        preferences = ", ".join(preferences_list) if preferences_list else None
+        preferences = request.form.get('preferences')
 
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
@@ -128,72 +126,59 @@ def trips():
     trips = Trip.query.filter_by(user_id=user.user_id).all()
     return render_template('trips.html', trips=trips)
 
-@main.route('/add_traveller', methods=['POST'])
-def add_traveller():
-    trip_id = request.form.get('trip_id')
-    traveller_name = request.form.get('name')
-    birth_date_str = request.form.get('birth_date')
-    fitness = request.form.get('fitness')
-
+@main.route('/travellers/<int:trip_id>', methods=['GET', 'POST'])
+def travellers(trip_id): 
     trip = Trip.query.get_or_404(trip_id)
 
-    if trip.user_id != session['user_id']:
-        flash("You cannot modify this trip.", "error")
+    if trip.user_id != session.get('user_id'):
+        flash("You cannot view travellers for this trip.", "error")
         return redirect(url_for('main.trips'))
 
-    # ⏳ Zet de datum-string van het formulier om naar een echte date
-    birth_date = None
-    if birth_date_str:
-        try:
-            birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d').date()
-        except ValueError:
-            flash("Ongeldige geboortedatum.", "danger")
-            return redirect(url_for('main.trips'))
+    if request.method == 'POST':
+        # Voeg nieuwe traveller toe
+        if 'add' in request.form:  
+            name = request.form.get('name')
+            birth_date_str = request.form.get('birth_date')
+            fitness = request.form.get('fitness')
 
-    # ✅ Maak nieuwe traveller aan
-    new_traveller = Traveller(
-        name=traveller_name,
-        birth_date=birth_date,
-        fitness=fitness if fitness else None,
-        trip_id=trip.trip_id,
-        created_at=datetime.utcnow()
-    )
+            try:
+                birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d').date()
+            except Exception:
+                flash("Ongeldige geboortedatum.", "error")
+                return redirect(url_for('main.travellers', trip_id=trip.trip_id))
 
-    db.session.add(new_traveller)
+            new_traveller = Traveller(
+                name=name,
+                birth_date=birth_date,
+                fitness=fitness if fitness else None,
+                trip_id=trip.trip_id,
+                created_at=datetime.utcnow()
+            )
+            db.session.add(new_traveller)
+            trip.number_of_travellers = (trip.number_of_travellers or 0) + 1
+            db.session.commit()
+            flash("Traveller added!", "success")
+            return redirect(url_for('main.travellers', trip_id=trip.trip_id))
 
-    # ✅ Update aantal reizigers op de trip
-    current = int(trip.number_of_travellers or 0)
-    trip.number_of_travellers = current + 1
+        # Edit bestaande traveller
+        if 'edit' in request.form:  
+            traveller_id = int(request.form.get('traveller_id'))
+            traveller = Traveller.query.get_or_404(traveller_id)
+            traveller.name = request.form.get('name')
+            traveller.fitness = request.form.get('fitness')
+            try:
+                traveller.birth_date = datetime.strptime(request.form.get('birth_date'), '%Y-%m-%d').date()
+            except Exception:
+                flash("Ongeldige geboortedatum.", "error")
+                return redirect(url_for('main.travellers', trip_id=trip.trip_id))
 
-    db.session.commit()
+            db.session.commit()
+            flash("Traveller updated!", "success")
+            return redirect(url_for('main.travellers', trip_id=trip.trip_id))
 
-    flash("Traveller added!", "success")
-    return redirect(url_for('main.trips'))
+    travellers = Traveller.query.filter_by(trip_id=trip.trip_id).all()
+    return render_template('travellers.html', trip=trip, travellers=travellers)  
 
-
-
-@main.route('/edit_traveller/<int:traveller_id>', methods=['POST'])
-def edit_traveller(traveller_id):
-    traveller = Traveller.query.get_or_404(traveller_id)
-
-    # Controleer of de gebruiker eigenaar is van de trip
-    if traveller.trip.user_id != session.get('user_id'):
-        flash("You cannot edit this traveller.", "error")
-        return redirect(url_for('main.trips'))
-
-    # Ophalen van de nieuwe gegevens
-    name = request.form.get('name')
-    date_of_birth = request.form.get('date_of_birth')
-    fitness_level = request.form.get('fitness_level')
-
-    # Bijwerken
-    traveller.name = name
-    traveller.birth_date = date_of_birth
-    traveller.fitness = fitness_level
-
-    db.session.commit()
-    flash("Traveller updated successfully!", "success")
-    return redirect(url_for('main.trips'))
 
 @main.route('/activities')
 def activities():

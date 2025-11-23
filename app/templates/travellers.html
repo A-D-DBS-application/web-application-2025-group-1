@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Travellers | AfriGuide</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f4a261, #2a9d8f); 
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 40px 0;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 16px;
+      width: 1000px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 10px;
+    }
+
+    label { display:block; font-weight:600; margin-top:10px; }
+    .btn { background:#264653; color:#fff; padding:8px 14px; border-radius:8px; cursor:pointer; border:none; }
+    .flash-success { background:#2a9d8f; padding:6px; border-radius:6px; margin-bottom:6px; }
+    .flash-error { background:#e76f51; padding:6px; border-radius:6px; margin-bottom:6px; }
+
+    h1, h2 { margin-bottom:10px; }
+    ul { padding-left:20px; }
+    .traveller-card { background: rgba(0,0,0,0.12); padding:8px; border-radius:6px; margin-bottom:6px; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Manage Travellers for {{ trip.destination }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="flash-message {% if category=='error' %}flash-error{% else %}flash-success{% endif %}">
+            {{ message }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h2>Add Traveller</h2>
+    <form method="POST" action="{{ url_for('main.travellers', trip_id=trip.trip_id) }}">
+      <input type="hidden" name="add" value="1"> 
+      <label>Name</label>
+      <input type="text" name="name" required>
+      <label>Date of Birth</label>
+      <input type="date" name="birth_date" required>
+      <label>Fitness</label>
+      <select name="fitness">
+        <option value="">Select</option>
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+      </select>
+      <button type="submit" class="btn">Add Traveller</button>
+    </form>
+
+    <hr>
+
+    <h2>Edit Travellers</h2>
+    {% for traveller in travellers %}
+      <div class="traveller-card">
+        <form method="POST" action="{{ url_for('main.travellers', trip_id=trip.trip_id) }}">
+          <input type="hidden" name="edit" value="1"> 
+          <input type="hidden" name="traveller_id" value="{{ traveller.traveller_id }}">
+          <label>Name</label>
+          <input type="text" name="name" value="{{ traveller.name }}">
+          <label>Date of Birth</label>
+          <input type="date" name="birth_date" value="{{ traveller.birth_date }}">
+          <label>Fitness</label>
+          <select name="fitness">
+            <option value="">Select</option>
+            <option value="LOW" {% if traveller.fitness=='LOW' %}selected{% endif %}>Low</option>
+            <option value="MEDIUM" {% if traveller.fitness=='MEDIUM' %}selected{% endif %}>Medium</option>
+            <option value="HIGH" {% if traveller.fitness=='HIGH' %}selected{% endif %}>High</option>
+          </select>
+          <button type="submit" class="btn">Update</button>
+        </form>
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
