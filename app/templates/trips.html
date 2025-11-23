@@ -171,6 +171,18 @@
               <div class="muted">Destination: {{ trip.destination or '–' }}</div>
               <div class="muted">Start: {{ trip.start_date or '–' }} — End: {{ trip.end_date or '–' }}</div>
               <div class="muted">Number of Travellers: {{ trip.num_travellers or 0 }}</div>
+              <ul style="margin-top:5px; padding-left:20px;">
+                {% if trip.travellers %}
+                  {% for t in trip.travellers %}
+                    <li>👤 {{ t.name or 'Traveller ' ~ loop.index }}
+                    {% if t.age %} — Age: {{ t.age }}{% endif %}
+                    {% if t.fitness %} — Fitness: {{ t.fitness }}{% endif %}
+                  </li>
+                  {% endfor %}
+                {% else %}
+                  <li class="muted">No travellers added</li>
+                {% endif %}
+              </ul>
 
               <a href="{{ url_for('main.generate', trip_id=trip.trip_id) }}" class="btn">Generate Itinerary</a>
               <a href="{{ url_for('main.itinerary_view', trip_id=trip.trip_id) }}" class="btn">View Itinerary</a>
