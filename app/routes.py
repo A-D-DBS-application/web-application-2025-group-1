@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from datetime import datetime
-from .models import db, User, Traveller, Trip, ActivityPlanned, ActivityType
+from .models import db, User, Traveller, Trip, ActivityPlanned, ActivityType, TravelAgency
 from .utils import generate_itinerary
 
 
@@ -180,9 +180,56 @@ def travellers(trip_id):
     return render_template('travellers.html', trip=trip, travellers=travellers)  
 
 
-@main.route('/activities')
+@main.route('/activities', methods=['GET'])
 def activities():
-    return render_template('activities.html')
+    all_activities = ActivityType.query.order_by(ActivityType.created_at.desc()).all()
+    agencies = TravelAgency.query.all()
+    return render_template('activities.html', activities=all_activities, agencies=agencies)
+
+
+@main.route('/add_activity', methods=['POST'])
+def add_activity():
+    if 'user_id' not in session:
+        flash("You must be logged in to add activities.", "error")
+        return redirect(url_for('main.login'))
+
+    name = request.form.get('name')
+    type_ = request.form.get('type')
+    difficulty = request.form.get('difficulty')
+    destination = request.form.get('destination')
+    agency_id = request.form.get('agency_id') or None
+
+    if not name or not type_ or not destination:
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for('main.activities'))
+
+    # Als agency_id leeg, optie 'User Added'
+    if not agency_id:
+        user_agency = TravelAgency.query.filter_by(name="User Added").first()
+        if not user_agency:
+            user_agency = TravelAgency(
+                name="User Added",
+                contact_info="",
+                website="",
+                created_at=datetime.utcnow()
+            )
+            db.session.add(user_agency)
+            db.session.commit()
+        agency_id = user_agency.agency_id
+
+    new_activity = ActivityType(
+        name=name,
+        type=type_,
+        difficulty=difficulty,
+        destination=destination,
+        agency_id=agency_id,
+        created_at=datetime.utcnow()
+    )
+    db.session.add(new_activity)
+    db.session.commit()
+
+    flash("Activity added successfully!", "success")
+    return redirect(url_for('main.activities'))
 
 @main.route('/hotels')
 def hotels():
