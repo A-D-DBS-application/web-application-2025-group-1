@@ -4,189 +4,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Itinerary | AfriGuide</title>
+    <title>Itinerary | {{ trip.destination }}</title>
+
     <style>
-        * {
+        html, body {
+            height: 100%;
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            background: linear-gradient(135deg, #f4a261, #2a9d8f);
             font-family: "Poppins", sans-serif;
+            color: #264653;
         }
 
         body {
-            background: linear-gradient(135deg, #f4a261, #2a9d8f);
-            min-height: 100vh;
-            color: #fff;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
             padding-top: 40px;
-        }
-
-        nav {
-            background: rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(8px);
-            padding: 10px 30px;
-            width: 100%;
-            max-width: 1000px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 16px;
-        }
-
-        nav .logo {
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        nav ul li a:hover {
-            text-decoration: underline;
+            padding-bottom: 40px;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            padding: 40px;
-            border-radius: 16px;
             width: 90%;
             max-width: 900px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.20);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
         }
 
-        h1 {
+        .trip-header {
             text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: #fff;
+            margin-bottom: 35px;
         }
 
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #fff;
+        .trip-title {
+            font-size: 2.6rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: white;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.2);
         }
 
-        .flash-message {
-            margin-bottom: 20px;
-            padding: 12px 20px;
+        .trip-dates {
+            font-size: 1.3rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.35);
+            display: inline-block;
+            padding: 10px 20px;
             border-radius: 12px;
-            font-weight: 600;
-        }
-
-        .flash-success {
-            background-color: #1e90ff;
-            color: #fff;
-        }
-
-        .flash-error {
-            background-color: #e63946;
-            color: #fff;
-        }
-
-        .activities {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 25px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            margin-top: 10px;
         }
 
         .activity-card {
             background: #fff;
+            padding: 22px;
+            border-radius: 16px;
+            margin-bottom: 22px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .activity-date {
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #2a9d8f;
+            font-size: 1.1rem;
+        }
+
+        .activity-name {
+            font-size: 1.2rem;
+            font-weight: 600;
             color: #264653;
-            padding: 25px;
-            border-radius: 20px;
-            font-weight: 600;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .back-btn {
             text-decoration: none;
-        }
-
-        .activity-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        }
-
-        .btn-back, .btn-logout {
-            display: inline-block;
             background: #1e90ff;
-            color: #fff;
-            padding: 12px 28px;
+            color: white;
+            padding: 14px 28px;
             border-radius: 14px;
+            display: inline-block;
             font-weight: 600;
-            text-decoration: none;
-            margin-top: 20px;
+            margin-top: 25px;
             transition: 0.25s;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.2);
         }
 
-        .btn-back:hover, .btn-logout:hover {
+        .back-btn:hover {
             background: #1565c0;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
+            transform: translateY(-3px);
         }
     </style>
 </head>
 
 <body>
-    <nav>
-        <div class="logo">AfriGuide</div>
-        <ul>
-            <li><a href="{{ url_for('main.home') }}">Home</a></li>
-            <li><a href="{{ url_for('main.trips') }}">Trips</a></li>
-            <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
-        </ul>
-    </nav>
 
     <div class="container">
-        <h1>Itinerary for {{ trip.destination }}</h1>
-        <h2>Date: {{ trip.start_date }} - {{ trip.end_date }}</h2>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div>
-                {% for category, message in messages %}
-                    <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
-                        {{ message }}
-                    </p>
-                {% endfor %}
+        <div class="trip-header">
+            <h1 class="trip-title">Itinerary for {{ trip.destination }}</h1>
+            <div class="trip-dates">
+                {{ trip.start_date }} — {{ trip.end_date }}
             </div>
-        {% endif %}
-        {% endwith %}
+        </div>
 
         {% if activities %}
-            <div class="activities">
-                {% for act in activities %}
-                    <div class="activity-card">
-                        <p><strong>{{ act.date }}</strong></p>
-                        <p>{{ act.activity_type.name }}</p>
-                        <p>{{ act.notes or "" }}</p>
-                    </div>
-                {% endfor %}
-            </div>
+            {% for act in activities %}
+                <div class="activity-card">
+                    <div class="activity-date">{{ act.date }}</div>
+                    <div class="activity-name">{{ act.activity_type.name }}</div>
+
+                    {% if act.notes %}
+                        <p>{{ act.notes }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
         {% else %}
-            <p style="text-align:center; color:#fff;">No planned activities yet.</p>
+            <p>No planned activities yet.</p>
         {% endif %}
 
-        <div style="text-align:center;">
-        </div>
     </div>
+
 </body>
 
 </html>
