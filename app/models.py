@@ -52,6 +52,9 @@ class Trip(db.Model):
     db.Enum('CULTURE', 'ADVENTURE', 'RELAXATION', 'NATURE', name='pref_kind'),
     nullable=True
 ) 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     destination = db.Column(db.Text, nullable=True, name='Destination')
     user_id = db.Column(db.BigInteger, db.ForeignKey('User.user_id'), nullable=True, name='User_id')
