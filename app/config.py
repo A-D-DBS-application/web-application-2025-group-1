@@ -14,21 +14,10 @@ load_dotenv()
 
 
 class Config:
-<<<<<<< Updated upstream
     SECRET_KEY = os.getenv("SECRET_KEY", "your_secret_key")
     SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL", "sqlite:///app.db"  # Local fallback so the app boots
+        "DATABASE_URL",
+        "postgresql://postgres.eoysewmdlgotspzgbpkb:Group1_ADDBS!@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require",
     )
-=======
-    SECRET_KEY = 'your_secret_key'
-    SQLALCHEMY_DATABASE_URI = (
-    "postgresql+psycopg2://postgres:Group1_ADDBS!"
-    "@db.eoysewmdlgotspzgbpkb.supabase.co:5432/postgres"
-)
-
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}

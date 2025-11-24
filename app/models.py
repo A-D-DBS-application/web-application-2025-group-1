@@ -44,18 +44,7 @@ class Trip(db.Model):
     start_date = db.Column(db.Date, nullable=True, name='Start_Date')
     end_date = db.Column(db.Date, nullable=True, name='End_Date')
     number_of_travellers = db.Column(Numeric, nullable=True, name='Number_Of_Travellers')
-<<<<<<< Updated upstream
     preferences = db.Column(pref_kind_enum, nullable=True)
-
-=======
-    preferences = db.Column(
-    db.Enum('CULTURE', 'ADVENTURE', 'RELAXATION', 'NATURE', name='pref_kind'),
-    nullable=True
-) 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     destination = db.Column(db.Text, nullable=True, name='Destination')
     user_id = db.Column(db.BigInteger, db.ForeignKey('User.user_id'), nullable=True, name='User_id')
     created_at = db.Column(
