@@ -92,7 +92,15 @@
             <option value="MEDIUM" {% if traveller.fitness=='MEDIUM' %}selected{% endif %}>Medium</option>
             <option value="HIGH" {% if traveller.fitness=='HIGH' %}selected{% endif %}>High</option>
           </select>
-          <button type="submit" class="btn">Update</button>
+          <div style="display:flex; gap:10px; align-items:flex-end; margin-top:10px;">
+            <!-- Update -->
+            <button type="submit" class="btn">Update</button>
+            <!-- Delete Traveller Button -->
+            <form method="POST"
+                  action="{{ url_for('main.delete_traveller', trip_id=trip.trip_id, traveller_id=traveller.traveller_id) }}">
+                <button type="submit" class="btn" style="background:#e63946;">Delete</button>
+            </form>
+          </div>
         </form>
       </div>
     {% endfor %}
