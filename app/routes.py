@@ -179,6 +179,26 @@ def travellers(trip_id):
     travellers = Traveller.query.filter_by(trip_id=trip.trip_id).all()
     return render_template('travellers.html', trip=trip, travellers=travellers)  
 
+@main.route('/travellers/<int:trip_id>/delete/<int:traveller_id>', methods=['POST'])
+def delete_traveller(trip_id, traveller_id):
+    trip = Trip.query.get_or_404(trip_id)
+    traveller = Traveller.query.get_or_404(traveller_id)
+
+    # check: hoort deze traveller bij de juiste gebruiker?
+    if trip.user_id != session.get('user_id'):
+        flash("You cannot delete a traveller from someone else's trip.", "error")
+        return redirect(url_for('main.travellers', trip_id=trip_id))
+
+    # verwijder traveller
+    db.session.delete(traveller)
+
+    # teller -1 doen
+    trip.number_of_travellers = max((trip.number_of_travellers or 1) - 1, 0)
+
+    db.session.commit()
+    flash("Traveller deleted!", "success")
+    return redirect(url_for('main.travellers', trip_id=trip_id))
+
 
 @main.route('/activities', methods=['GET'])
 def activities():
