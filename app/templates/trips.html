@@ -170,7 +170,7 @@
               <div class="muted">Preference(s): {{ trip.preferences or '–' }}</div>
               <div class="muted">Destination: {{ trip.destination or '–' }}</div>
               <div class="muted">Start: {{ trip.start_date or '–' }} — End: {{ trip.end_date or '–' }}</div>
-              <div class="muted">Number of Travellers: {{ trip.num_travellers or 0 }}</div>
+              <div class="muted">Number of Travellers: {{ trip.travellers|length or 0 }}</div>
               <ul style="margin-top:5px; padding-left:20px;">
                 {% if trip.travellers %}
                   {% for t in trip.travellers %}
