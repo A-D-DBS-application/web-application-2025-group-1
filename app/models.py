@@ -43,7 +43,7 @@ class Trip(db.Model):
     trip_id = db.Column(db.BigInteger, primary_key=True, name='Trip_id')
     start_date = db.Column(db.Date, nullable=True, name='Start_Date')
     end_date = db.Column(db.Date, nullable=True, name='End_Date')
-    number_of_travellers = db.Column(Numeric, nullable=True, name='Number_Of_Travellers')
+    number_of_travellers = db.Column(db.Integer, nullable=True, name='Number_Of_Travellers')
     preferences = db.Column(pref_kind_enum, nullable=True)
     destination = db.Column(db.Text, nullable=True, name='Destination')
     user_id = db.Column(db.BigInteger, db.ForeignKey('User.user_id'), nullable=True, name='User_id')
