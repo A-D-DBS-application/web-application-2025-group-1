@@ -32,6 +32,11 @@ def register():
         name = request.form.get('name')
         email = request.form.get('email')
         phone_number = request.form.get('phone_number')
+        role = request.form.get('role')
+
+        if role not in ('TRAVELLER','AGENCY'):
+            flash("Please choose a valid role.","error")
+            return redirect(url_for('main.register'))
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
@@ -42,9 +47,22 @@ def register():
             name=name,
             email=email,
             phone_number=phone_number,
+            role = role,
             created_at=datetime.now(),
         )
         db.session.add(new_user)
+        db.session.flush() #zodat user.user_id bestaat
+
+        if role == 'AGENCY':
+            agency = TravelAgency(
+                name=name,
+                contact_info=phone_number or "",
+                website="",
+                user_id=user.user_id,
+                created_at=datetime.utcnow()
+            )
+            db.session.add(agency)
+        
         db.session.commit()
 
         session['user_id'] = new_user.user_id
@@ -206,12 +224,26 @@ def activities():
     agencies = TravelAgency.query.all()
     return render_template('activities.html', activities=all_activities, agencies=agencies)
 
+def get_current_user():
+    if 'user_id' not in session:
+        return None
+    return User.query.get(session['user_id'])
 
 @main.route('/add_activity', methods=['POST'])
-def add_activity():
-    if 'user_id' not in session:
+def add_activity(): #check of de soort user correct is (agency of reiziger)
+    user = get_current_user()
+    if not user:
         flash("You must be logged in to add activities.", "error")
         return redirect(url_for('main.login'))
+
+    if user.role != 'Agency':
+        flash("Only agencies can add activities.", "error")
+        return redirect(url_for('main_activities'))
+
+    agency = TravelAgency.query.filter_by(user_id=user.user_id).first()
+    if not agency:
+        flash("No agency profile found for this account.", "error")
+        return redirect(url_for('main.activities'))
 
     name = request.form.get('name')
     type_ = request.form.get('type')
@@ -222,20 +254,6 @@ def add_activity():
     if not name or not type_ or not destination:
         flash("Please fill in all required fields.", "error")
         return redirect(url_for('main.activities'))
-
-    # Als agency_id leeg, optie 'User Added'
-    if not agency_id:
-        user_agency = TravelAgency.query.filter_by(name="User Added").first()
-        if not user_agency:
-            user_agency = TravelAgency(
-                name="User Added",
-                contact_info="",
-                website="",
-                created_at=datetime.utcnow()
-            )
-            db.session.add(user_agency)
-            db.session.commit()
-        agency_id = user_agency.agency_id
 
     new_activity = ActivityType(
         name=name,
@@ -250,10 +268,6 @@ def add_activity():
 
     flash("Activity added successfully!", "success")
     return redirect(url_for('main.activities'))
-
-@main.route('/hotels')
-def hotels():
-    return render_template('hotels.html')
 
 @main.route('/agencies')
 def agencies():
@@ -296,91 +310,3 @@ def itinerary_select():
     user = User.query.get(session['user_id'])
     trips = Trip.query.filter_by(user_id=user.user_id).all()
     return render_template('itinerary_select.html', trips=trips)
-
-# -----------------------
-# AGENCY PORTAL INDEX
-# -----------------------
-@main.route('/agency')
-def agency_index():
-    return render_template('agency_index.html')
-
-
-# -----------------------
-# AGENCY REGISTER
-# -----------------------
-@main.route('/agency/register', methods=['GET', 'POST'])
-def agency_register():
-    if request.method == 'POST':
-        email = request.form.get('email')
-
-        existing = TravelAgency.query.filter_by(contact_info=email).first()
-        if existing:
-            flash("This email is already registered.", "error")
-            return redirect(url_for('main.agency_register'))
-
-        agency = TravelAgency(
-            name=email.split('@')[0],  # simpele naam
-            contact_info=email,
-            website="",
-            created_at=datetime.utcnow()
-        )
-
-        db.session.add(agency)
-        db.session.commit()
-
-        flash("Agency registered successfully!", "success")
-        return redirect(url_for('main.agency_login'))
-
-    return render_template('agency_register.html')
-
-
-# -----------------------
-# AGENCY LOGIN
-# -----------------------
-@main.route('/agency/login', methods=['GET', 'POST'])
-def agency_login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        agency = TravelAgency.query.filter_by(contact_info=email).first()
-
-        if not agency:
-            flash("No agency found with that email.", "error")
-            return redirect(url_for('main.agency_login'))
-
-        session.clear()
-        session['agency_id'] = agency.agency_id
-        flash(f"Logged in as {agency.name}", "success")
-        return redirect(url_for('main.agency_home'))
-
-    return render_template('agency_login.html')
-
-@main.route('/agency/home')
-def agency_home():
-    if 'agency_id' not in session:
-        return redirect(url_for('main.agency_login'))
-
-    agency = TravelAgency.query.get(session['agency_id'])
-    return render_template('agency_home.html', agency=agency)
-
-@main.route('/agency/logout')
-def agency_logout():
-    session.pop('agency_id', None)
-    flash("You have been logged out.", "success")
-    return redirect(url_for('main.agency_index'))
-
-@main.route('/activity/edit/<int:activity_id>', methods=['GET', 'POST'])
-def edit_activity(activity_id):
-    activity = ActivityType.query.get_or_404(activity_id)
-
-    if request.method == 'POST':
-        activity.name = request.form.get('name')
-        activity.type = request.form.get('type')
-        activity.difficulty = request.form.get('difficulty') or None
-        activity.destination = request.form.get('destination')
-
-        db.session.commit()
-
-        flash("Activity updated!", "success")
-        return redirect(url_for('main.activities'))
-
-    return render_template('edit_activity.html', activity=activity)
