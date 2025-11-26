@@ -23,7 +23,7 @@ def get_matching_activities(destination, preferences):
         if filtered:
             return filtered
 
-    return all_activities  # fallback
+    return all_activities  # fallback 
 
 
 def generate_itinerary(trip):

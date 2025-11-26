@@ -12,7 +12,7 @@ db = SQLAlchemy()
 pref_kind_enum = Enum('ADVENTURE', 'CULTURE', 'RELAXATION', 'NATURE', name='pref_kind', create_type=True)
 fitness_level_enum = Enum('LOW', 'MEDIUM', 'HIGH', name='fitness_level_enum', create_type=True)
 activity_difficulty_enum = Enum('EASY', 'MODERATE', 'HARD', name='activity_difficulty_enum', create_type=True)
-
+user_role_enum = Enum('TRAVELLER', 'AGENCY', name='user_role', create_type=True)
 
 # -----------------------------
 # GEBRUIKERS EN REIZEN
@@ -24,6 +24,8 @@ class User(db.Model):  # niet van BaseModel erven omdat created_at/updated_at an
     name = db.Column(db.Text, nullable=True, name='Name')
     email = db.Column(db.Text, nullable=True, unique=True, name='Email')
     phone_number = db.Column(db.Text, nullable=True, name='Phone_Number')
+    role = db.Column(user_role_enum, nullable=False, name='Role')
+    #volgens chatgpt sterk aangeraden om nog een password aan toe te voegen
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
@@ -34,7 +36,7 @@ class User(db.Model):  # niet van BaseModel erven omdat created_at/updated_at an
     trips = db.relationship('Trip', backref='user', lazy=True)
 
     def __repr__(self):
-        return f'<User {self.name}>'
+        return f'<User {self.user_id} ({self.role})>'
 
 
 class Trip(db.Model):
@@ -104,6 +106,14 @@ class TravelAgency(db.Model):
         name='created_at',
         default=datetime.utcnow,
     )
+
+    user_id = db.Column(                        
+        db.BigInteger,
+        db.ForeignKey('User.user_id'),
+        nullable=False,
+        name='User_id'
+    )
+
     updated_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
     activities = db.relationship('ActivityType', backref='agency', lazy=True)
@@ -154,47 +164,6 @@ class ActivityPlanned(db.Model):
     def __repr__(self):
         return f'<ActivityPlanned trip={self.trip_id} activity={self.activity_type_id}>'
 
-
-# -----------------------------
-# HOTELS EN BOEKINGEN
-# -----------------------------
-class Hotel(db.Model):
-    __tablename__ = 'Hotel'
-
-    hotel_id = db.Column(db.BigInteger, primary_key=True, name='Hotel_id')
-    adress = db.Column(db.Text, nullable=True)
-    created_at = db.Column(
-        db.DateTime(timezone=True),
-        nullable=False,
-        name='created_at',
-        default=datetime.utcnow,
-    )
-
-    bookings = db.relationship('HotelBooking', backref='hotel', lazy=True)
-
-    def __repr__(self):
-        return f'<Hotel {self.hotel_id}>'
-
-
-class HotelBooking(db.Model):
-    __tablename__ = 'Hotel_Booking'
-
-    booking_id = db.Column(db.BigInteger, primary_key=True, name='Booking_id')
-    trip_id = db.Column(db.BigInteger, db.ForeignKey('Trip.Trip_id'), nullable=False, name='Trip_id')
-    check_in_time = db.Column(db.DateTime(timezone=True), nullable=True, name='check-in time')
-    check_out_time = db.Column(db.DateTime(timezone=True), nullable=True, name='check-out time')
-    hotel_id = db.Column(db.BigInteger, db.ForeignKey('Hotel.Hotel_id'), nullable=False, name='Hotel_id')
-    created_at = db.Column(
-        db.DateTime(timezone=True),
-        nullable=False,
-        name='created_at',
-        default=datetime.utcnow,
-    )
-
-    def __repr__(self):
-        return f'<HotelBooking {self.booking_id}>'
-
-
 def _register_sqlite_autoincrement(model, pk_field):
     """Ensure SQLite assigns IDs even though the schema mirrors Supabase bigints."""
 
@@ -216,7 +185,5 @@ for model, field in [
     (Traveller, 'traveller_id'),
     (TravelAgency, 'agency_id'),
     (ActivityType, 'activity_type_id'),
-    (Hotel, 'hotel_id'),
-    (HotelBooking, 'booking_id'),
 ]:
     _register_sqlite_autoincrement(model, field)

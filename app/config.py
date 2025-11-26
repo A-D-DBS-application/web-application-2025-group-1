@@ -1,7 +1,7 @@
 import importlib
 import os
 
-dotenv_spec = importlib.util.find_spec("dotenv")
+dotenv_spec = importlib.util.find_spec("dotenv") #bekijken, want zelfde wordt gedaan. Eerst zoeken naar dotenv en wanneer gevonden 
 if dotenv_spec:
     load_dotenv = importlib.import_module("dotenv").load_dotenv  # type: ignore[attr-defined]
 else:  # pragma: no cover - optional dependency

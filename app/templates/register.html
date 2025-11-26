@@ -45,6 +45,22 @@
       background-color: #ff6b6b;    /* rood achtergrond */
       color: #fff; }
 
+    .role-select {
+      margin: 12px 0 5px 0;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .role-select label {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+    .role-select input[type="radio"] {
+      margin-right: 6px;
+      accent-color: #264653;
+    }
+
   </style>
 </head>
 <body>
@@ -69,6 +85,19 @@
       <input type="text" name="name" placeholder="Full name" required>
       <input type="email" name="email" placeholder="Email address" required>
       <input type="tel" name="phone_number" placeholder="Phone number">
+
+      <div class="role-select">
+        <span style="display:block; margin-bottom:4px;">I am a:</span>
+        <label>
+          <input type="radio" name="role" value="TRAVELLER" checked>
+          Traveller
+        </label>
+        <label>
+          <input type="radio" name="role" value="AGENCY">
+          Agency
+        </label>
+      </div>
+      
       <button type="submit">Register</button>
     </form>
 
