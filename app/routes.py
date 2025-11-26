@@ -296,3 +296,91 @@ def itinerary_select():
     user = User.query.get(session['user_id'])
     trips = Trip.query.filter_by(user_id=user.user_id).all()
     return render_template('itinerary_select.html', trips=trips)
+
+# -----------------------
+# AGENCY PORTAL INDEX
+# -----------------------
+@main.route('/agency')
+def agency_index():
+    return render_template('agency_index.html')
+
+
+# -----------------------
+# AGENCY REGISTER
+# -----------------------
+@main.route('/agency/register', methods=['GET', 'POST'])
+def agency_register():
+    if request.method == 'POST':
+        email = request.form.get('email')
+
+        existing = TravelAgency.query.filter_by(contact_info=email).first()
+        if existing:
+            flash("This email is already registered.", "error")
+            return redirect(url_for('main.agency_register'))
+
+        agency = TravelAgency(
+            name=email.split('@')[0],  # simpele naam
+            contact_info=email,
+            website="",
+            created_at=datetime.utcnow()
+        )
+
+        db.session.add(agency)
+        db.session.commit()
+
+        flash("Agency registered successfully!", "success")
+        return redirect(url_for('main.agency_login'))
+
+    return render_template('agency_register.html')
+
+
+# -----------------------
+# AGENCY LOGIN
+# -----------------------
+@main.route('/agency/login', methods=['GET', 'POST'])
+def agency_login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        agency = TravelAgency.query.filter_by(contact_info=email).first()
+
+        if not agency:
+            flash("No agency found with that email.", "error")
+            return redirect(url_for('main.agency_login'))
+
+        session.clear()
+        session['agency_id'] = agency.agency_id
+        flash(f"Logged in as {agency.name}", "success")
+        return redirect(url_for('main.agency_home'))
+
+    return render_template('agency_login.html')
+
+@main.route('/agency/home')
+def agency_home():
+    if 'agency_id' not in session:
+        return redirect(url_for('main.agency_login'))
+
+    agency = TravelAgency.query.get(session['agency_id'])
+    return render_template('agency_home.html', agency=agency)
+
+@main.route('/agency/logout')
+def agency_logout():
+    session.pop('agency_id', None)
+    flash("You have been logged out.", "success")
+    return redirect(url_for('main.agency_index'))
+
+@main.route('/activity/edit/<int:activity_id>', methods=['GET', 'POST'])
+def edit_activity(activity_id):
+    activity = ActivityType.query.get_or_404(activity_id)
+
+    if request.method == 'POST':
+        activity.name = request.form.get('name')
+        activity.type = request.form.get('type')
+        activity.difficulty = request.form.get('difficulty') or None
+        activity.destination = request.form.get('destination')
+
+        db.session.commit()
+
+        flash("Activity updated!", "success")
+        return redirect(url_for('main.activities'))
+
+    return render_template('edit_activity.html', activity=activity)

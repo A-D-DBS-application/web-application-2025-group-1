@@ -92,7 +92,7 @@ class Traveller(db.Model):
 # TRAVEL AGENCIES
 # -----------------------------
 class TravelAgency(db.Model):
-    __tablename__ = 'Travel_agencies'
+    __tablename__ = 'Travel_agencies_id'
 
     agency_id = db.Column(db.BigInteger, primary_key=True, name='Agency_id')
     name = db.Column(db.Text, nullable=False)
@@ -123,7 +123,7 @@ class ActivityType(db.Model):
     type = db.Column(db.Text, nullable=False)
     destination = db.Column(db.Text, nullable=False)
     difficulty = db.Column(activity_difficulty_enum, nullable=True)
-    agency_id = db.Column(db.BigInteger, db.ForeignKey('Travel_agencies.Agency_id'), nullable=False, name='Agency_id')
+    agency_id = db.Column(db.BigInteger, db.ForeignKey('Travel_agencies_id.Agency_id'), nullable=False, name='Agency_id')
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,

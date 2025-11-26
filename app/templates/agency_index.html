@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AfriGuide | Travel Planner</title>
+  <title>AfriGuide | Agency Portal</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
     body {
@@ -27,8 +27,6 @@
       font-weight: 700; color: #264653; font-size: 1.5rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
-    h1 { font-size: 2rem; margin-bottom: 10px; }
-    p { margin-bottom: 30px; font-size: 1rem; opacity: 0.9; }
     .btn {
       display: block;
       background: #264653;
@@ -41,37 +39,22 @@
       transition: 0.3s;
     }
     .btn:hover { background: #1f3b47; }
-
-    .flash-success {
-      background-color: #1e90ff;    /* blauw achtergrond */
-      color: #fff; }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="logo">AG</div>
-    <h1>Welcome to AfriGuide</h1>
-    <p>Your personal guide to plan the most amazing African adventures.</p>
+    <h1>Agency Portal</h1>
+    <p>Manage your activities and work with AfriGuide partners.</p>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div>
-          {% for category, message in messages %}
-            <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
-              {{ message }}
-            </p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+    <a href="{{ url_for('main.agency_login') }}" class="btn">Login</a>
+    <a href="{{ url_for('main.agency_register') }}" class="btn">Register</a>
 
-    <a href="{{ url_for('main.login') }}" class="btn">Login</a>
-    <a href="{{ url_for('main.register') }}" class="btn">Register</a>
-    <p style="margin-top: 15px; font-size: 0.95rem;">
-      Are you a travel agency?
-      <a href="{{ url_for('main.agency_index') }}" style="font-weight: 700; color: #fff; text-decoration: underline;">
-        Click here
-      </a>.
+    <p style="margin-top:20px;">
+      <a href="{{ url_for('main.index') }}" style="color:white; text-decoration:underline;">
+        ← Back to User Home
+      </a>
     </p>
   </div>
 </body>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AfriGuide | Agency Home</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f4a261, #2a9d8f);
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      color: #fff;
+    }
+    header {
+      background: rgba(0,0,0,0.2);
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+    }
+    a { color: #fff; text-decoration: none; margin-left: 20px; }
+    .center-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+    }
+    .btn-big {
+      background: #264653;
+      padding: 20px 40px;
+      border-radius: 12px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    }
+    .btn-big:hover { background: #1f3b47; }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>AfriGuide</h2>
+
+  <nav>
+    <a href="{{ url_for('main.activities') }}">Activities</a>
+    <a href="{{ url_for('main.agency_logout') }}">Logout</a>
+  </nav>
+</header>
+
+<div class="center-box">
+  <a href="{{ url_for('main.activities') }}" class="btn-big">Manage Activities</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Activity</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #f4a261, #2a9d8f);
+      display: flex; justify-content: center;
+      padding: 40px; color: #fff;
+    }
+    .container {
+      width: 600px; background: rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      padding: 30px; border-radius: 16px;
+    }
+    input, select {
+      width: 100%; padding: 8px; margin-bottom: 10px;
+      border-radius: 6px; border: none; background: white; color: black;
+    }
+    button {
+      background: #264653; color: white;
+      padding: 10px 14px; border: none;
+      border-radius: 8px; cursor: pointer;
+    }
+    a { color:white; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Edit Activity</h1>
+
+    <form method="POST">
+      <label>Name</label>
+      <input type="text" name="name" value="{{ activity.name }}" required>
+
+      <label>Type</label>
+      <select name="type">
+        <option value="CULTURE" {% if activity.type == "CULTURE" %}selected{% endif %}>Culture</option>
+        <option value="ADVENTURE" {% if activity.type == "ADVENTURE" %}selected{% endif %}>Adventure</option>
+        <option value="RELAXATION" {% if activity.type == "RELAXATION" %}selected{% endif %}>Relaxation</option>
+        <option value="NATURE" {% if activity.type == "NATURE" %}selected{% endif %}>Nature</option>
+      </select>
+
+      <label>Difficulty</label>
+      <select name="difficulty">
+        <option value="">None</option>
+        <option value="EASY" {% if activity.difficulty == "EASY" %}selected{% endif %}>Easy</option>
+        <option value="MODERATE" {% if activity.difficulty == "MODERATE" %}selected{% endif %}>Moderate</option>
+        <option value="HARD" {% if activity.difficulty == "HARD" %}selected{% endif %}>Hard</option>
+      </select>
+
+      <label>Destination</label>
+      <input type="text" name="destination" value="{{ activity.destination }}" required>
+
+      <button type="submit">Save</button>
+    </form>
+
+    <p style="margin-top:15px;">
+      <a href="{{ url_for('main.activities') }}">← Back to Activities</a>
+    </p>
+  </div>
+</body>
+</html>
