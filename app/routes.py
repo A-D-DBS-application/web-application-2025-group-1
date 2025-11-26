@@ -208,6 +208,22 @@ def travellers(trip_id):
             flash("Traveller updated!", "success")
             return redirect(url_for('main.travellers', trip_id=trip.trip_id))
 
+        # Delete traveller
+        if 'delete' in request.form:
+            traveller_id = int(request.form.get('traveller_id'))
+            traveller = Traveller.query.get_or_404(traveller_id)
+            
+            # Verify traveller belongs to this trip
+            if traveller.trip_id != trip.trip_id:
+                flash("You cannot delete this traveller.", "error")
+                return redirect(url_for('main.travellers', trip_id=trip.trip_id))
+            
+            db.session.delete(traveller)
+            trip.number_of_travellers = max((trip.number_of_travellers or 1) - 1, 0)
+            db.session.commit()
+            flash("Traveller deleted!", "success")
+            return redirect(url_for('main.travellers', trip_id=trip.trip_id))
+
     travellers = Traveller.query.filter_by(trip_id=trip.trip_id).all()
     return render_template('travellers.html', trip=trip, travellers=travellers)  
 
