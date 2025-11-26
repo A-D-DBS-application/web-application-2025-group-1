@@ -3,64 +3,167 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Activity</title>
+  <title>AfriGuide | Edit Activity</title>
+
   <style>
     body {
       font-family: "Poppins", sans-serif;
       background: linear-gradient(135deg, #f4a261, #2a9d8f);
-      display: flex; justify-content: center;
-      padding: 40px; color: #fff;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .container {
-      width: 600px; background: rgba(0,0,0,0.2);
+
+    /* ⭐ HEADER — EXACT VAN activities.html */
+    header {
+      width: 100%;
+      background: rgba(0,0,0,0.25);
       backdrop-filter: blur(10px);
-      padding: 30px; border-radius: 16px;
+      padding: 30px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
     }
+
+    header a {
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      text-decoration: none;
+    }
+
+    header a:hover {
+      text-decoration: underline;
+    }
+
+    header span {
+      font-size: 1.4rem;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    /* ⭐ GROTE KADER */
+    .main-box {
+      width: 1000px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px;
+      margin-top: 40px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.20);
+    }
+
     input, select {
-      width: 100%; padding: 8px; margin-bottom: 10px;
-      border-radius: 6px; border: none; background: white; color: black;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: none;
+      background: white;
+      color: black;
+      font-size: 1rem;
+      box-sizing: border-box;
     }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
     button {
-      background: #264653; color: white;
-      padding: 10px 14px; border: none;
-      border-radius: 8px; cursor: pointer;
+      background: #264653;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-right: 10px;
     }
-    a { color:white; text-decoration:none; }
+
+    button:hover {
+      background: #1f3b47;
+    }
+
+    .button-cancel {
+      background: #e76f51;
+    }
+
+    .button-cancel:hover {
+      background: #d65a3f;
+    }
+
+    .flash-success { background: #2a9d8f; padding: 6px; border-radius: 6px; margin-bottom: 15px; }
+    .flash-error { background: #e76f51; padding: 6px; border-radius: 6px; margin-bottom: 15px; }
+
+    h1 {
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Edit Activity</h1>
 
-    <form method="POST">
-      <label>Name</label>
-      <input type="text" name="name" value="{{ activity.name }}" required>
+  <!-- ⭐ HEADER -->
+  <header>
+    <a href="{{ url_for('main.index') }}">AfriGuide</a>
+    <span>Edit Activity</span>
+  </header>
 
-      <label>Type</label>
-      <select name="type">
-        <option value="CULTURE" {% if activity.type == "CULTURE" %}selected{% endif %}>Culture</option>
-        <option value="ADVENTURE" {% if activity.type == "ADVENTURE" %}selected{% endif %}>Adventure</option>
-        <option value="RELAXATION" {% if activity.type == "RELAXATION" %}selected{% endif %}>Relaxation</option>
-        <option value="NATURE" {% if activity.type == "NATURE" %}selected{% endif %}>Nature</option>
-      </select>
+  <!-- ⭐ GROTE KADER -->
+  <div class="main-box">
 
-      <label>Difficulty</label>
-      <select name="difficulty">
-        <option value="">None</option>
-        <option value="EASY" {% if activity.difficulty == "EASY" %}selected{% endif %}>Easy</option>
-        <option value="MODERATE" {% if activity.difficulty == "MODERATE" %}selected{% endif %}>Moderate</option>
-        <option value="HARD" {% if activity.difficulty == "HARD" %}selected{% endif %}>Hard</option>
-      </select>
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="{% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+            {{ message }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-      <label>Destination</label>
-      <input type="text" name="destination" value="{{ activity.destination }}" required>
+    <!-- EDIT ACTIVITY FORM -->
+    <div>
+      <h1>Edit Activity</h1>
 
-      <button type="submit">Save</button>
-    </form>
+      <form method="POST" action="{{ url_for('main.edit_activity', activity_id=activity.activity_type_id) }}">
+        <label>Name</label>
+        <input type="text" name="name" value="{{ activity.name }}" required>
 
-    <p style="margin-top:15px;">
-      <a href="{{ url_for('main.activities') }}">← Back to Activities</a>
-    </p>
+        <label>Type</label>
+        <select name="type" required>
+          <option value="CULTURE" {% if activity.type == 'CULTURE' %}selected{% endif %}>Culture</option>
+          <option value="ADVENTURE" {% if activity.type == 'ADVENTURE' %}selected{% endif %}>Adventure</option>
+          <option value="RELAXATION" {% if activity.type == 'RELAXATION' %}selected{% endif %}>Relaxation</option>
+          <option value="NATURE" {% if activity.type == 'NATURE' %}selected{% endif %}>Nature</option>
+        </select>
+
+        <label>Difficulty</label>
+        <select name="difficulty">
+          <option value="">None</option>
+          <option value="EASY" {% if activity.difficulty == 'EASY' %}selected{% endif %}>Easy</option>
+          <option value="MODERATE" {% if activity.difficulty == 'MODERATE' %}selected{% endif %}>Moderate</option>
+          <option value="HARD" {% if activity.difficulty == 'HARD' %}selected{% endif %}>Hard</option>
+        </select>
+
+        <label>Destination</label>
+        <input type="text" name="destination" value="{{ activity.destination }}" required>
+
+        <div style="margin-top: 20px;">
+          <button type="submit">Update Activity</button>
+          <a href="{{ url_for('main.activities') }}" class="button-cancel" style="text-decoration: none; display: inline-block; padding: 10px 16px;">Cancel</a>
+        </div>
+      </form>
+    </div>
+
   </div>
+
 </body>
 </html>

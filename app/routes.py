@@ -6,11 +6,14 @@ from .utils import generate_itinerary
 
 # ⬇️ Maak een Blueprint aan i.p.v. rechtstreeks met app werken
 main = Blueprint('main', __name__)
-
+#hallo
 @main.route('/')
 def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
+        # Agencies should only see activities, not trips
+        if user and user.role == 'AGENCY':
+            return redirect(url_for('main.activities'))
         trips = Trip.query.filter_by(user_id=user.user_id).all()
         return render_template('trips.html', trips=trips)
     return render_template('index.html')
@@ -21,6 +24,10 @@ def home():
         return redirect(url_for('main.login'))
     
     user = User.query.get(session['user_id'])
+    # Agencies should only see activities, not trips
+    if user and user.role == 'AGENCY':
+        return redirect(url_for('main.activities'))
+    
     trips = Trip.query.filter_by(user_id=user.user_id).all()
     
     return render_template('home.html', user=user, trips=trips)
@@ -32,11 +39,7 @@ def register():
         name = request.form.get('name')
         email = request.form.get('email')
         phone_number = request.form.get('phone_number')
-        role = request.form.get('role')
-
-        if role not in ('TRAVELLER','AGENCY'):
-            flash("Please choose a valid role.","error")
-            return redirect(url_for('main.register'))
+        role = request.form.get('role', 'TRAVELLER')  # Default to TRAVELLER if not provided
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
@@ -47,23 +50,23 @@ def register():
             name=name,
             email=email,
             phone_number=phone_number,
-            role = role,
+            role=role,
             created_at=datetime.now(),
         )
         db.session.add(new_user)
-        db.session.flush() #zodat user.user_id bestaat
+        db.session.commit()
 
+        # If user registered as AGENCY, create a TravelAgency record
         if role == 'AGENCY':
-            agency = TravelAgency(
+            new_agency = TravelAgency(
                 name=name,
                 contact_info=phone_number or "",
                 website="",
-                user_id =new_user.user_id,
+                user_id=new_user.user_id,
                 created_at=datetime.utcnow()
             )
-            db.session.add(agency)
-        
-        db.session.commit()
+            db.session.add(new_agency)
+            db.session.commit()
 
         session['user_id'] = new_user.user_id
         flash("Registration successful!", "success")
@@ -101,6 +104,9 @@ def trips():
         return redirect(url_for('main.login'))
 
     user = User.query.get(session['user_id'])
+    # Agencies should only see activities, not trips
+    if user and user.role == 'AGENCY':
+        return redirect(url_for('main.activities'))
 
     if request.method == 'POST':
         destination = request.form.get('destination')
@@ -146,6 +152,14 @@ def trips():
 
 @main.route('/travellers/<int:trip_id>', methods=['GET', 'POST'])
 def travellers(trip_id): 
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+    
+    user = User.query.get(session['user_id'])
+    # Agencies should not access travellers/trips
+    if user and user.role == 'AGENCY':
+        return redirect(url_for('main.activities'))
+    
     trip = Trip.query.get_or_404(trip_id)
 
     if trip.user_id != session.get('user_id'):
@@ -197,63 +211,70 @@ def travellers(trip_id):
     travellers = Traveller.query.filter_by(trip_id=trip.trip_id).all()
     return render_template('travellers.html', trip=trip, travellers=travellers)  
 
-@main.route('/travellers/<int:trip_id>/delete/<int:traveller_id>', methods=['POST'])
-def delete_traveller(trip_id, traveller_id):
-    trip = Trip.query.get_or_404(trip_id)
-    traveller = Traveller.query.get_or_404(traveller_id)
-
-    # check: hoort deze traveller bij de juiste gebruiker?
-    if trip.user_id != session.get('user_id'):
-        flash("You cannot delete a traveller from someone else's trip.", "error")
-        return redirect(url_for('main.travellers', trip_id=trip_id))
-
-    # verwijder traveller
-    db.session.delete(traveller)
-
-    # teller -1 doen
-    trip.number_of_travellers = max((trip.number_of_travellers or 1) - 1, 0)
-
-    db.session.commit()
-    flash("Traveller deleted!", "success")
-    return redirect(url_for('main.travellers', trip_id=trip_id))
-
 
 @main.route('/activities', methods=['GET'])
 def activities():
-    all_activities = ActivityType.query.order_by(ActivityType.created_at.desc()).all()
     agencies = TravelAgency.query.all()
-    return render_template('activities.html', activities=all_activities, agencies=agencies)
+    
+    # Get current user and their role if logged in
+    current_user = None
+    is_agency = False
+    user_agency = None
+    
+    if 'user_id' in session:
+        current_user = User.query.get(session['user_id'])
+        if current_user and current_user.role == 'AGENCY':
+            is_agency = True
+            # Find the TravelAgency associated with this user
+            user_agency = TravelAgency.query.filter_by(user_id=current_user.user_id).first()
+    
+    # Filter activities based on user role
+    if is_agency and user_agency:
+        # Agency users only see their own activities
+        activities = ActivityType.query.filter_by(agency_id=user_agency.agency_id).order_by(ActivityType.created_at.desc()).all()
+    else:
+        # Travellers and non-logged-in users see all activities
+        activities = ActivityType.query.order_by(ActivityType.created_at.desc()).all()
+    
+    return render_template('activities.html', activities=activities, agencies=agencies, current_user=current_user, is_agency=is_agency)
 
-def get_current_user():
-    if 'user_id' not in session:
-        return None
-    return User.query.get(session['user_id'])
 
 @main.route('/add_activity', methods=['POST'])
-def add_activity(): #check of de soort user correct is (agency of reiziger)
-    user = get_current_user()
-    if not user:
+def add_activity():
+    if 'user_id' not in session:
         flash("You must be logged in to add activities.", "error")
         return redirect(url_for('main.login'))
 
-    if user.role != 'Agency':
+    current_user = User.query.get(session['user_id'])
+    if not current_user or current_user.role != 'AGENCY':
         flash("Only agencies can add activities.", "error")
-        return redirect(url_for('main_activities'))
-
-    agency = TravelAgency.query.filter_by(user_id=user.user_id).first()
-    if not agency:
-        flash("No agency profile found for this account.", "error")
         return redirect(url_for('main.activities'))
 
     name = request.form.get('name')
     type_ = request.form.get('type')
     difficulty = request.form.get('difficulty')
     destination = request.form.get('destination')
-    agency_id = request.form.get('agency_id') or None
 
     if not name or not type_ or not destination:
         flash("Please fill in all required fields.", "error")
         return redirect(url_for('main.activities'))
+
+    # Find the TravelAgency associated with this user
+    user_agency = TravelAgency.query.filter_by(user_id=current_user.user_id).first()
+    
+    if not user_agency:
+        # If no agency exists for this user, create a fallback
+        user_agency = TravelAgency(
+            name=current_user.name or "User Added",
+            contact_info="",
+            website="",
+            user_id=current_user.user_id,
+            created_at=datetime.utcnow()
+        )
+        db.session.add(user_agency)
+        db.session.commit()
+    
+    agency_id = user_agency.agency_id
 
     new_activity = ActivityType(
         name=name,
@@ -269,12 +290,73 @@ def add_activity(): #check of de soort user correct is (agency of reiziger)
     flash("Activity added successfully!", "success")
     return redirect(url_for('main.activities'))
 
+
+@main.route('/edit_activity/<int:activity_id>', methods=['GET', 'POST'])
+def edit_activity(activity_id):
+    if 'user_id' not in session:
+        flash("You must be logged in to edit activities.", "error")
+        return redirect(url_for('main.login'))
+    
+    current_user = User.query.get(session['user_id'])
+    if not current_user or current_user.role != 'AGENCY':
+        flash("Only agencies can edit activities.", "error")
+        return redirect(url_for('main.activities'))
+    
+    # Find the TravelAgency associated with this user
+    user_agency = TravelAgency.query.filter_by(user_id=current_user.user_id).first()
+    if not user_agency:
+        flash("Agency not found.", "error")
+        return redirect(url_for('main.activities'))
+    
+    # Get the activity and verify it belongs to this agency
+    activity = ActivityType.query.get_or_404(activity_id)
+    if activity.agency_id != user_agency.agency_id:
+        flash("You can only edit your own activities.", "error")
+        return redirect(url_for('main.activities'))
+    
+    if request.method == 'POST':
+        activity.name = request.form.get('name')
+        activity.type = request.form.get('type')
+        activity.difficulty = request.form.get('difficulty')
+        activity.destination = request.form.get('destination')
+        
+        if not activity.name or not activity.type or not activity.destination:
+            flash("Please fill in all required fields.", "error")
+            return redirect(url_for('main.edit_activity', activity_id=activity_id))
+        
+        db.session.commit()
+        flash("Activity updated successfully!", "success")
+        return redirect(url_for('main.activities'))
+    
+    # GET request - show edit form
+    return render_template('edit_activity.html', activity=activity)
+
+
+@main.route('/hotels')
+def hotels():
+    return render_template('hotels.html')
+
 @main.route('/agencies')
 def agencies():
-    return render_template('agencies.html')
+    current_user = None
+    if 'user_id' in session:
+        current_user = User.query.get(session['user_id'])
+    
+    # Get all agencies
+    all_agencies = TravelAgency.query.order_by(TravelAgency.name).all()
+    
+    return render_template('agencies.html', user=current_user, agencies=all_agencies)
 
 @main.route('/generate_itinerary/<int:trip_id>')
 def generate(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+    
+    user = User.query.get(session['user_id'])
+    # Agencies should not access itinerary generation
+    if user and user.role == 'AGENCY':
+        return redirect(url_for('main.activities'))
+    
     trip = Trip.query.get_or_404(trip_id)
 
     if trip.user_id != session.get('user_id'):
@@ -293,6 +375,14 @@ def generate(trip_id):
 
 @main.route('/itinerary/<int:trip_id>')
 def itinerary_view(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+    
+    user = User.query.get(session['user_id'])
+    # Agencies should not access itinerary views
+    if user and user.role == 'AGENCY':
+        return redirect(url_for('main.activities'))
+    
     trip = Trip.query.get_or_404(trip_id)
     activities = (
         ActivityPlanned.query.filter_by(trip_id=trip_id)
@@ -308,5 +398,9 @@ def itinerary_select():
         return redirect(url_for('main.login'))
 
     user = User.query.get(session['user_id'])
+    # Agencies should not access itinerary selection
+    if user and user.role == 'AGENCY':
+        return redirect(url_for('main.activities'))
+    
     trips = Trip.query.filter_by(user_id=user.user_id).all()
     return render_template('itinerary_select.html', trips=trips)

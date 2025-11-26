@@ -6,6 +6,13 @@
   <title>AfriGuide | Activities</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
     body {
       font-family: "Poppins", sans-serif;
       background: linear-gradient(135deg, #f4a261, #2a9d8f);
@@ -15,9 +22,45 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 40px 0;
     }
 
-    /* ⭐ HEADER — EXACT VAN home.html & trips.html */
+    /* ⭐ NAVIGATION BAR - For travellers (same as trips.html) */
+    nav {
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(8px);
+      padding: 10px 30px;
+      width: 1000px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 16px;
+    }
+
+    nav .logo {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+
+    /* ⭐ HEADER — For agencies (simpler version) */
     header {
       width: 100%;
       background: rgba(0,0,0,0.25);
@@ -46,6 +89,22 @@
       opacity: 0.9;
     }
 
+    header .logout {
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    header .logout:hover {
+      background: rgba(255, 255, 255, 0.3);
+      text-decoration: none;
+    }
+
     /* ⭐ GROTE KADER — zelfde als trips hoofd-container */
     .main-box {
       width: 1000px;
@@ -53,7 +112,7 @@
       backdrop-filter: blur(10px);
       border-radius: 16px;
       padding: 30px;
-      margin-top: 40px;
+      margin-top: 0;
       box-shadow: 0 8px 25px rgba(0,0,0,0.20);
       display: flex;
       flex-direction: column;
@@ -114,11 +173,29 @@
 </head>
 <body>
 
-  <!-- ⭐ HEADER -->
+  <!-- ⭐ NAVIGATION BAR - For travellers -->
+  {% if not is_agency %}
+  <nav>
+    <div class="logo">AfriGuide</div>
+    <ul>
+      <li><a href="{{ url_for('main.trips') }}">Trips</a></li>
+      <li><a href="{{ url_for('main.activities') }}">Activities</a></li>
+      <li><a href="{{ url_for('main.agencies') }}">Agencies</a></li>
+      <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  {% else %}
+  <!-- ⭐ HEADER - For agencies -->
   <header>
-    <a href="{{ url_for('main.agency_home') }}">AfriGuide</a>
-    <span>Activities</span>
+    <a href="{{ url_for('main.index') }}">AfriGuide</a>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <span>Activities</span>
+      {% if current_user %}
+      <a href="{{ url_for('main.logout') }}" class="logout">Logout</a>
+      {% endif %}
+    </div>
   </header>
+  {% endif %}
 
   <!-- ⭐ GROTE KADER -->
   <div class="main-box">
@@ -134,7 +211,8 @@
       {% endif %}
     {% endwith %}
 
-    <!-- ADD ACTIVITY FORM -->
+    <!-- ADD ACTIVITY FORM - Only visible for AGENCY users -->
+    {% if is_agency %}
     <div>
       <h1>Add Activity</h1>
 
@@ -163,6 +241,7 @@
         <button type="submit">Add Activity</button>
       </form>
     </div>
+    {% endif %}
 
     <!-- ⭐ TABEL SUB-KADER -->
     <div class="table-card">
@@ -173,7 +252,11 @@
             <th>Type</th>
             <th>Difficulty</th>
             <th>Destination</th>
+            {% if is_agency %}
             <th>Edit</th>
+            {% else %}
+            <th>Travel Agency</th>
+            {% endif %}
           </tr>
         </thead>
 
@@ -184,6 +267,7 @@
               <td>{{ activity.type }}</td>
               <td>{{ activity.difficulty or '-' }}</td>
               <td>{{ activity.destination }}</td>
+              {% if is_agency %}
               <td>
                 <a
                   href="{{ url_for('main.edit_activity', activity_id=activity.activity_type_id) }}"
@@ -191,6 +275,9 @@
                   Edit
                 </a>
               </td>
+              {% else %}
+              <td>{{ activity.agency.name if activity.agency else '-' }}</td>
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>

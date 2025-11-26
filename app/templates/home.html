@@ -149,9 +149,13 @@
     <nav>
         <div class="logo">AfriGuide</div>
         <ul>
+            {% if user.role != 'AGENCY' %}
             <li><a href="{{ url_for('main.trips') }}">Trips</a></li>
+            {% endif %}
             <li><a href="{{ url_for('main.activities') }}">Activities</a></li>
+            {% if user.role != 'AGENCY' %}
             <li><a href="{{ url_for('main.agencies') }}">Agencies</a></li>
+            {% endif %}
             <li><a href="{{ url_for('main.logout') }}" class="logout">Logout</a></li>
         </ul>
     </nav>
@@ -176,13 +180,15 @@
         <h1>Welcome to AfriGuide</h1>
         <p>Explore and manage your trips and travel activities!</p>
 
-        <!-- Group 1 -->
+        <!-- Group 1 - Only visible for travellers -->
+        {% if user.role != 'AGENCY' %}
         <div class="group">
             <div class="cards">
                 <a href="{{ url_for('main.trips') }}" class="card">Your Trips</a>
                 <a href="{{ url_for('main.itinerary_select') }}" class="card">View Itinerary</a>
             </div>
         </div>
+        {% endif %}
 
         <!-- Group 2 -->
         <div class="group">
