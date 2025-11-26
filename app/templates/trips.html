@@ -34,6 +34,8 @@
       border-radius: 16px;
     }
     nav .logo { font-weight: 700; font-size: 1.3rem; }
+    nav .logo a { color: #fff; text-decoration: none; }
+    nav .logo a:hover { text-decoration: underline; }
     nav ul { list-style: none; display: flex; gap: 20px; }
     nav ul li a { color: #fff; text-decoration: none; font-weight: 600; transition: 0.3s; }
     nav ul li a:hover { text-decoration: underline; }
@@ -100,7 +102,7 @@
 <body>
 
   <nav>
-    <div class="logo">AfriGuide</div>
+    <div class="logo"><a href="{{ url_for('main.home') }}">AfriGuide</a></div>
     <ul>
       <li><a href="{{ url_for('main.trips') }}">Trips</a></li>
       <li><a href="{{ url_for('main.activities') }}">Activities</a></li>

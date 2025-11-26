@@ -26,6 +26,8 @@
       margin-bottom:20px;
     }
     nav .logo { font-weight:700; font-size:1.3rem; }
+    nav .logo a { color:#fff; text-decoration:none; }
+    nav .logo a:hover { text-decoration:underline; }
     nav ul { list-style:none; display:flex; gap:20px; margin:0; padding:0; }
     nav ul li a { color:#fff; text-decoration:none; font-weight:600; transition:0.3s; }
     nav ul li a:hover { text-decoration:underline; }
@@ -76,19 +78,30 @@
   </style>
 </head>
 <body>
+  <!-- ⭐ NAVIGATION BAR - For travellers -->
+  {% if not is_agency %}
   <nav>
-    <div class="logo">AfriGuide</div>
+    <div class="logo"><a href="{{ url_for('main.home') }}">AfriGuide</a></div>
     <ul>
-      {% if user and user.role != 'AGENCY' %}
       <li><a href="{{ url_for('main.trips') }}">Trips</a></li>
-      {% endif %}
       <li><a href="{{ url_for('main.activities') }}">Activities</a></li>
-      {% if user and user.role != 'AGENCY' %}
       <li><a href="{{ url_for('main.agencies') }}">Agencies</a></li>
-      {% endif %}
       <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
     </ul>
   </nav>
+  {% else %}
+  <!-- ⭐ NAVIGATION BAR - For agencies (same layout as activities page) -->
+  <nav>
+    <div class="logo">AfriGuide</div>
+    <ul>
+      <li><a href="{{ url_for('main.activities') }}">Activities</a></li>
+      <li><a href="{{ url_for('main.agencies') }}">Agencies</a></li>
+      {% if current_user %}
+      <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
   
   <div class="container">
     <h1>Travel Agencies</h1>

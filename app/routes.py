@@ -339,13 +339,16 @@ def hotels():
 @main.route('/agencies')
 def agencies():
     current_user = None
+    is_agency = False
     if 'user_id' in session:
         current_user = User.query.get(session['user_id'])
+        if current_user and current_user.role == 'AGENCY':
+            is_agency = True
     
     # Get all agencies
     all_agencies = TravelAgency.query.order_by(TravelAgency.name).all()
     
-    return render_template('agencies.html', user=current_user, agencies=all_agencies)
+    return render_template('agencies.html', user=current_user, agencies=all_agencies, is_agency=is_agency, current_user=current_user)
 
 @main.route('/generate_itinerary/<int:trip_id>')
 def generate(trip_id):
