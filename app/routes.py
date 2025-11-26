@@ -58,7 +58,7 @@ def register():
                 name=name,
                 contact_info=phone_number or "",
                 website="",
-                user_id=user.user_id,
+                user_id =new_user.user_id,
                 created_at=datetime.utcnow()
             )
             db.session.add(agency)

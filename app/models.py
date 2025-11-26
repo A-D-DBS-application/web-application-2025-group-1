@@ -45,8 +45,16 @@ class Trip(db.Model):
     trip_id = db.Column(db.BigInteger, primary_key=True, name='Trip_id')
     start_date = db.Column(db.Date, nullable=True, name='Start_Date')
     end_date = db.Column(db.Date, nullable=True, name='End_Date')
+
     number_of_travellers = db.Column(db.Integer, nullable=True, name='Number_Of_Travellers')
     preferences = db.Column(pref_kind_enum, nullable=True)
+
+    number_of_travellers = db.Column(Numeric, nullable=True, name='Number_Of_Travellers')
+    preferences = db.Column(
+    db.Enum('CULTURE', 'ADVENTURE', 'RELAXATION', 'NATURE', name='pref_kind'),
+    nullable=True
+) 
+
     destination = db.Column(db.Text, nullable=True, name='Destination')
     user_id = db.Column(db.BigInteger, db.ForeignKey('User.user_id'), nullable=True, name='User_id')
     created_at = db.Column(
@@ -58,7 +66,6 @@ class Trip(db.Model):
 
     travellers = db.relationship('Traveller', backref='trip', lazy=True)
     planned_activities = db.relationship('ActivityPlanned', backref='trip', lazy=True)
-    hotel_bookings = db.relationship('HotelBooking', backref='trip', lazy=True)
 
     def __repr__(self):
         return f'<Trip {self.trip_id}>'
