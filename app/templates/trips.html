@@ -47,7 +47,7 @@
       border-radius: 16px;
       width: 1000px;
       display: grid;
-      grid-template-columns: 1.5fr 2.5fr; 
+      grid-template-columns: 1.5fr 2.5fr;
       gap: 24px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
     }
@@ -61,7 +61,18 @@
       border: none;
       cursor: pointer;
       display: inline-block;
-      margin-top: 6px; 
+      margin-top: 6px;
+    }
+
+    .btn-secondary {
+      background: rgba(0, 0, 0, 0.25);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.4);
+      cursor: pointer;
+      margin-top: 6px;
+      margin-right: 8px;
     }
 
     .trip-card {
@@ -97,6 +108,265 @@
       .container { width: 90%; grid-template-columns: 1fr; }
       .trip-card .btn { width: auto; margin-top: 6px; }
     }
+
+    /* ---------- Wizard / steps ---------- */
+    .wizard-progress {
+      margin: 16px 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wizard-progress-bar {
+      flex: 1;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.25);
+      overflow: hidden;
+    }
+
+    .wizard-progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: #2a9d8f;
+      transition: width 0.25s ease-out;
+    }
+
+    .wizard-progress-label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .form-step {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    .wizard-step-title {
+      margin-bottom: 4px;
+      font-size: 1.1rem;
+    }
+    .wizard-step-subtitle {
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    .step-buttons {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .step-buttons .spacer {
+      flex: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Destination cards ---------- */
+
+    .destination-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .destination-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .destination-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 16px;
+      padding: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .destination-card img {
+      width: 100%;
+      height: 130px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 8px;
+    }
+
+    .destination-card-body {
+      color: #264653;
+    }
+
+    .destination-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+
+    .destination-name {
+      font-size: 1rem;
+    }
+
+    .destination-desc {
+      font-size: 0.85rem;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+
+    .destination-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .destination-card.selected {
+      border-color: #2a9d8f;
+      box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.35);
+    }
+
+    /* ---------- Interests sliders (slank & clean) ---------- */
+
+    .interest-list {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .interest-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .interest-left {
+      width: 130px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .interest-icon {
+      font-size: 1.4rem;
+    }
+
+    .interest-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.25);
+      outline: none;
+      cursor: pointer;
+      transition: box-shadow 0.15s ease;
+    }
+
+    .interest-slider::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: transparent;
+    }
+
+    .interest-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2a9d8f;
+      border: 0;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.10);
+      margin-top: -4px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .interest-slider::-moz-range-track {
+      height: 6px;
+      border-radius: 999px;
+      background: transparent;
+    }
+
+    .interest-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2a9d8f;
+      border: 0;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.10);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .interest-slider:focus::-webkit-slider-thumb,
+    .interest-slider:hover::-webkit-slider-thumb,
+    .interest-slider:focus::-moz-range-thumb,
+    .interest-slider:hover::-moz-range-thumb {
+      transform: scale(1.06);
+      box-shadow: 0 0 0 4px rgba(42, 157, 143, 0.35);
+    }
+
+    .interest-tag {
+      width: 130px;
+      font-size: 0.8rem;
+      text-align: right;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    @media (max-width: 600px) {
+      .interest-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .interest-left, .interest-tag {
+        width: 100%;
+        text-align: left;
+      }
+    }
+
+    /* ---------- Overview card ---------- */
+
+    .overview-card {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .overview-row {
+      margin-bottom: 10px;
+    }
+
+    .overview-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .overview-value {
+      font-size: 0.9rem;
+    }
+
+    .overview-list {
+      margin: 4px 0 0;
+      padding-left: 18px;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -129,27 +399,217 @@
       <h1>Create Trips</h1>
       <p class="muted">Create new trips or view existing trips!</p>
 
-      <form method="POST" action="{{ url_for('main.trips') }}">
-        <label>Destination</label>
-        <input type="text" name="destination" placeholder="E.g. South Africa">
-        <label>Start Date</label>
-        <input type="date" name="start_date">
-        <label>End Date</label>
-        <input type="date" name="end_date">
-        <label>Number of travellers</label>
-        <input type="number" name="num_travellers" min="1" value="1">
-        <label>Preferences</label>
-        <select name="preferences">
-          <option value="">Choose your preference</option>
-          <option value="CULTURE">Culture</option>
-          <option value="ADVENTURE">Adventure</option>
-          <option value="RELAXATION">Relaxation</option>
-          <option value="NATURE">Nature</option>
-        </select>
-
-        <div style="margin-top:10px;">
-          <button type="submit" class="btn">Create trip</button>
+      <!-- WIZARD PROGRESS -->
+      <div class="wizard-progress">
+        <div class="wizard-progress-bar">
+          <div class="wizard-progress-fill" id="wizardProgressFill"></div>
         </div>
+        <div class="wizard-progress-label" id="wizardProgressLabel">1/5</div>
+      </div>
+
+      <form method="POST" action="{{ url_for('main.trips') }}" id="tripForm">
+
+        <!-- STEP 1: Destination -->
+        <div class="form-step active">
+          <h3 class="wizard-step-title">What's your destination?</h3>
+          <p class="wizard-step-subtitle">Choose one of our African destinations.</p>
+
+          <input type="hidden" name="destination" id="destinationInput">
+
+          <div class="destination-grid">
+            <button
+              type="button"
+              class="destination-card"
+              data-value="South Africa"
+            >
+              <img
+                src="{{ url_for('static', filename='img/south-africa.webp') }}"
+                alt="South Africa"
+              />
+              <div class="destination-card-body">
+                <div class="destination-title-row">
+                  <span class="destination-flag">🇿🇦</span>
+                  <span class="destination-name">South Africa</span>
+                </div>
+                <p class="destination-desc">
+                  Safaris, coastline & vibrant cities.
+                </p>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              class="destination-card"
+              data-value="Morocco"
+            >
+              <img
+                src="{{ url_for('static', filename='img/morocco.jpg') }}"
+                alt="Morocco"
+              />
+              <div class="destination-card-body">
+                <div class="destination-title-row">
+                  <span class="destination-flag">🇲🇦</span>
+                  <span class="destination-name">Morocco</span>
+                </div>
+                <p class="destination-desc">
+                  Desert, souks & colourful medinas.
+                </p>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Dates -->
+        <div class="form-step">
+          <h3 class="wizard-step-title">When do you want to go?</h3>
+          <p class="wizard-step-subtitle">Choose your start and end date.</p>
+
+          <label>Start Date</label>
+          <input type="date" name="start_date" required>
+
+          <label>End Date</label>
+          <input type="date" name="end_date" required>
+        </div>
+
+        <!-- STEP 3: Travellers -->
+        <div class="form-step">
+          <h3 class="wizard-step-title">Who's going?</h3>
+          <p class="wizard-step-subtitle">Tell us who you're travelling with.</p>
+
+          <label>Number of travellers</label>
+          <input type="number" name="num_travellers" min="1" value="1" required>
+        </div>
+
+        <!-- STEP 4: Preferences -->
+        <div class="form-step">
+          <h3 class="wizard-step-title">What are your preferences?</h3>
+          <p class="wizard-step-subtitle">Tell us what you like to do.</p>
+
+          <input type="hidden" name="preferences" id="preferencesInput">
+
+          <div class="interest-list">
+            <div class="interest-row">
+              <div class="interest-left">
+                <span class="interest-icon">🏛️</span>
+                <span>Culture</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="5"
+                value="3"
+                class="interest-slider"
+                name="interest_culture"
+                data-key="CULTURE"
+              />
+              <div class="interest-tag" data-for="CULTURE">I could try</div>
+            </div>
+
+            <div class="interest-row">
+              <div class="interest-left">
+                <span class="interest-icon">🧗‍♂️</span>
+                <span>Adventure</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="5"
+                value="3"
+                class="interest-slider"
+                name="interest_adventure"
+                data-key="ADVENTURE"
+              />
+              <div class="interest-tag" data-for="ADVENTURE">I could try</div>
+            </div>
+
+            <div class="interest-row">
+              <div class="interest-left">
+                <span class="interest-icon">🧘‍♀️</span>
+                <span>Relaxation</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="5"
+                value="3"
+                class="interest-slider"
+                name="interest_relaxation"
+                data-key="RELAXATION"
+              />
+              <div class="interest-tag" data-for="RELAXATION">I could try</div>
+            </div>
+
+            <div class="interest-row">
+              <div class="interest-left">
+                <span class="interest-icon">🌿</span>
+                <span>Nature</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="5"
+                value="3"
+                class="interest-slider"
+                name="interest_nature"
+                data-key="NATURE"
+              />
+              <div class="interest-tag" data-for="NATURE">I could try</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5: Overview -->
+        <div class="form-step">
+          <h3 class="wizard-step-title">Trip overview</h3>
+          <p class="wizard-step-subtitle">
+            Check your info. If everything looks good, we’ll create your trip.
+          </p>
+
+          <div class="overview-card">
+            <div class="overview-row">
+              <span class="overview-label">Destination</span>
+              <span class="overview-value" id="ovDestination">–</span>
+            </div>
+
+            <div class="overview-row">
+              <span class="overview-label">Dates</span>
+              <span class="overview-value" id="ovDates">–</span>
+            </div>
+
+            <div class="overview-row">
+              <span class="overview-label">Travellers</span>
+              <span class="overview-value" id="ovTravellers">–</span>
+            </div>
+
+            <div class="overview-row">
+              <span class="overview-label">Main preference</span>
+              <span class="overview-value" id="ovMainPreference">–</span>
+            </div>
+
+            <div class="overview-row">
+              <span class="overview-label">All preferences</span>
+              <ul class="overview-list" id="ovPreferences">
+                <!-- wordt door JS gevuld -->
+              </ul>
+            </div>
+          </div>
+
+          <p class="muted" style="margin-top:12px;">
+            On submit we’ll save your trip and you’ll see it in the list on the right.
+          </p>
+        </div>
+
+        <!-- NAV BUTTONS -->
+        <div class="step-buttons">
+          <button type="button" class="btn-secondary" id="prevStepBtn" style="display:none;">
+            Back
+          </button>
+          <div class="spacer"></div>
+          <button type="button" class="btn" id="nextStepBtn">
+            Next
+          </button>
+        </div>
+
       </form>
     </div>
 
@@ -196,5 +656,184 @@
       </div>
     </div>
   </div>
+
+  <script>
+  (function () {
+    const steps = Array.from(document.querySelectorAll(".form-step"));
+    const totalSteps = steps.length;
+    let currentStep = 0;
+
+    const progressFill = document.getElementById("wizardProgressFill");
+    const progressLabel = document.getElementById("wizardProgressLabel");
+    const prevBtn = document.getElementById("prevStepBtn");
+    const nextBtn = document.getElementById("nextStepBtn");
+    const form = document.getElementById("tripForm");
+
+    // inputs for overview
+    const startInput = document.querySelector('input[name="start_date"]');
+    const endInput = document.querySelector('input[name="end_date"]');
+    const travellersInput = document.querySelector('input[name="num_travellers"]');
+
+    const ovDestination = document.getElementById("ovDestination");
+    const ovDates = document.getElementById("ovDates");
+    const ovTravellers = document.getElementById("ovTravellers");
+    const ovMainPreference = document.getElementById("ovMainPreference");
+    const ovPreferences = document.getElementById("ovPreferences");
+
+    const preferenceLabelMap = {
+      CULTURE: "Culture",
+      ADVENTURE: "Adventure",
+      RELAXATION: "Relaxation",
+      NATURE: "Nature"
+    };
+
+    // -------- DESTINATION CARDS --------
+    const destinationInput = document.getElementById("destinationInput");
+    const destinationCards = document.querySelectorAll(".destination-card");
+
+    destinationCards.forEach(function (card) {
+      card.addEventListener("click", function () {
+        destinationCards.forEach(function (c) {
+          c.classList.remove("selected");
+        });
+        card.classList.add("selected");
+        destinationInput.value = card.getAttribute("data-value");
+      });
+    });
+
+    // -------- INTEREST SLIDERS --------
+    const preferenceInput = document.getElementById("preferencesInput");
+    const sliders = Array.from(document.querySelectorAll(".interest-slider"));
+
+    function valueToText(v) {
+      const val = parseInt(v, 10);
+      switch (val) {
+        case 1: return "Not my thing";
+        case 2: return "Maybe a little";
+        case 3: return "I could try";
+        case 4: return "Sounds fun!";
+        case 5: return "Absolutely yes!";
+        default: return "";
+      }
+    }
+
+    function updateSliderFill(slider) {
+      const min = parseInt(slider.min || 0, 10);
+      const max = parseInt(slider.max || 100, 10);
+      const val = parseInt(slider.value, 10);
+      const percent = ((val - min) / (max - min)) * 100;
+
+      slider.style.background =
+        "linear-gradient(to right, " +
+        "#2a9d8f 0%, " +
+        "#2a9d8f " + percent + "%, " +
+        "rgba(255, 255, 255, 0.25) " + percent + "%, " +
+        "rgba(255, 255, 255, 0.25) 100%)";
+    }
+
+    sliders.forEach(function (slider) {
+      const key = slider.getAttribute("data-key");
+      const tag = document.querySelector('.interest-tag[data-for="' + key + '"]');
+
+      updateSliderFill(slider);
+      if (tag) {
+        tag.textContent = valueToText(slider.value);
+      }
+
+      slider.addEventListener("input", function () {
+        updateSliderFill(slider);
+        if (tag) {
+          tag.textContent = valueToText(slider.value);
+        }
+      });
+    });
+
+    function chooseMainPreference() {
+      let best = null;
+      sliders.forEach(function (slider) {
+        const val = parseInt(slider.value, 10);
+        if (!best || val > best.value) {
+          best = { key: slider.getAttribute("data-key"), value: val };
+        }
+      });
+      if (best) {
+        preferenceInput.value = best.key;   // bv. "NATURE"
+      }
+    }
+
+    function updateOverview() {
+      // destination
+      ovDestination.textContent = destinationInput.value || "–";
+
+      // dates
+      const s = startInput.value || "–";
+      const e = endInput.value || "–";
+      ovDates.textContent = s + " → " + e;
+
+      // travellers
+      ovTravellers.textContent = travellersInput.value || "–";
+
+      // main preference
+      const mainKey = preferenceInput.value;
+      ovMainPreference.textContent =
+        mainKey ? (preferenceLabelMap[mainKey] || mainKey) : "–";
+
+      // all preferences list
+      ovPreferences.innerHTML = "";
+      sliders.forEach(function (slider) {
+        const key = slider.getAttribute("data-key");
+        const label = preferenceLabelMap[key] || key;
+        const val = slider.value;
+        const txt = valueToText(val);
+        const li = document.createElement("li");
+        li.textContent = label + ": " + txt + " (" + val + "/5)";
+        ovPreferences.appendChild(li);
+      });
+    }
+
+    // -------- WIZARD UI --------
+    function updateUI() {
+      steps.forEach(function (step, index) {
+        step.classList.toggle("active", index === currentStep);
+      });
+      const pct = ((currentStep + 1) / totalSteps) * 100;
+      progressFill.style.width = pct + "%";
+      progressLabel.textContent = (currentStep + 1) + "/" + totalSteps;
+
+      prevBtn.style.display = currentStep === 0 ? "none" : "inline-block";
+      nextBtn.textContent = currentStep === totalSteps - 1 ? "Create trip" : "Next";
+    }
+
+    prevBtn.addEventListener("click", function () {
+      if (currentStep > 0) {
+        currentStep--;
+        updateUI();
+      }
+    });
+
+    nextBtn.addEventListener("click", function () {
+      // Step 0: destination verplicht
+      if (currentStep === 0 && !destinationInput.value) {
+        alert("Please choose a destination first.");
+        return;
+      }
+
+      // Na preferences-stap (index 3) hoofd preference kiezen + overview vullen
+      if (currentStep === 3) {
+        chooseMainPreference();
+        updateOverview();
+      }
+
+      if (currentStep < totalSteps - 1) {
+        currentStep++;
+        updateUI();
+      } else {
+        form.submit();
+      }
+    });
+
+    updateUI();
+  })();
+  </script>
 </body>
 </html>

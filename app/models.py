@@ -101,12 +101,18 @@ class Traveller(db.Model):
 # TRAVEL AGENCIES
 # -----------------------------
 class TravelAgency(db.Model):
-    __tablename__ = 'Travel_agencies_id'
+    __tablename__ = 'Travel_agencies_id'   # exact zoals in de DB
 
-    agency_id = db.Column(db.BigInteger, primary_key=True, name='Agency_id')
-    name = db.Column(db.Text, nullable=False)
-    contact_info = db.Column(db.Text, nullable=True)
+    agency_id = db.Column(
+        db.BigInteger,
+        primary_key=True,
+        name='Agency_id'                   # kolomnaam in de DB
+    )
+
+    name = db.Column(db.Text, nullable=False)          # eventueel name='Name' als je kolom zo heet
+    contact_info = db.Column(db.Text, nullable=True)   # idem
     website = db.Column(db.Text, nullable=True)
+
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
@@ -114,7 +120,7 @@ class TravelAgency(db.Model):
         default=datetime.utcnow,
     )
 
-    user_id = db.Column(                        
+    user_id = db.Column(
         db.BigInteger,
         db.ForeignKey('User.user_id'),
         nullable=False,
@@ -123,33 +129,52 @@ class TravelAgency(db.Model):
 
     updated_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
-    activities = db.relationship('ActivityType', backref='agency', lazy=True)
+    # relatie naar ActivityType
+    activities = db.relationship(
+        'ActivityType',
+        back_populates='agency',
+        lazy='dynamic',
+    )
 
     def __repr__(self):
         return f'<TravelAgency {self.name}>'
 
 
-# -----------------------------
-# ACTIVITEITEN
-# -----------------------------
 class ActivityType(db.Model):
-    __tablename__ = 'Activity_type'
+    __tablename__ = 'Activity_type'   # matcht de bestaande tabelnaam in de DB
 
-    activity_type_id = db.Column(db.BigInteger, primary_key=True, name='Activity_type_id')
-    name = db.Column(db.Text, nullable=False)
-    type = db.Column(db.Text, nullable=False)
-    destination = db.Column(db.Text, nullable=False)
-    difficulty = db.Column(activity_difficulty_enum, nullable=True)
-    agency_id = db.Column(db.BigInteger, db.ForeignKey('Travel_agencies_id.Agency_id'), nullable=False, name='Agency_id')
-    created_at = db.Column(
-        db.DateTime(timezone=True),
-        nullable=False,
-        name='created_at',
-        default=datetime.utcnow,
+    activity_type_id = db.Column(
+        db.BigInteger,
+        primary_key=True,
+        name='Activity_type_id'       # kolom in de DB
     )
-    updated_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
-    planned_activities = db.relationship('ActivityPlanned', backref='activity_type', lazy=True)
+    name        = db.Column(db.String(120), nullable=False)
+    type        = db.Column(db.String(30),  nullable=False)   # CULTURE / ADVENTURE / ...
+    difficulty  = db.Column(db.String(20))                    # of een Enum als je dat later wil
+    destination = db.Column(db.String(50),  nullable=False)
+
+    description = db.Column(db.Text)
+
+    score_culture    = db.Column(db.Integer, default=3)
+    score_adventure  = db.Column(db.Integer, default=3)
+    score_relaxation = db.Column(db.Integer, default=3)
+    score_nature     = db.Column(db.Integer, default=3)
+
+    agency_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey('Travel_agencies_id.Agency_id'),  # ⚠️ hier zit de echte FK
+        name='Agency_id',
+        nullable=False,
+    )
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # terug-relatie naar TravelAgency
+    agency = db.relationship(
+        'TravelAgency',
+        back_populates='activities',
+    )
 
     def __repr__(self):
         return f'<ActivityType {self.name}>'

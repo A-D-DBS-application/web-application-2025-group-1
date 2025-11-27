@@ -17,7 +17,7 @@
       align-items: center;
     }
 
-    /* ⭐ HEADER — EXACT VAN activities.html */
+    /* HEADER */
     header {
       width: 100%;
       background: rgba(0,0,0,0.25);
@@ -28,25 +28,22 @@
       align-items: center;
       box-sizing: border-box;
     }
-
     header a {
       font-size: 2rem;
       font-weight: 700;
       color: white;
       text-decoration: none;
     }
-
     header a:hover {
       text-decoration: underline;
     }
-
     header span {
       font-size: 1.4rem;
       font-weight: 600;
       opacity: 0.9;
     }
 
-    /* ⭐ GROTE KADER */
+    /* CONTENT BOX */
     .main-box {
       width: 1000px;
       background: rgba(255,255,255,0.15);
@@ -57,7 +54,17 @@
       box-shadow: 0 8px 25px rgba(0,0,0,0.20);
     }
 
-    input, select {
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    input, select, textarea {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -67,12 +74,11 @@
       color: black;
       font-size: 1rem;
       box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
     }
 
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
+    textarea {
+      resize: vertical;
     }
 
     button {
@@ -86,7 +92,6 @@
       font-weight: 600;
       margin-right: 10px;
     }
-
     button:hover {
       background: #1f3b47;
     }
@@ -94,7 +99,6 @@
     .button-cancel {
       background: #e76f51;
     }
-
     .button-cancel:hover {
       background: #d65a3f;
     }
@@ -102,20 +106,114 @@
     .flash-success { background: #2a9d8f; padding: 6px; border-radius: 6px; margin-bottom: 15px; }
     .flash-error { background: #e76f51; padding: 6px; border-radius: 6px; margin-bottom: 15px; }
 
-    h1 {
-      margin-bottom: 20px;
+    /* ---------- Interest sliders (zelfde look als trips) ---------- */
+    .interest-list {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .interest-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .interest-left {
+      width: 130px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .interest-icon {
+      font-size: 1.4rem;
+    }
+
+    .interest-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.35);
+      outline: none;
+      cursor: pointer;
+      transition: box-shadow 0.15s ease;
+    }
+
+    .interest-slider::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: transparent;
+    }
+    .interest-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2a9d8f;
+      border: 2px solid #2a9d8f;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15);
+      margin-top: -5px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .interest-slider::-moz-range-track {
+      height: 6px;
+      border-radius: 999px;
+      background: transparent;
+    }
+    .interest-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2a9d8f;
+      border: 2px solid #2a9d8f;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .interest-slider:focus::-webkit-slider-thumb,
+    .interest-slider:hover::-webkit-slider-thumb,
+    .interest-slider:focus::-moz-range-thumb,
+    .interest-slider:hover::-moz-range-thumb {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 4px rgba(42, 157, 143, 0.35);
+    }
+
+    .interest-tag {
+      width: 130px;
+      font-size: 0.8rem;
+      text-align: right;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    @media (max-width: 600px) {
+      .main-box { width: 90%; }
+      .interest-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .interest-left, .interest-tag {
+        width: 100%;
+        text-align: left;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- ⭐ HEADER -->
+  <!-- HEADER -->
   <header>
     <a href="{{ url_for('main.index') }}">AfriGuide</a>
     <span>Edit Activity</span>
   </header>
 
-  <!-- ⭐ GROTE KADER -->
+  <!-- MAIN BOX -->
   <div class="main-box">
 
     <!-- FLASH MESSAGES -->
@@ -129,41 +227,162 @@
       {% endif %}
     {% endwith %}
 
-    <!-- EDIT ACTIVITY FORM -->
-    <div>
-      <h1>Edit Activity</h1>
+    <h1>Edit Activity</h1>
 
-      <form method="POST" action="{{ url_for('main.edit_activity', activity_id=activity.activity_type_id) }}">
-        <label>Name</label>
-        <input type="text" name="name" value="{{ activity.name }}" required>
+    <form method="POST"
+          action="{{ url_for('main.edit_activity', activity_id=activity.activity_type_id) }}"
+          id="editActivityForm">
 
-        <label>Type</label>
-        <select name="type" required>
-          <option value="CULTURE" {% if activity.type == 'CULTURE' %}selected{% endif %}>Culture</option>
-          <option value="ADVENTURE" {% if activity.type == 'ADVENTURE' %}selected{% endif %}>Adventure</option>
-          <option value="RELAXATION" {% if activity.type == 'RELAXATION' %}selected{% endif %}>Relaxation</option>
-          <option value="NATURE" {% if activity.type == 'NATURE' %}selected{% endif %}>Nature</option>
-        </select>
+      <label>Name</label>
+      <input type="text" name="name" value="{{ activity.name }}" required>
 
-        <label>Difficulty</label>
-        <select name="difficulty">
-          <option value="">None</option>
-          <option value="EASY" {% if activity.difficulty == 'EASY' %}selected{% endif %}>Easy</option>
-          <option value="MODERATE" {% if activity.difficulty == 'MODERATE' %}selected{% endif %}>Moderate</option>
-          <option value="HARD" {% if activity.difficulty == 'HARD' %}selected{% endif %}>Hard</option>
-        </select>
+      <!-- Hidden: hoofdtype CUL/ADV/REL/NAT -->
+      <input type="hidden" name="type" id="typeInput" value="{{ activity.type }}">
 
-        <label>Destination</label>
-        <input type="text" name="destination" value="{{ activity.destination }}" required>
+      <label>Description</label>
+      <textarea name="description" rows="2" required>{{ activity.description }}</textarea>
 
-        <div style="margin-top: 20px;">
-          <button type="submit">Update Activity</button>
-          <a href="{{ url_for('main.activities') }}" class="button-cancel" style="text-decoration: none; display: inline-block; padding: 10px 16px;">Cancel</a>
+      <label>Destination</label>
+      <select name="destination" required>
+        <option value="South Africa" {% if activity.destination == 'South Africa' %}selected{% endif %}>South Africa</option>
+        <option value="Morocco" {% if activity.destination == 'Morocco' %}selected{% endif %}>Morocco</option>
+      </select>
+
+      <label>Difficulty</label>
+      <select name="difficulty">
+        <option value="">None</option>
+        <option value="EASY" {% if activity.difficulty == 'EASY' %}selected{% endif %}>Easy</option>
+        <option value="MODERATE" {% if activity.difficulty == 'MODERATE' %}selected{% endif %}>Moderate</option>
+        <option value="HARD" {% if activity.difficulty == 'HARD' %}selected{% endif %}>Hard</option>
+      </select>
+
+      <p style="margin-top: 20px; font-weight:600;">
+        How well does this activity fit each preference?
+      </p>
+
+      <div class="interest-list">
+        <!-- Culture -->
+        <div class="interest-row">
+          <div class="interest-left">
+            <span class="interest-icon">🏛️</span><span>Culture</span>
+          </div>
+          <input type="range" min="1" max="5"
+                 value="{{ activity.score_culture or 3 }}"
+                 class="interest-slider"
+                 name="score_culture"
+                 data-key="CULTURE">
+          <div class="interest-tag" data-for="CULTURE"></div>
         </div>
-      </form>
-    </div>
 
+        <!-- Adventure -->
+        <div class="interest-row">
+          <div class="interest-left">
+            <span class="interest-icon">🧗‍♂️</span><span>Adventure</span>
+          </div>
+          <input type="range" min="1" max="5"
+                 value="{{ activity.score_adventure or 3 }}"
+                 class="interest-slider"
+                 name="score_adventure"
+                 data-key="ADVENTURE">
+          <div class="interest-tag" data-for="ADVENTURE"></div>
+        </div>
+
+        <!-- Relaxation -->
+        <div class="interest-row">
+          <div class="interest-left">
+            <span class="interest-icon">🧘‍♀️</span><span>Relaxation</span>
+          </div>
+          <input type="range" min="1" max="5"
+                 value="{{ activity.score_relaxation or 3 }}"
+                 class="interest-slider"
+                 name="score_relaxation"
+                 data-key="RELAXATION">
+          <div class="interest-tag" data-for="RELAXATION"></div>
+        </div>
+
+        <!-- Nature -->
+        <div class="interest-row">
+          <div class="interest-left">
+            <span class="interest-icon">🌿</span><span>Nature</span>
+          </div>
+          <input type="range" min="1" max="5"
+                 value="{{ activity.score_nature or 3 }}"
+                 class="interest-slider"
+                 name="score_nature"
+                 data-key="NATURE">
+          <div class="interest-tag" data-for="NATURE"></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 25px;">
+        <button type="submit">Save changes</button>
+        <a href="{{ url_for('main.activities') }}" class="button-cancel"
+           style="text-decoration:none;display:inline-block;padding:10px 16px;">
+          Cancel
+        </a>
+      </div>
+
+    </form>
   </div>
+
+  <script>
+  (function () {
+    const sliders = document.querySelectorAll(".interest-slider");
+    const typeInput = document.getElementById("typeInput");
+
+    function valueToText(v) {
+      const val = parseInt(v, 10);
+      switch (val) {
+        case 1: return "Not my thing";
+        case 2: return "Maybe a little";
+        case 3: return "I could try";
+        case 4: return "Sounds fun!";
+        case 5: return "Absolutely yes!";
+        default: return "";
+      }
+    }
+
+    function updateSlider(slider) {
+      const key = slider.dataset.key;
+      const tag = document.querySelector('.interest-tag[data-for="' + key + '"]');
+
+      if (tag) {
+        tag.textContent = valueToText(slider.value);
+      }
+
+      const min = parseInt(slider.min || 0, 10);
+      const max = parseInt(slider.max || 100, 10);
+      const val = parseInt(slider.value, 10);
+      const percent = ((val - min) / (max - min)) * 100;
+
+      slider.style.background =
+        "linear-gradient(to right, " +
+        "#2a9d8f 0%, " +
+        "#2a9d8f " + percent + "%, " +
+        "rgba(255, 255, 255, 0.35) " + percent + "%, " +
+        "rgba(255, 255, 255, 0.35) 100%)";
+    }
+
+    sliders.forEach(slider => {
+      updateSlider(slider);
+      slider.addEventListener("input", () => updateSlider(slider));
+    });
+
+    // bij submit: hoogste slider = hoofdtype
+    document.getElementById("editActivityForm").addEventListener("submit", () => {
+      let best = { value: 0, key: null };
+      sliders.forEach(slider => {
+        const val = parseInt(slider.value, 10);
+        if (val > best.value) {
+          best = { value: val, key: slider.dataset.key };
+        }
+      });
+      if (best.key) {
+        typeInput.value = best.key; // CULTURE / ADVENTURE / RELAXATION / NATURE
+      }
+    });
+  })();
+  </script>
 
 </body>
 </html>

@@ -14,74 +14,54 @@
     }
 
     body {
-      font-family: "Poppins", sans-serif;
       background: linear-gradient(135deg, #f4a261, #2a9d8f);
       color: #fff;
       margin: 0;
-      padding: 0;
+      padding: 40px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 0;
     }
 
-    /* ⭐ NAVIGATION BAR - For travellers and agencies (same as agencies.html) */
+    /* NAV zoals bij Trips */
     nav {
       background: rgba(0, 0, 0, 0.25);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(8px);
       padding: 10px 30px;
       width: 1000px;
       margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-radius: 8px;
+      border-radius: 16px;
     }
+    nav .logo { font-weight: 700; font-size: 1.3rem; }
+    nav .logo a { color: #fff; text-decoration: none; }
+    nav .logo a:hover { text-decoration: underline; }
+    nav ul { list-style: none; display: flex; gap: 20px; }
+    nav ul li a { color: #fff; text-decoration: none; font-weight: 600; transition: 0.3s; }
+    nav ul li a:hover { text-decoration: underline; }
 
-    nav .logo {
-      font-weight: 700;
-      font-size: 1.3rem;
-    }
-    nav .logo a {
-      color: #fff;
-      text-decoration: none;
-    }
-    nav .logo a:hover {
-      text-decoration: underline;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 20px;
-    }
-
-    nav ul li a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      transition: 0.3s;
-    }
-
-    nav ul li a:hover {
-      text-decoration: underline;
-    }
-
-    /* ⭐ GROTE KADER — zelfde als trips hoofd-container */
-    .main-box {
+    .container {
       width: 1000px;
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(10px);
       border-radius: 16px;
       padding: 30px;
-      margin-top: 0;
       box-shadow: 0 8px 25px rgba(0,0,0,0.20);
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
     }
 
-    input, select {
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    input, select, textarea {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -90,9 +70,17 @@
       background: white;
       color: black;
       font-size: 1rem;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
     }
 
-    button {
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button,
+    .btn {
       background: #264653;
       color: white;
       padding: 10px 16px;
@@ -101,69 +89,189 @@
       cursor: pointer;
       font-size: 1rem;
       font-weight: 600;
+      margin-right: 10px;
+      text-decoration: none;
+      display: inline-block;
     }
 
-    /* ⭐ TABLE SUB-KADER — zelfde als elke trip card */
-    .table-card {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.20);
+    button:hover,
+    .btn:hover {
+      background: #1f3b47;
     }
 
+    .flash-success { background: #2a9d8f; padding: 6px; border-radius: 6px; margin-bottom: 15px; }
+    .flash-error { background: #e76f51; padding: 6px; border-radius: 6px; margin-bottom: 15px; }
+
+    /* ------- Destination buttons ------- */
+    .dest-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .dest-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.6);
+      background: rgba(0,0,0,0.15);
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.95rem;
+      text-align: center;
+      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    }
+
+    .dest-btn.selected {
+      background: #264653;
+      box-shadow: 0 0 0 3px rgba(38,70,83,0.35);
+      transform: translateY(-1px);
+    }
+
+    .dest-btn:hover {
+      background: rgba(0,0,0,0.25);
+    }
+
+    /* ------- Preference sliders for activity type ------- */
+    .pref-list {
+      margin-top: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .pref-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .pref-left {
+      width: 140px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .pref-icon {
+      font-size: 1.4rem;
+    }
+
+    .activity-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.25);
+      outline: none;
+      cursor: pointer;
+      transition: box-shadow 0.15s ease;
+    }
+
+    .activity-slider::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: transparent;
+    }
+
+    .activity-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2a9d8f;
+      border: 0;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+      margin-top: -4px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .activity-slider::-moz-range-track {
+      height: 6px;
+      border-radius: 999px;
+      background: transparent;
+    }
+
+    .activity-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2a9d8f;
+      border: 0;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .activity-slider:hover::-webkit-slider-thumb,
+    .activity-slider:focus::-webkit-slider-thumb,
+    .activity-slider:hover::-moz-range-thumb,
+    .activity-slider:focus::-moz-range-thumb {
+      transform: scale(1.06);
+      box-shadow: 0 0 0 4px rgba(42,157,143,0.35);
+    }
+
+    .pref-tag {
+      width: 150px;
+      font-size: 0.8rem;
+      text-align: right;
+    }
+
+    /* tabel met activiteiten */
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 25px;
+      font-size: 0.9rem;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    thead {
+      background: rgba(0,0,0,0.15);
     }
 
     th, td {
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.35);
-      text-align: left;
-      font-size: 1rem;
+      padding: 10px 12px;
     }
 
-    th {
-      background: rgba(255,255,255,0.15);
-      font-weight: 600;
+    tr:nth-child(even) {
+      background: rgba(0,0,0,0.05);
     }
 
-    .flash-success { background: #2a9d8f; padding: 6px; border-radius: 6px; }
-    .flash-error { background: #e76f51; padding: 6px; border-radius: 6px; }
+    @media (max-width: 700px) {
+      nav, .container { width: 95%; }
+      .pref-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .pref-left, .pref-tag {
+        width: 100%;
+        text-align: left;
+      }
+      .dest-buttons {
+        flex-direction: column;
+      }
+    }
   </style>
-
 </head>
 <body>
 
-  <!-- ⭐ NAVIGATION BAR - For travellers -->
-  {% if not is_agency %}
   <nav>
     <div class="logo"><a href="{{ url_for('main.home') }}">AfriGuide</a></div>
     <ul>
-      <li><a href="{{ url_for('main.trips') }}">Trips</a></li>
       <li><a href="{{ url_for('main.activities') }}">Activities</a></li>
       <li><a href="{{ url_for('main.agencies') }}">Agencies</a></li>
       <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
     </ul>
   </nav>
-  {% else %}
-  <!-- ⭐ NAVIGATION BAR - For agencies (same layout as agencies page) -->
-  <nav>
-    <div class="logo">AfriGuide</div>
-    <ul>
-      <li><a href="{{ url_for('main.activities') }}">Activities</a></li>
-      <li><a href="{{ url_for('main.agencies') }}">Agencies</a></li>
-      {% if current_user %}
-      <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
-      {% endif %}
-    </ul>
-  </nav>
-  {% endif %}
 
-  <!-- ⭐ GROTE KADER -->
-  <div class="main-box">
+  <div class="container">
 
-    <!-- FLASH MESSAGES -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -174,81 +282,210 @@
       {% endif %}
     {% endwith %}
 
-    <!-- ADD ACTIVITY FORM - Only visible for AGENCY users -->
-    {% if is_agency %}
-    <div>
-      <h1>Add Activity</h1>
+    <h1>Add Activity</h1>
 
-      <form method="POST" action="{{ url_for('main.add_activity') }}">
-        <label>Name</label>
-        <input type="text" name="name" required>
+    <form method="POST" action="{{ url_for('main.activities') }}" id="activityForm">
+      <label>Name</label>
+      <input type="text" name="name" required>
 
-        <label>Type</label>
-        <select name="type" required>
-          <option value="CULTURE">Culture</option>
-          <option value="ADVENTURE">Adventure</option>
-          <option value="RELAXATION">Relaxation</option>
-          <option value="NATURE">Nature</option>
-        </select>
+      <!-- hidden type (hoogste slider) -->
+      <input type="hidden" name="type" id="typeInput" value="CULTURE">
 
-        <label>Difficulty</label>
-        <select name="difficulty">
-          <option value="EASY">Easy</option>
-          <option value="MODERATE">Moderate</option>
-          <option value="HARD">Hard</option>
-        </select>
+      <label>How well does this activity fit each theme?</label>
+      <div class="pref-list">
+        <div class="pref-row">
+          <div class="pref-left">
+            <span class="pref-icon">🏛️</span>
+            <span>Culture</span>
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="5"
+            class="activity-slider"
+            name="score_culture"
+            data-key="CULTURE"
+            value="3"
+          />
+          <div class="pref-tag" data-for="CULTURE">Nice extra</div>
+        </div>
 
-        <label>Destination</label>
-        <input type="text" name="destination" required>
+        <div class="pref-row">
+          <div class="pref-left">
+            <span class="pref-icon">🧗‍♂️</span>
+            <span>Adventure</span>
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="5"
+            class="activity-slider"
+            name="score_adventure"
+            data-key="ADVENTURE"
+            value="3"
+          />
+          <div class="pref-tag" data-for="ADVENTURE">Nice extra</div>
+        </div>
 
-        <button type="submit">Add Activity</button>
-      </form>
-    </div>
-    {% endif %}
+        <div class="pref-row">
+          <div class="pref-left">
+            <span class="pref-icon">🧘‍♀️</span>
+            <span>Relaxation</span>
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="5"
+            class="activity-slider"
+            name="score_relaxation"
+            data-key="RELAXATION"
+            value="3"
+          />
+          <div class="pref-tag" data-for="RELAXATION">Nice extra</div>
+        </div>
 
-    <!-- ⭐ TABEL SUB-KADER -->
-    <div class="table-card">
-      <table>
-        <thead>
+        <div class="pref-row">
+          <div class="pref-left">
+            <span class="pref-icon">🌿</span>
+            <span>Nature</span>
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="5"
+            class="activity-slider"
+            name="score_nature"
+            data-key="NATURE"
+            value="3"
+          />
+          <div class="pref-tag" data-for="NATURE">Nice extra</div>
+        </div>
+      </div>
+
+      <label>Difficulty</label>
+      <select name="difficulty">
+        <option value="">None</option>
+        <option value="EASY">Easy</option>
+        <option value="MODERATE">Moderate</option>
+        <option value="HARD">Hard</option>
+      </select>
+
+      <label>Destination</label>
+      <input type="hidden" name="destination" id="destinationInput">
+
+      <div class="dest-buttons">
+        <button type="button" class="dest-btn" data-value="South Africa">South Africa</button>
+        <button type="button" class="dest-btn" data-value="Morocco">Morocco</button>
+      </div>
+
+      <label>Description</label>
+      <textarea name="description" rows="3"></textarea>
+
+      <button type="submit">Add Activity</button>
+    </form>
+
+    <!-- lijst met activiteiten -->
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Difficulty</th>
+          <th>Destination</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in activities %}
           <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Difficulty</th>
-            <th>Destination</th>
-            {% if is_agency %}
-            <th>Edit</th>
-            {% else %}
-            <th>Travel Agency</th>
-            {% endif %}
+            <td>{{ a.name }}</td>
+            <td>{{ a.type }}</td>
+            <td>{{ a.difficulty or '–' }}</td>
+            <td>{{ a.destination }}</td>
+            <td>
+              <a class="btn" href="{{ url_for('main.edit_activity', activity_id=a.activity_type_id) }}">Edit</a>
+            </td>
           </tr>
-        </thead>
-
-        <tbody>
-          {% for activity in activities %}
-            <tr>
-              <td>{{ activity.name }}</td>
-              <td>{{ activity.type }}</td>
-              <td>{{ activity.difficulty or '-' }}</td>
-              <td>{{ activity.destination }}</td>
-              {% if is_agency %}
-              <td>
-                <a
-                  href="{{ url_for('main.edit_activity', activity_id=activity.activity_type_id) }}"
-                  style="color:white; background:#264653; padding:6px 12px; border-radius:6px; text-decoration:none;">
-                  Edit
-                </a>
-              </td>
-              {% else %}
-              <td>{{ activity.agency.name if activity.agency else '-' }}</td>
-              {% endif %}
-            </tr>
-          {% endfor %}
-        </tbody>
-
-      </table>
-    </div>
+        {% endfor %}
+      </tbody>
+    </table>
 
   </div>
 
+  <script>
+    (function () {
+      const form = document.getElementById("activityForm");
+
+      /* --- destination buttons --- */
+      const destInput = document.getElementById("destinationInput");
+      const destBtns  = document.querySelectorAll(".dest-btn");
+
+      destBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          destBtns.forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          destInput.value = btn.dataset.value;
+        });
+      });
+
+      /* --- sliders voor type --- */
+      const sliders   = Array.from(document.querySelectorAll(".activity-slider"));
+      const typeInput = document.getElementById("typeInput");
+
+      function valueToText(v) {
+        const val = parseInt(v, 10);
+        switch (val) {
+          case 1: return "Not really";
+          case 2: return "A little bit";
+          case 3: return "Nice extra";
+          case 4: return "Great match";
+          case 5: return "Perfect fit";
+          default: return "";
+        }
+      }
+
+      function updateSliderFill(slider) {
+        const min = parseInt(slider.min || 0, 10);
+        const max = parseInt(slider.max || 100, 10);
+        const val = parseInt(slider.value, 10);
+        const pct = ((val - min) / (max - min)) * 100;
+
+        slider.style.background =
+          "linear-gradient(to right," +
+          "#2a9d8f 0%," +
+          "#2a9d8f " + pct + "%," +
+          "rgba(255,255,255,0.25) " + pct + "%," +
+          "rgba(255,255,255,0.25) 100%)";
+      }
+
+      sliders.forEach(slider => {
+        const key = slider.dataset.key;
+        const tag = document.querySelector('.pref-tag[data-for="' + key + '"]');
+
+        updateSliderFill(slider);
+        if (tag) tag.textContent = valueToText(slider.value);
+
+        slider.addEventListener("input", () => {
+          updateSliderFill(slider);
+          if (tag) tag.textContent = valueToText(slider.value);
+        });
+      });
+
+      function chooseMainType() {
+        let best = null;
+        sliders.forEach(slider => {
+          const val = parseInt(slider.value, 10);
+          if (!best || val > best.value) {
+            best = { key: slider.dataset.key, value: val };
+          }
+        });
+        if (best) typeInput.value = best.key;   // CULTURE / ADVENTURE / ...
+      }
+
+      form.addEventListener("submit", () => {
+        chooseMainType();
+      });
+    })();
+  </script>
 </body>
 </html>

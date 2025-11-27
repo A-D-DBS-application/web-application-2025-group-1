@@ -228,83 +228,93 @@ def travellers(trip_id):
     return render_template('travellers.html', trip=trip, travellers=travellers)  
 
 
-@main.route('/activities', methods=['GET'])
+@main.route('/activities', methods=['GET', 'POST'])
 def activities():
     agencies = TravelAgency.query.all()
-    
-    # Get current user and their role if logged in
+
+    # Huidige user + agency opzoeken
     current_user = None
     is_agency = False
     user_agency = None
-    
+
     if 'user_id' in session:
         current_user = User.query.get(session['user_id'])
         if current_user and current_user.role == 'AGENCY':
             is_agency = True
-            # Find the TravelAgency associated with this user
             user_agency = TravelAgency.query.filter_by(user_id=current_user.user_id).first()
-    
-    # Filter activities based on user role
-    if is_agency and user_agency:
-        # Agency users only see their own activities
-        activities = ActivityType.query.filter_by(agency_id=user_agency.agency_id).order_by(ActivityType.created_at.desc()).all()
-    else:
-        # Travellers and non-logged-in users see all activities
-        activities = ActivityType.query.order_by(ActivityType.created_at.desc()).all()
-    
-    return render_template('activities.html', activities=activities, agencies=agencies, current_user=current_user, is_agency=is_agency)
 
+    # ---------- POST: nieuwe activity toevoegen ----------
+    if request.method == 'POST':
+        if 'user_id' not in session:
+            flash("You must be logged in to add activities.", "error")
+            return redirect(url_for('main.login'))
 
-@main.route('/add_activity', methods=['POST'])
-def add_activity():
-    if 'user_id' not in session:
-        flash("You must be logged in to add activities.", "error")
-        return redirect(url_for('main.login'))
+        if not current_user or current_user.role != 'AGENCY':
+            flash("Only agencies can add activities.", "error")
+            return redirect(url_for('main.activities'))
 
-    current_user = User.query.get(session['user_id'])
-    if not current_user or current_user.role != 'AGENCY':
-        flash("Only agencies can add activities.", "error")
-        return redirect(url_for('main.activities'))
+        name        = request.form.get('name')
+        type_       = request.form.get('type')            # komt uit hidden input typeInput
+        difficulty  = request.form.get('difficulty')
+        destination = request.form.get('destination')
+        description = request.form.get('description')
 
-    name = request.form.get('name')
-    type_ = request.form.get('type')
-    difficulty = request.form.get('difficulty')
-    destination = request.form.get('destination')
+        # sliders – als je ze al in het model hebt:
+        score_culture    = int(request.form.get('score_culture', 3))
+        score_adventure  = int(request.form.get('score_adventure', 3))
+        score_relaxation = int(request.form.get('score_relaxation', 3))
+        score_nature     = int(request.form.get('score_nature', 3))
 
-    if not name or not type_ or not destination:
-        flash("Please fill in all required fields.", "error")
-        return redirect(url_for('main.activities'))
+        if not name or not type_ or not destination:
+            flash("Please fill in all required fields.", "error")
+            return redirect(url_for('main.activities'))
 
-    # Find the TravelAgency associated with this user
-    user_agency = TravelAgency.query.filter_by(user_id=current_user.user_id).first()
-    
-    if not user_agency:
-        # If no agency exists for this user, create a fallback
-        user_agency = TravelAgency(
-            name=current_user.name or "User Added",
-            contact_info="",
-            website="",
-            user_id=current_user.user_id,
+        # als agency van user nog niet bestaat → aanmaken
+        if not user_agency:
+            user_agency = TravelAgency(
+                name=current_user.name or "User Added",
+                contact_info="",
+                website="",
+                user_id=current_user.user_id,
+                created_at=datetime.utcnow()
+            )
+            db.session.add(user_agency)
+            db.session.commit()
+
+        new_activity = ActivityType(
+            name=name,
+            type=type_,
+            difficulty=difficulty,
+            destination=destination,
+            description=description,          # <– veld moet in je model staan
+            score_culture=score_culture,      # idem
+            score_adventure=score_adventure,
+            score_relaxation=score_relaxation,
+            score_nature=score_nature,
+            agency_id=user_agency.agency_id,
             created_at=datetime.utcnow()
         )
-        db.session.add(user_agency)
+        db.session.add(new_activity)
         db.session.commit()
-    
-    agency_id = user_agency.agency_id
 
-    new_activity = ActivityType(
-        name=name,
-        type=type_,
-        difficulty=difficulty,
-        destination=destination,
-        agency_id=agency_id,
-        created_at=datetime.utcnow()
+        flash("Activity added successfully!", "success")
+        return redirect(url_for('main.activities'))
+
+    # ---------- GET: lijst tonen ----------
+    if is_agency and user_agency:
+        activities = ActivityType.query.filter_by(
+            agency_id=user_agency.agency_id
+        ).order_by(ActivityType.created_at.desc()).all()
+    else:
+        activities = ActivityType.query.order_by(ActivityType.created_at.desc()).all()
+
+    return render_template(
+        'activities.html',
+        activities=activities,
+        agencies=agencies,
+        current_user=current_user,
+        is_agency=is_agency
     )
-    db.session.add(new_activity)
-    db.session.commit()
-
-    flash("Activity added successfully!", "success")
-    return redirect(url_for('main.activities'))
 
 
 @main.route('/edit_activity/<int:activity_id>', methods=['GET', 'POST'])
@@ -330,22 +340,32 @@ def edit_activity(activity_id):
         flash("You can only edit your own activities.", "error")
         return redirect(url_for('main.activities'))
     
+    # ------- POST: update activity -------
     if request.method == 'POST':
-        activity.name = request.form.get('name')
-        activity.type = request.form.get('type')
-        activity.difficulty = request.form.get('difficulty')
+        activity.name        = request.form.get('name')
+        # als het hidden veld 'type' om een of andere reden leeg is, oude waarde behouden
+        activity.type        = request.form.get('type') or activity.type
+        activity.difficulty  = request.form.get('difficulty')
         activity.destination = request.form.get('destination')
-        
+        activity.description = request.form.get('description')
+
+        # scores veilig casten, met fallback op bestaande waarde of 3
+        activity.score_culture    = int(request.form.get('score_culture')    or activity.score_culture    or 3)
+        activity.score_adventure  = int(request.form.get('score_adventure')  or activity.score_adventure  or 3)
+        activity.score_relaxation = int(request.form.get('score_relaxation') or activity.score_relaxation or 3)
+        activity.score_nature     = int(request.form.get('score_nature')     or activity.score_nature     or 3)
+
         if not activity.name or not activity.type or not activity.destination:
             flash("Please fill in all required fields.", "error")
             return redirect(url_for('main.edit_activity', activity_id=activity_id))
-        
+
         db.session.commit()
         flash("Activity updated successfully!", "success")
         return redirect(url_for('main.activities'))
     
-    # GET request - show edit form
+    # ------- GET: toon edit formulier -------
     return render_template('edit_activity.html', activity=activity)
+
 
 
 @main.route('/hotels')
