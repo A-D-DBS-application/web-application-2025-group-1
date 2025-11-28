@@ -29,6 +29,7 @@
       border-radius: 6px;
       border: none;
       margin-bottom: 10px;
+      box-sizing: border-box;
     }
 
     label { display:block; font-weight:600; margin-top:10px; }
@@ -38,11 +39,63 @@
 
     h1, h2 { margin-bottom:10px; }
     ul { padding-left:20px; }
-    .traveller-card { background: rgba(0,0,0,0.12); padding:8px; border-radius:6px; margin-bottom:6px; }
+    .traveller-card { 
+      background: rgba(0,0,0,0.12); 
+      padding:16px; 
+      border-radius:6px; 
+      margin-bottom:12px; 
+    }
+    
+    .traveller-card form {
+      margin-bottom: 0;
+    }
+    
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    
+    .button-container .btn {
+      margin: 0;
+    }
+    
+    .btn-delete {
+      background: #e63946;
+    }
+    
+    .btn-delete:hover {
+      background: #d62839;
+    }
+
+    .back-to-trips-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(8px);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.25s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .back-to-trips-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
 
   </style>
 </head>
 <body>
+  <a href="{{ url_for('main.trips') }}" class="back-to-trips-btn">← Back to Trips</a>
+  
   <div class="container">
     <h1>Manage Travellers for {{ trip.destination }}</h1>
 
@@ -92,16 +145,14 @@
             <option value="MEDIUM" {% if traveller.fitness=='MEDIUM' %}selected{% endif %}>Medium</option>
             <option value="HIGH" {% if traveller.fitness=='HIGH' %}selected{% endif %}>High</option>
           </select>
-          <div style="display:flex; gap:10px; align-items:flex-end; margin-top:10px;">
-            <!-- Update -->
+          <div class="button-container">
             <button type="submit" class="btn">Update</button>
+            <form method="POST" action="{{ url_for('main.travellers', trip_id=trip.trip_id) }}" style="display:inline; margin:0;">
+              <input type="hidden" name="delete" value="1">
+              <input type="hidden" name="traveller_id" value="{{ traveller.traveller_id }}">
+              <button type="submit" class="btn btn-delete">Delete</button>
+            </form>
           </div>
-        </form>
-        <!-- Delete Traveller Button - Separate form -->
-        <form method="POST" action="{{ url_for('main.travellers', trip_id=trip.trip_id) }}" style="display:inline; margin-top:10px;">
-          <input type="hidden" name="delete" value="1">
-          <input type="hidden" name="traveller_id" value="{{ traveller.traveller_id }}">
-          <button type="submit" class="btn" style="background:#e63946;">Delete</button>
         </form>
       </div>
     {% endfor %}

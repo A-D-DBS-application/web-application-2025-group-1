@@ -264,6 +264,9 @@
   <nav>
     <div class="logo"><a href="{{ url_for('main.home') }}">AfriGuide</a></div>
     <ul>
+      {% if current_user and current_user.role != 'AGENCY' %}
+      <li><a href="{{ url_for('main.trips') }}">Trips</a></li>
+      {% endif %}
       <li><a href="{{ url_for('main.activities') }}">Activities</a></li>
       <li><a href="{{ url_for('main.agencies') }}">Agencies</a></li>
       <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
@@ -282,6 +285,7 @@
       {% endif %}
     {% endwith %}
 
+    {% if is_agency %}
     <h1>Add Activity</h1>
 
     <form method="POST" action="{{ url_for('main.activities') }}" id="activityForm">
@@ -383,6 +387,9 @@
 
       <button type="submit">Add Activity</button>
     </form>
+    {% else %}
+    <h1>Activities</h1>
+    {% endif %}
 
     <!-- lijst met activiteiten -->
     <table>
@@ -392,7 +399,11 @@
           <th>Type</th>
           <th>Difficulty</th>
           <th>Destination</th>
+          {% if is_agency %}
           <th>Edit</th>
+          {% else %}
+          <th>Travel Agency</th>
+          {% endif %}
         </tr>
       </thead>
       <tbody>
@@ -402,9 +413,13 @@
             <td>{{ a.type }}</td>
             <td>{{ a.difficulty or '–' }}</td>
             <td>{{ a.destination }}</td>
+            {% if is_agency %}
             <td>
               <a class="btn" href="{{ url_for('main.edit_activity', activity_id=a.activity_type_id) }}">Edit</a>
             </td>
+            {% else %}
+            <td>{{ a.agency.name if a.agency else '–' }}</td>
+            {% endif %}
           </tr>
         {% endfor %}
       </tbody>

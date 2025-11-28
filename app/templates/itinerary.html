@@ -94,10 +94,34 @@
             background: #1565c0;
             transform: translateY(-3px);
         }
+
+        .back-to-trips-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.25s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .back-to-trips-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 
 <body>
+
+    <a href="{{ url_for('main.trips') }}" class="back-to-trips-btn">← Back to Trips</a>
 
     <div class="container">
 

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from datetime import datetime
+from sqlalchemy.orm import joinedload
 from .models import db, User, Traveller, Trip, ActivityPlanned, ActivityType, TravelAgency
 from .utils import generate_itinerary
 
@@ -304,9 +305,9 @@ def activities():
     if is_agency and user_agency:
         activities = ActivityType.query.filter_by(
             agency_id=user_agency.agency_id
-        ).order_by(ActivityType.created_at.desc()).all()
+        ).options(joinedload(ActivityType.agency)).order_by(ActivityType.created_at.desc()).all()
     else:
-        activities = ActivityType.query.order_by(ActivityType.created_at.desc()).all()
+        activities = ActivityType.query.options(joinedload(ActivityType.agency)).order_by(ActivityType.created_at.desc()).all()
 
     return render_template(
         'activities.html',
