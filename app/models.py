@@ -160,6 +160,8 @@ class ActivityType(db.Model):
     score_adventure  = db.Column(db.Integer, default=3)
     score_relaxation = db.Column(db.Integer, default=3)
     score_nature     = db.Column(db.Integer, default=3)
+    latitude  = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
 
     agency_id = db.Column(
         db.BigInteger,
@@ -192,6 +194,8 @@ class ActivityPlanned(db.Model):
         name='created_at',
         default=datetime.utcnow,
     )
+
+    activity = db.relationship("ActivityType", backref="planned_instances")
 
     def __repr__(self):
         return f'<ActivityPlanned trip={self.trip_id} activity={self.activity_type_id}>'

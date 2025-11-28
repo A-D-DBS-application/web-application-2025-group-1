@@ -259,6 +259,9 @@ def activities():
         difficulty  = request.form.get('difficulty')
         destination = request.form.get('destination')
         description = request.form.get('description')
+        latitude = request.form.get('latitude')
+        longitude = request.form.get('longitude')
+
 
         # sliders – als je ze al in het model hebt:
         score_culture    = int(request.form.get('score_culture', 3))
@@ -292,6 +295,8 @@ def activities():
             score_adventure=score_adventure,
             score_relaxation=score_relaxation,
             score_nature=score_nature,
+            latitude=float(latitude),
+            longitude=float(longitude),
             agency_id=user_agency.agency_id,
             created_at=datetime.utcnow()
         )

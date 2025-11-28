@@ -136,7 +136,7 @@
             {% for act in activities %}
                 <div class="activity-card">
                     <div class="activity-date">{{ act.date }}</div>
-                    <div class="activity-name">{{ act.activity_type.name }}</div>
+                    <div class="activity-name">{{ act.activity.name }}</div>
 
                     {% if act.notes %}
                         <p>{{ act.notes }}</p>
