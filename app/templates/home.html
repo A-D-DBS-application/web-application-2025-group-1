@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
       --background: hsl(35, 30%, 96%);
       --foreground: hsl(25, 30%, 12%);
@@ -42,31 +43,29 @@
       position: relative;
     }
 
-    /* Navbar */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      padding: 1rem;
-      max-width: 72rem;
-      margin: 0 auto;
+    /* Background blobs */
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: -1;
     }
+    .bg-blob-1 { top: 5rem; left: 2rem; width: 18rem; height: 18rem; background: hsla(14, 72%, 55%, 0.1); }
+    .bg-blob-2 { bottom: 5rem; right: 2rem; width: 24rem; height: 24rem; background: hsla(168, 55%, 40%, 0.1); }
+    .bg-blob-3 { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: hsla(38, 80%, 55%, 0.05); }
 
+    /* Navbar */
+    nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 72rem; margin: 0 auto; }
     .nav-inner {
-      background: linear-gradient(135deg, 
-        hsla(35, 40%, 98%, 0.85), 
-        hsla(35, 30%, 96%, 0.75));
+      background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.85), hsla(35, 30%, 96%, 0.75));
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-radius: 1rem;
       border: 1px solid hsla(35, 25%, 88%, 0.5);
       padding: 0.75rem 1.5rem;
       box-shadow: var(--shadow-md);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
     }
-
     .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.25rem; color: var(--foreground); text-decoration: none; transition: color 0.2s; }
     .logo:hover { color: var(--primary); }
     .logo-icon { width: 2.25rem; height: 2.25rem; background: var(--primary); color: var(--primary-foreground); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; }
@@ -82,52 +81,48 @@
     .text-gradient { background: linear-gradient(135deg, var(--primary), var(--gold), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .page-header p { font-size: 1.125rem; color: var(--muted-foreground); max-width: 36rem; margin: 0 auto; }
 
-    /* Main container */
+    /* Container */
     .container { max-width: 72rem; margin: 0 auto; padding: 0 1rem 3rem; }
 
-    /* Glass card adjustments for slightly larger cards */
-    .glass-card { background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.85), hsla(35, 30%, 96%, 0.75)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 1.5rem; border: 1px solid hsla(35, 25%, 88%, 0.5); padding: 2rem; box-shadow: var(--shadow-lg); transition: all 0.3s; }
-    .glass-card:hover { transform: translateY(-4px); box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15); }
+    /* Flash messages */
+    .flash-message { padding: 0.75rem 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-size: 0.875rem; max-width: 72rem; margin-left: auto; margin-right: auto; }
+    .flash-success { background: hsla(168, 55%, 40%, 0.1); color: var(--teal); border: 1px solid var(--teal); }
+    .flash-error { background: hsla(0, 72%, 55%, 0.1); color: hsl(0, 72%, 45%); border: 1px solid hsl(0, 72%, 55%); }
 
-    /* Cards grid */
-    .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem; margin-bottom: 2rem; }
+    /* Cards Grid */
+    .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
     @media (max-width: 768px) { .cards-grid { grid-template-columns: 1fr; } }
 
     .card-link { text-decoration: none; color: inherit; }
+    .glass-card { background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.85), hsla(35, 30%, 96%, 0.75)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 1.5rem; border: 1px solid hsla(35, 25%, 88%, 0.5); padding: 1.5rem; box-shadow: var(--shadow-lg); transition: all 0.3s; }
+    .glass-card:hover { transform: translateY(-4px); box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15); }
     .card-inner { display: flex; align-items: flex-start; gap: 1rem; }
-    .card-icon { width: 4rem; height: 4rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; box-shadow: var(--shadow-md); transition: transform 0.3s; flex-shrink: 0; }
+    .card-icon { width: 3.5rem; height: 3.5rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: var(--shadow-md); transition: transform 0.3s; flex-shrink: 0; }
     .glass-card:hover .card-icon { transform: scale(1.1); }
-
     .card-icon.primary { background: linear-gradient(135deg, var(--primary), hsla(14, 72%, 50%, 1)); color: var(--primary-foreground); }
     .card-icon.gold { background: linear-gradient(135deg, var(--gold), hsla(38, 80%, 50%, 1)); color: var(--gold-foreground); }
     .card-icon.teal { background: linear-gradient(135deg, var(--teal), hsla(168, 55%, 35%, 1)); color: var(--teal-foreground); }
     .card-icon.secondary { background: linear-gradient(135deg, var(--secondary), hsla(195, 50%, 18%, 1)); color: var(--secondary-foreground); }
-
-    .card-content h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; transition: color 0.2s; }
-    .card-content p { color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 1rem; }
+    .card-content h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; transition: color 0.2s; }
+    .card-content p { color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 0.75rem; }
     .card-cta { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.875rem; }
     .card-cta span { transition: transform 0.2s; }
     .glass-card:hover .card-cta span { transform: translateX(4px); }
 
-    /* Logout button */
-    .logout-section { text-align: center; margin-top: 2rem; }
-    .btn-logout-large { display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: var(--secondary); color: var(--secondary-foreground); border-radius: 0.75rem; font-weight: 600; text-decoration: none; box-shadow: var(--shadow-md); transition: all 0.2s; }
-    .btn-logout-large:hover { background: hsla(195, 50%, 18%, 1); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-
-    /* Footer */
-    footer { text-align: center; padding: 1rem; color: var(--muted-foreground); font-size: 0.875rem; margin-top: 3rem; border-top: 1px solid var(--border); }
-
-    /* Animations */
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
     .delay-1 { animation-delay: 0.1s; opacity: 0; }
     .delay-2 { animation-delay: 0.2s; opacity: 0; }
     .delay-3 { animation-delay: 0.3s; opacity: 0; }
     .delay-4 { animation-delay: 0.4s; opacity: 0; }
-
   </style>
 </head>
 <body>
+  <!-- Background blobs -->
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+
   <!-- Navigation -->
   <nav>
     <div class="nav-inner">
@@ -148,7 +143,20 @@
     </div>
   </nav>
 
-  <!-- Page header -->
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container" style="padding-bottom: 0;">
+        {% for category, message in messages %}
+          <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+            {{ message }}
+          </p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Hero Section -->
   <div class="page-header">
     <h1>Welcome to <span class="text-gradient">AfriGuide</span></h1>
     <p>Discover the magic of Africa. Plan your perfect adventure with personalized itineraries and local experiences.</p>
@@ -158,63 +166,59 @@
     <!-- Cards Grid -->
     <div class="cards-grid">
       {% if user.role != 'AGENCY' %}
+      <!-- Your Trips -->
       <a href="{{ url_for('main.trips') }}" class="card-link">
         <div class="glass-card animate-fade-in delay-1">
           <div class="card-inner">
             <div class="card-icon primary">🧳</div>
             <div class="card-content">
-              <h2 class="hover-primary">Your Trips</h2>
+              <h2>Your Trips</h2>
               <p>View and manage all your planned adventures</p>
-              <div class="card-cta primary"><span>Explore trips</span> <span>→</span></div>
             </div>
           </div>
         </div>
       </a>
 
+      <!-- View Itinerary -->
       <a href="{{ url_for('main.itinerary_select') }}" class="card-link">
         <div class="glass-card animate-fade-in delay-2">
           <div class="card-inner">
             <div class="card-icon gold">📅</div>
             <div class="card-content">
-              <h2 class="hover-gold">View Itinerary</h2>
+              <h2>View Itinerary</h2>
               <p>Check your day-by-day travel schedule</p>
-              <div class="card-cta gold"><span>View schedule</span> <span>→</span></div>
             </div>
           </div>
         </div>
       </a>
       {% endif %}
 
+      <!-- Browse Activities -->
       <a href="{{ url_for('main.activities') }}" class="card-link">
         <div class="glass-card animate-fade-in delay-3">
           <div class="card-inner">
             <div class="card-icon teal">🎯</div>
             <div class="card-content">
-              <h2 class="hover-teal">Browse Activities</h2>
+              <h2>Browse Activities</h2>
               <p>Discover unique experiences and tours</p>
-              <div class="card-cta teal"><span>Find activities</span> <span>→</span></div>
             </div>
           </div>
         </div>
       </a>
 
+      <!-- Travel Agencies -->
       <a href="{{ url_for('main.agencies') }}" class="card-link">
         <div class="glass-card animate-fade-in delay-4">
           <div class="card-inner">
             <div class="card-icon secondary">🏢</div>
             <div class="card-content">
-              <h2 class="hover-secondary">Travel Agencies</h2>
+              <h2>Travel Agencies</h2>
               <p>Connect with trusted local partners</p>
-              <div class="card-cta secondary"><span>View agencies</span> <span>→</span></div>
             </div>
           </div>
         </div>
       </a>
     </div>
-
-    <footer>
-      🧭 Explore Africa with AfriGuide
-    </footer>
   </div>
 </body>
 </html>
