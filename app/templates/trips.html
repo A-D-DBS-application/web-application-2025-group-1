@@ -1293,6 +1293,44 @@
     const endInput = document.getElementById("end_date");
     const travellersInput = document.getElementById("num_travellers");
 
+    // Date picker logic: when start date is selected, end date calendar should open at that month
+    startInput.addEventListener("change", function() {
+      if (startInput.value) {
+        // Set minimum date for end date to be the start date
+        endInput.min = startInput.value;
+        
+        // If end date is empty or before start date, clear it
+        // We'll set a temporary value on focus to ensure calendar opens at the right month
+        if (endInput.value && endInput.value < startInput.value) {
+          endInput.value = "";
+        }
+      }
+    });
+
+    // When end date input is focused and there's a start date, set temporary value
+    // so the calendar opens at the month of the start date
+    endInput.addEventListener("focus", function() {
+      if (startInput.value) {
+        // If end date is empty, set it to start date + 1 day
+        // This ensures the calendar opens at the correct month (the month of the start date)
+        // and shows a reasonable default value
+        if (!endInput.value) {
+          const startDate = new Date(startInput.value);
+          startDate.setDate(startDate.getDate() + 1);
+          const nextDay = startDate.toISOString().split('T')[0];
+          endInput.value = nextDay;
+        }
+      }
+    });
+
+    // When end date changes, validate it's not before start date
+    endInput.addEventListener("change", function() {
+      if (startInput.value && endInput.value && endInput.value < startInput.value) {
+        alert("End date cannot be before start date.");
+        endInput.value = "";
+      }
+    });
+
     const ovDestination = document.getElementById("ovDestination");
     const ovDates = document.getElementById("ovDates");
     const ovTravellers = document.getElementById("ovTravellers");
