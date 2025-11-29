@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AfriGuide | Register as Agency</title>
+  <title>AfriGuide | Register as Traveller</title>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
@@ -48,7 +48,6 @@
       outline: none; font-size: 1rem;
       background: #fff;
     }
-
 
     .btn {
       width: 100%;
@@ -102,8 +101,8 @@
 
   <div class="container">
     <div class="logo">AG</div>
-    <h1>Register as Agency</h1>
-    <p>Join AfriGuide and start managing your activities and destinations.</p>
+    <h1>Register as Traveller</h1>
+    <p>Join AfriGuide and start planning your perfect journey.</p>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -117,7 +116,7 @@
       {% endif %}
     {% endwith %}
 
-    <form method="POST" action="{{ url_for('main.register_agency') }}">
+    <form method="POST" action="{{ url_for('main.register_traveller') }}">
       <input type="text" name="name" placeholder="Name" required>
       <input type="email" name="email" placeholder="Email" required>
       <input type="tel" name="phone_number" placeholder="Phone Number">
@@ -126,7 +125,7 @@
     </form>
 
     <div class="register">
-      Already have an account? <a href="{{ url_for('main.agency_login') }}">Login here</a>
+      Already have an account? <a href="{{ url_for('main.login') }}">Login here</a>
     </div>
 
     <p class="back-home" style="margin-top:15px;">
@@ -136,3 +135,4 @@
 
 </body>
 </html>
+

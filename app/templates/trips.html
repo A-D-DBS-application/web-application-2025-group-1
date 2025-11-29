@@ -585,9 +585,10 @@
     }
 
     .pref-row {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
       align-items: center;
+      gap: 1rem;
       padding: 0.5rem 0;
     }
 
@@ -602,11 +603,13 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      justify-content: flex-start;
     }
 
     .pref-bars {
       display: flex;
       gap: 0.25rem;
+      flex-shrink: 0;
     }
 
     .pref-bar {
@@ -1418,7 +1421,8 @@
         row.className = "pref-row";
         row.innerHTML = 
           '<div class="pref-left"><span>' + info.icon + '</span><span>' + info.label + '</span></div>' +
-          '<div class="pref-right">' + barsHtml + '<span class="pref-text">' + valueToText(val) + '</span></div>';
+          '<div class="pref-right">' + barsHtml + '</div>' +
+          '<span class="pref-text">' + valueToText(val) + '</span>';
         ovPreferences.appendChild(row);
       });
     }

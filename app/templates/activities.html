@@ -74,6 +74,7 @@
     nav ul { list-style: none; display: flex; align-items: center; gap: 0.25rem; }
     nav ul li a { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 0.75rem; color: hsla(25, 30%, 12%, 0.8); text-decoration: none; font-weight: 500; transition: all 0.2s; }
     nav ul li a:hover { background: var(--accent); color: var(--foreground); }
+    nav ul li a.active { background: var(--primary); color: var(--primary-foreground); }
     .btn-logout { background: var(--secondary); color: var(--secondary-foreground); margin-left: 0.5rem; }
     .btn-logout:hover { background: hsla(195, 50%, 18%, 1); }
 
@@ -392,7 +393,13 @@
         {% if current_user and current_user.role != 'AGENCY' %}
         <li><a href="{{ url_for('main.trips') }}">🧭 Trips</a></li>
         {% endif %}
-        <li><a href="{{ url_for('main.activities') }}">📍 Activities</a></li>
+        {% if current_user and current_user.role == 'AGENCY' %}
+        <li><a href="{{ url_for('main.my_activities') }}" {% if is_my_activities %}class="active"{% endif %}>🎯 My Activities</a></li>
+        {% endif %}
+        <li><a href="{{ url_for('main.activities') }}" {% if not is_my_activities %}class="active"{% endif %}>📍 Activities</a></li>
+        {% if current_user and current_user.role == 'AGENCY' %}
+        <li><a href="{{ url_for('main.my_agency') }}">🏢 My Agency</a></li>
+        {% endif %}
         <li><a href="{{ url_for('main.agencies') }}">🏢 Agencies</a></li>
         <li><a href="{{ url_for('main.logout') }}" class="btn-logout">🚪 Logout</a></li>
       </ul>
@@ -417,7 +424,7 @@
       {% endif %}
     {% endwith %}
 
-    {% if is_agency %}
+    {% if is_my_activities %}
     <!-- Add Activity Form -->
     <div class="glass-card animate-fade-in delay-1">
       <div class="section-header">
@@ -425,7 +432,7 @@
         <h2>Add New Activity</h2>
       </div>
 
-      <form method="POST" action="{{ url_for('main.activities') }}" id="activityForm">
+      <form method="POST" action="{{ url_for('main.my_activities') }}" id="activityForm">
         <label>Activity Name</label>
         <input type="text" name="name" placeholder="Enter activity name" required>
 
@@ -510,7 +517,7 @@
     <div class="glass-card animate-fade-in delay-2">
       <div class="section-header">
         <div class="section-icon teal">🎯</div>
-        <h2>{% if is_agency %}Your Activities{% else %}All Activities{% endif %}</h2>
+        <h2>{% if is_my_activities %}My Activities{% elif is_agency %}All Activities{% else %}All Activities{% endif %}</h2>
       </div>
 
       <div class="table-wrapper">
@@ -521,8 +528,10 @@
               <th>Type</th>
               <th>Difficulty</th>
               <th>Destination</th>
-              {% if is_agency %}
+              {% if is_my_activities %}
               <th>Actions</th>
+              {% elif is_agency %}
+              <th>Travel Agency</th>
               {% else %}
               <th>Travel Agency</th>
               {% endif %}
@@ -543,7 +552,7 @@
                   {% endif %}
                 </td>
                 <td>{{ a.destination }}</td>
-                {% if is_agency %}
+                {% if is_my_activities %}
                 <td>
                   <a class="btn btn-outline" href="{{ url_for('main.edit_activity', activity_id=a.activity_type_id) }}">Edit</a>
                 </td>

@@ -134,10 +134,14 @@
         {% if user.role != 'AGENCY' %}
         <li><a href="{{ url_for('main.trips') }}">🧭 Trips</a></li>
         {% endif %}
-        <li><a href="{{ url_for('main.activities') }}">📍 Activities</a></li>
-        {% if user.role != 'AGENCY' %}
-        <li><a href="{{ url_for('main.agencies') }}">🏢 Agencies</a></li>
+        {% if user.role == 'AGENCY' %}
+        <li><a href="{{ url_for('main.my_activities') }}">🎯 My Activities</a></li>
         {% endif %}
+        <li><a href="{{ url_for('main.activities') }}">📍 Activities</a></li>
+        {% if user.role == 'AGENCY' %}
+        <li><a href="{{ url_for('main.my_agency') }}">🏢 My Agency</a></li>
+        {% endif %}
+        <li><a href="{{ url_for('main.agencies') }}">🏢 Agencies</a></li>
         <li><a href="{{ url_for('main.logout') }}" class="btn-logout">🚪 Logout</a></li>
       </ul>
     </div>
@@ -193,6 +197,59 @@
       </a>
       {% endif %}
 
+      {% if user.role == 'AGENCY' %}
+      <!-- My Activities -->
+      <a href="{{ url_for('main.my_activities') }}" class="card-link">
+        <div class="glass-card animate-fade-in delay-1">
+          <div class="card-inner">
+            <div class="card-icon primary">🎯</div>
+            <div class="card-content">
+              <h2>My Activities</h2>
+              <p>Manage your own activities</p>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Activities -->
+      <a href="{{ url_for('main.activities') }}" class="card-link">
+        <div class="glass-card animate-fade-in delay-2">
+          <div class="card-inner">
+            <div class="card-icon teal">📍</div>
+            <div class="card-content">
+              <h2>Activities</h2>
+              <p>Browse all available activities</p>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- My Agency -->
+      <a href="{{ url_for('main.my_agency') }}" class="card-link">
+        <div class="glass-card animate-fade-in delay-3">
+          <div class="card-inner">
+            <div class="card-icon gold">🏢</div>
+            <div class="card-content">
+              <h2>My Agency</h2>
+              <p>View and edit your agency profile</p>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Agencies -->
+      <a href="{{ url_for('main.agencies') }}" class="card-link">
+        <div class="glass-card animate-fade-in delay-4">
+          <div class="card-inner">
+            <div class="card-icon secondary">🏢</div>
+            <div class="card-content">
+              <h2>Agencies</h2>
+              <p>View all travel agencies</p>
+            </div>
+          </div>
+        </div>
+      </a>
+      {% else %}
       <!-- Browse Activities -->
       <a href="{{ url_for('main.activities') }}" class="card-link">
         <div class="glass-card animate-fade-in delay-3">
@@ -218,6 +275,7 @@
           </div>
         </div>
       </a>
+      {% endif %}
     </div>
   </div>
 </body>

@@ -40,57 +40,36 @@
     }
 
     h1 { font-size: 2rem; margin-bottom: 10px; color: #264653; }
-    p { margin-bottom: 25px; font-size: 1rem; opacity: 0.85; }
+    p { margin-bottom: 30px; font-size: 1rem; opacity: 0.85; }
 
-    input {
-      width: 100%; padding: 12px; margin: 10px 0;
-      border: 1px solid #ccc; border-radius: 12px;
-      outline: none; font-size: 1rem;
-      background: #fff;
+    .choice-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 20px;
     }
 
-    .btn {
+    .choice-btn {
       width: 100%;
-      padding: 14px;
+      padding: 16px;
       border-radius: 12px;
-      border: none;
-      background: linear-gradient(135deg, #f6d365, #fda085);
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      transition: 0.3s;
-    }
-
-    .btn:hover {
-      background: linear-gradient(135deg, #fda085, #f6d365);
-      transform: translateY(-3px);
-    }
-
-    .flash-message {
-      font-weight: 600; font-size: 0.95rem;
-      margin-bottom: 15px; padding: 10px;
-      border-radius: 8px;
-    }
-    .flash-error { background:#e63946; color:#fff; }
-    .flash-success { background:#38b000; color:#fff; }
-
-    .role-select {
-      margin: 12px 0 5px 0;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-    .role-select label {
-      display: inline-flex;
-      align-items: center;
-      margin-right: 12px;
-      cursor: pointer;
+      border: 2px solid #ccc;
+      background: rgba(255, 255, 255, 0.9);
       color: #264653;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: block;
+      text-align: center;
     }
-    .role-select input[type="radio"] {
-      margin-right: 6px;
-      accent-color: #264653;
+
+    .choice-btn:hover {
+      border-color: #264653;
+      background: rgba(38, 70, 83, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .register {
@@ -112,6 +91,13 @@
     }
     .back-home a:hover { text-decoration: underline; }
 
+    .flash-message {
+      font-weight: 600; font-size: 0.95rem;
+      margin-bottom: 15px; padding: 10px;
+      border-radius: 8px;
+    }
+    .flash-error { background:#e63946; color:#fff; }
+    .flash-success { background:#38b000; color:#fff; }
   </style>
 </head>
 <body>
@@ -119,7 +105,7 @@
   <div class="container">
     <div class="logo">AG</div>
     <h1>Create an Account</h1>
-    <p>Join AfriGuide and start planning your perfect journey.</p>
+    <p>Choose your account type to get started.</p>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -133,25 +119,14 @@
       {% endif %}
     {% endwith %}
 
-    <form method="POST" action="{{ url_for('main.register') }}">
-      <input type="text" name="name" placeholder="Full name" required>
-      <input type="email" name="email" placeholder="Email address" required>
-      <input type="tel" name="phone_number" placeholder="Phone number">
-
-      <div class="role-select">
-        <span style="display:block; margin-bottom:4px;">I am a:</span>
-        <label>
-          <input type="radio" name="role" value="TRAVELLER" checked>
-          Traveller
-        </label>
-        <label>
-          <input type="radio" name="role" value="AGENCY">
-          Agency
-        </label>
-      </div>
-
-      <button type="submit" class="btn">Register</button>
-    </form>
+    <div class="choice-buttons">
+      <a href="{{ url_for('main.register_traveller') }}" class="choice-btn">
+        I'm a Traveller
+      </a>
+      <a href="{{ url_for('main.register_agency') }}" class="choice-btn">
+        I'm an Agency
+      </a>
+    </div>
 
     <div class="register">
       Already have an account? <a href="{{ url_for('main.login') }}">Login here</a>
@@ -164,3 +139,4 @@
 
 </body>
 </html>
+

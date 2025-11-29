@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from datetime import datetime
 from sqlalchemy.orm import joinedload
+from werkzeug.utils import secure_filename
+import os
 from .models import db, User, Traveller, Trip, ActivityPlanned, ActivityType, TravelAgency
 from .utils import generate_itinerary
 
@@ -25,27 +27,32 @@ def home():
         return redirect(url_for('main.login'))
     
     user = User.query.get(session['user_id'])
-    # Agencies should only see activities, not trips
+    # Agencies should see agency homepage
     if user and user.role == 'AGENCY':
-        return redirect(url_for('main.activities'))
+        return render_template('home.html', user=user)
     
     trips = Trip.query.filter_by(user_id=user.user_id).all()
     
     return render_template('home.html', user=user, trips=trips)
 
 
-@main.route('/register', methods=['GET', 'POST'])
+@main.route('/register', methods=['GET'])
 def register():
+    """Keuzepagina voor registratie type"""
+    return render_template('register.html')
+
+@main.route('/register_traveller', methods=['GET', 'POST'])
+def register_traveller():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
         phone_number = request.form.get('phone_number')
-        role = request.form.get('role', 'TRAVELLER')  # Default to TRAVELLER if not provided
+        role = 'TRAVELLER'
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash("Email already registered.", "error")
-            return redirect(url_for('main.register'))
+            return redirect(url_for('main.register_traveller'))
         
         new_user = User(
             name=name,
@@ -57,23 +64,51 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        # If user registered as AGENCY, create a TravelAgency record
-        if role == 'AGENCY':
-            new_agency = TravelAgency(
-                name=name,
-                contact_info=phone_number or "",
-                website="",
-                user_id=new_user.user_id,
-                created_at=datetime.utcnow()
-            )
-            db.session.add(new_agency)
-            db.session.commit()
-
         session['user_id'] = new_user.user_id
         flash("Registration successful!", "success")
         return redirect(url_for('main.home'))
         
-    return render_template('register.html')
+    return render_template('register_traveller.html')
+
+@main.route('/register_agency', methods=['GET', 'POST'])
+def register_agency():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone_number = request.form.get('phone_number')
+        role = 'AGENCY'
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash("Email already registered.", "error")
+            return redirect(url_for('main.register_agency'))
+        
+        new_user = User(
+            name=name,
+            email=email,
+            phone_number=phone_number,
+            role=role,
+            created_at=datetime.now(),
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Create TravelAgency record
+        new_agency = TravelAgency(
+            name=name,
+            contact_info="",
+            website="",
+            user_id=new_user.user_id,
+            created_at=datetime.utcnow()
+        )
+        db.session.add(new_agency)
+        db.session.commit()
+
+        session['user_id'] = new_user.user_id
+        flash("Registration successful!", "success")
+        return redirect(url_for('main.activities'))
+        
+    return render_template('agency_register.html')
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
@@ -89,6 +124,24 @@ def login():
             return redirect(url_for('main.login'))
         
     return render_template('login.html')
+
+@main.route('/agency_login', methods=['GET', 'POST'])
+def agency_login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if user.role != 'AGENCY':
+                flash("This account is not registered as an agency.", "error")
+                return redirect(url_for('main.agency_login'))
+            session['user_id'] = user.user_id
+            flash(f"Logged in successfully as {user.name}!", "success")
+            return redirect(url_for('main.activities'))
+        else:
+            flash("Agency not found.", "error")
+            return redirect(url_for('main.agency_login'))
+        
+    return render_template('agency_login.html')
 
 @main.route('/logout') 
 def logout():
@@ -229,41 +282,68 @@ def travellers(trip_id):
     return render_template('travellers.html', trip=trip, travellers=travellers)  
 
 
-@main.route('/activities', methods=['GET', 'POST'])
+@main.route('/activities', methods=['GET'])
 def activities():
+    """Show all activities (for both travellers and agencies)"""
     agencies = TravelAgency.query.all()
 
-    # Huidige user + agency opzoeken
+    # Huidige user opzoeken
     current_user = None
     is_agency = False
-    user_agency = None
 
     if 'user_id' in session:
         current_user = User.query.get(session['user_id'])
         if current_user and current_user.role == 'AGENCY':
             is_agency = True
-            user_agency = TravelAgency.query.filter_by(user_id=current_user.user_id).first()
+
+    # Get all activities
+    activities = ActivityType.query.options(joinedload(ActivityType.agency)).order_by(ActivityType.created_at.desc()).all()
+
+    return render_template(
+        'activities.html',
+        activities=activities,
+        agencies=agencies,
+        current_user=current_user,
+        is_agency=is_agency
+    )
+
+@main.route('/my_activities', methods=['GET', 'POST'])
+def my_activities():
+    """Show and manage agency's own activities"""
+    if 'user_id' not in session:
+        flash("You must be logged in to view your activities.", "error")
+        return redirect(url_for('main.login'))
+    
+    current_user = User.query.get(session['user_id'])
+    if not current_user or current_user.role != 'AGENCY':
+        flash("This page is only available for agencies.", "error")
+        return redirect(url_for('main.activities'))
+    
+    user_agency = TravelAgency.query.filter_by(user_id=current_user.user_id).first()
+    
+    if not user_agency:
+        # Create agency record if it doesn't exist
+        user_agency = TravelAgency(
+            name=current_user.name or "User Added",
+            contact_info="",
+            website="",
+            user_id=current_user.user_id,
+            created_at=datetime.utcnow()
+        )
+        db.session.add(user_agency)
+        db.session.commit()
 
     # ---------- POST: nieuwe activity toevoegen ----------
     if request.method == 'POST':
-        if 'user_id' not in session:
-            flash("You must be logged in to add activities.", "error")
-            return redirect(url_for('main.login'))
-
-        if not current_user or current_user.role != 'AGENCY':
-            flash("Only agencies can add activities.", "error")
-            return redirect(url_for('main.activities'))
-
         name        = request.form.get('name')
-        type_       = request.form.get('type')            # komt uit hidden input typeInput
+        type_       = request.form.get('type')
         difficulty  = request.form.get('difficulty')
         destination = request.form.get('destination')
         description = request.form.get('description')
         latitude = request.form.get('latitude')
         longitude = request.form.get('longitude')
 
-
-        # sliders – als je ze al in het model hebt:
+        # sliders
         score_culture    = int(request.form.get('score_culture', 3))
         score_adventure  = int(request.form.get('score_adventure', 3))
         score_relaxation = int(request.form.get('score_relaxation', 3))
@@ -271,27 +351,15 @@ def activities():
 
         if not name or not type_ or not destination:
             flash("Please fill in all required fields.", "error")
-            return redirect(url_for('main.activities'))
-
-        # als agency van user nog niet bestaat → aanmaken
-        if not user_agency:
-            user_agency = TravelAgency(
-                name=current_user.name or "User Added",
-                contact_info="",
-                website="",
-                user_id=current_user.user_id,
-                created_at=datetime.utcnow()
-            )
-            db.session.add(user_agency)
-            db.session.commit()
+            return redirect(url_for('main.my_activities'))
 
         new_activity = ActivityType(
             name=name,
             type=type_,
             difficulty=difficulty,
             destination=destination,
-            description=description,          # <– veld moet in je model staan
-            score_culture=score_culture,      # idem
+            description=description,
+            score_culture=score_culture,
             score_adventure=score_adventure,
             score_relaxation=score_relaxation,
             score_nature=score_nature,
@@ -304,22 +372,20 @@ def activities():
         db.session.commit()
 
         flash("Activity added successfully!", "success")
-        return redirect(url_for('main.activities'))
+        return redirect(url_for('main.my_activities'))
 
     # ---------- GET: lijst tonen ----------
-    if is_agency and user_agency:
-        activities = ActivityType.query.filter_by(
-            agency_id=user_agency.agency_id
-        ).options(joinedload(ActivityType.agency)).order_by(ActivityType.created_at.desc()).all()
-    else:
-        activities = ActivityType.query.options(joinedload(ActivityType.agency)).order_by(ActivityType.created_at.desc()).all()
+    activities = ActivityType.query.filter_by(
+        agency_id=user_agency.agency_id
+    ).options(joinedload(ActivityType.agency)).order_by(ActivityType.created_at.desc()).all()
 
     return render_template(
         'activities.html',
         activities=activities,
-        agencies=agencies,
+        agencies=[user_agency],
         current_user=current_user,
-        is_agency=is_agency
+        is_agency=True,
+        is_my_activities=True
     )
 
 
@@ -344,7 +410,7 @@ def edit_activity(activity_id):
     activity = ActivityType.query.get_or_404(activity_id)
     if activity.agency_id != user_agency.agency_id:
         flash("You can only edit your own activities.", "error")
-        return redirect(url_for('main.activities'))
+        return redirect(url_for('main.my_activities'))
     
     # ------- POST: update activity -------
     if request.method == 'POST':
@@ -367,7 +433,7 @@ def edit_activity(activity_id):
 
         db.session.commit()
         flash("Activity updated successfully!", "success")
-        return redirect(url_for('main.activities'))
+        return redirect(url_for('main.my_activities'))
     
     # ------- GET: toon edit formulier -------
     return render_template('edit_activity.html', activity=activity)
@@ -387,10 +453,59 @@ def agencies():
         if current_user and current_user.role == 'AGENCY':
             is_agency = True
     
-    # Get all agencies
+    # Get all agencies with their user information
     all_agencies = TravelAgency.query.order_by(TravelAgency.name).all()
     
-    return render_template('agencies.html', user=current_user, agencies=all_agencies, is_agency=is_agency, current_user=current_user)
+    # Get user information for each agency
+    agencies_with_users = []
+    for agency in all_agencies:
+        user = User.query.get(agency.user_id)
+        agencies_with_users.append({
+            'agency': agency,
+            'user': user
+        })
+    
+    return render_template('agencies.html', user=current_user, agencies=agencies_with_users, is_agency=is_agency, current_user=current_user)
+
+@main.route('/my_agency', methods=['GET', 'POST'])
+def my_agency():
+    if 'user_id' not in session:
+        flash("You must be logged in to view your agency profile.", "error")
+        return redirect(url_for('main.login'))
+    
+    current_user = User.query.get(session['user_id'])
+    if not current_user or current_user.role != 'AGENCY':
+        flash("This page is only available for agencies.", "error")
+        return redirect(url_for('main.activities'))
+    
+    user_agency = TravelAgency.query.filter_by(user_id=current_user.user_id).first()
+    
+    if not user_agency:
+        # Create agency record if it doesn't exist
+        user_agency = TravelAgency(
+            name=current_user.name or "My Agency",
+            contact_info="",
+            website="",
+            user_id=current_user.user_id,
+            created_at=datetime.utcnow()
+        )
+        db.session.add(user_agency)
+        db.session.commit()
+    
+    if request.method == 'POST':
+        # Update agency information
+        website_url = request.form.get('website_url', '').strip()
+        logo_url = request.form.get('logo_url', '').strip()
+        
+        user_agency.website = website_url
+        user_agency.contact_info = logo_url  # Using contact_info to store logo URL
+        user_agency.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        flash("Agency information updated successfully!", "success")
+        return redirect(url_for('main.my_agency'))
+    
+    return render_template('my_agency.html', user=current_user, agency=user_agency)
 
 @main.route('/generate_itinerary/<int:trip_id>')
 def generate(trip_id):

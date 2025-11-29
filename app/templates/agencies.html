@@ -72,6 +72,7 @@
     nav ul { list-style: none; display: flex; align-items: center; gap: 0.25rem; }
     nav ul li a { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 0.75rem; color: hsla(25, 30%, 12%, 0.8); text-decoration: none; font-weight: 500; transition: all 0.2s; }
     nav ul li a:hover { background: var(--accent); color: var(--foreground); }
+    nav ul li a.active { background: var(--primary); color: var(--primary-foreground); }
     .btn-logout { background: var(--secondary); color: var(--secondary-foreground); margin-left: 0.5rem; }
     .btn-logout:hover { background: hsla(195, 50%, 18%, 1); }
 
@@ -242,8 +243,14 @@
         {% if not is_agency %}
         <li><a href="{{ url_for('main.trips') }}">🧭 Trips</a></li>
         {% endif %}
+        {% if is_agency %}
+        <li><a href="{{ url_for('main.my_activities') }}">🎯 My Activities</a></li>
+        {% endif %}
         <li><a href="{{ url_for('main.activities') }}">📍 Activities</a></li>
-        <li><a href="{{ url_for('main.agencies') }}">🏢 Agencies</a></li>
+        {% if is_agency %}
+        <li><a href="{{ url_for('main.my_agency') }}">🏢 My Agency</a></li>
+        {% endif %}
+        <li><a href="{{ url_for('main.agencies') }}" class="active">🏢 Agencies</a></li>
         {% if current_user %}
         <li><a href="{{ url_for('main.logout') }}" class="btn-logout">🚪 Logout</a></li>
         {% endif %}
@@ -260,27 +267,38 @@
   <div class="container">
     {% if agencies %}
     <div class="agencies-grid">
-      {% for agency in agencies %}
+      {% for item in agencies %}
       <div class="agency-card">
         <div class="agency-header">
           <div class="agency-avatar">🏢</div>
-          <div class="agency-name">{{ agency.name }}</div>
+          <div class="agency-name">{{ item.agency.name }}</div>
         </div>
         <div class="agency-info">
           <div class="agency-info-row">
             <div class="agency-info-icon">📞</div>
             <div class="agency-info-content">
               <div class="agency-info-label">Contact</div>
-              <div class="agency-info-value">{{ agency.contact_info or 'Not available' }}</div>
+              <div class="agency-info-value">
+                {% if item.user and item.user.email %}
+                  <div style="margin-bottom: 0.25rem;">{{ item.user.email }}</div>
+                {% else %}
+                  <div style="margin-bottom: 0.25rem; color: var(--muted-foreground); font-style: italic;">Email not available</div>
+                {% endif %}
+                {% if item.user and item.user.phone_number %}
+                  <div>{{ item.user.phone_number }}</div>
+                {% else %}
+                  <div style="color: var(--muted-foreground); font-style: italic;">Phone number not available</div>
+                {% endif %}
+              </div>
             </div>
           </div>
-          {% if agency.website %}
+          {% if item.agency.website %}
           <div class="agency-info-row">
             <div class="agency-info-icon">🌐</div>
             <div class="agency-info-content">
               <div class="agency-info-label">Website</div>
               <div class="agency-info-value">
-                <a href="{{ agency.website }}" target="_blank" rel="noopener">{{ agency.website }}</a>
+                <a href="{{ item.agency.website }}" target="_blank" rel="noopener">{{ item.agency.website }}</a>
               </div>
             </div>
           </div>
