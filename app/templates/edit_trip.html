@@ -87,8 +87,8 @@
         <label>Number of Travellers</label>
         <input type="number" name="num_travellers" min="1" value="{{ trip.number_of_travellers }}" required>
 
-        <label>Preferences (optional)</label>
-        <input type="text" name="preferences" value="{{ trip.preferences }}">
+        <label>Preferences </label>
+        <input type="text" name="preferences" value="{{ trip.preferences }}" required>
 
         <div class="button-row">
             <a href="{{ url_for('main.trips') }}" class="btn btn-secondary">Back</a>
