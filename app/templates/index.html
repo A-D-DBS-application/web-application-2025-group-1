@@ -56,10 +56,9 @@
       transform: translateY(-3px);
     }
 
-    /* Flash messages styling (same as home.html success) */
     .flash-success {
       background: hsla(168, 55%, 40%, 0.1);
-      color: #028090; /* teal-like color */
+      color: #028090;
       padding: 10px;
       margin-bottom: 15px;
       border: 1px solid #028090;
@@ -93,7 +92,11 @@
       {% endif %}
     {% endwith %}
 
-    <a href="{{ url_for('main.login') }}" class="btn">Login</a>
+    <!-- LOGIN CHOICES -->
+    <a href="{{ url_for('main.login') }}" class="btn">Login as User</a>
+    <a href="{{ url_for('main.agency_login') }}" class="btn">Login as Agency</a>
+
+    <!-- REGISTER stays the same -->
     <a href="{{ url_for('main.register') }}" class="btn">Register</a>
   </div>
 </body>
