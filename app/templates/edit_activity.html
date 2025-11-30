@@ -275,7 +275,13 @@
         </div>
         <div>
           <label>Picture</label>
-          <input type="file" name="picture" accept="image/*">
+          <div style="position: relative;">
+            <input type="file" name="picture" accept="image/*" id="pictureInputEdit" style="position: absolute; opacity: 0; width: 0; height: 0;">
+            <label for="pictureInputEdit" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+              <span style="display: inline-block; padding: 10px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;">Choose File</span>
+              <span style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7);" id="fileInputTextEdit">No file chosen</span>
+            </label>
+          </div>
           {% if activity.picture %}
             <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); margin-top: 5px;">
               Current: <a href="{{ url_for('static', filename=activity.picture) }}" target="_blank" style="color: #2a9d8f;">View current picture</a>
@@ -410,6 +416,19 @@
       }
     });
   })();
+
+  // Update file input text
+  const pictureInputEdit = document.getElementById("pictureInputEdit");
+  const fileInputTextEdit = document.getElementById("fileInputTextEdit");
+  if (pictureInputEdit && fileInputTextEdit) {
+    pictureInputEdit.addEventListener("change", function(e) {
+      if (e.target.files && e.target.files.length > 0) {
+        fileInputTextEdit.textContent = e.target.files[0].name;
+      } else {
+        fileInputTextEdit.textContent = "No file chosen";
+      }
+    });
+  }
   </script>
 
 </body>

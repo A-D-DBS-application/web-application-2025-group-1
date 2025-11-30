@@ -190,6 +190,14 @@
       margin-bottom: 0.25rem;
     }
 
+    .activity-description {
+      font-size: 0.95rem;
+      color: var(--foreground);
+      line-height: 1.6;
+      margin-top: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
     .activity-notes {
       font-size: 0.9rem;
       color: var(--muted-foreground);
@@ -308,6 +316,9 @@
                   <div class="activity-duration">
                     <span>⏱️</span> {{ act.activity.duration }} {% if act.activity.duration == 1 %}hour{% else %}hours{% endif %}
                   </div>
+                {% endif %}
+                {% if act.activity.description %}
+                  <p class="activity-description">{{ act.activity.description }}</p>
                 {% endif %}
                 {% if act.notes %}
                   <p class="activity-notes">{{ act.notes }}</p>
