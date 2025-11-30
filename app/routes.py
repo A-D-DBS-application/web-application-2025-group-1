@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify, current_app
 from datetime import datetime
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
@@ -386,6 +386,29 @@ def my_activities():
         min_age = int(min_age_str) if min_age_str and min_age_str.strip() else None
         max_age = int(max_age_str) if max_age_str and max_age_str.strip() else None
 
+        # Duration
+        duration_str = request.form.get('duration')
+        duration = int(duration_str) if duration_str and duration_str.strip() else None
+
+        # Picture upload
+        picture_path = None
+        if 'picture' in request.files:
+            picture_file = request.files['picture']
+            if picture_file and picture_file.filename:
+                # Create uploads/activities directory if it doesn't exist
+                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'activities')
+                os.makedirs(upload_dir, exist_ok=True)
+                
+                # Generate unique filename
+                filename = secure_filename(picture_file.filename)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                unique_filename = f"{timestamp}_{filename}"
+                file_path = os.path.join(upload_dir, unique_filename)
+                
+                picture_file.save(file_path)
+                # Store relative path for database
+                picture_path = f"uploads/activities/{unique_filename}"
+
         if not name or not type_ or not destination:
             flash("Please fill in all required fields.", "error")
             return redirect(url_for('main.my_activities'))
@@ -404,6 +427,8 @@ def my_activities():
             longitude=float(longitude),
             min_age=min_age,
             max_age=max_age,
+            duration=duration,
+            picture=picture_path,
             agency_id=user_agency.agency_id,
             created_at=datetime.utcnow()
         )
@@ -471,6 +496,34 @@ def edit_activity(activity_id):
         max_age_str = request.form.get('max_age')
         activity.min_age = int(min_age_str) if min_age_str and min_age_str.strip() else None
         activity.max_age = int(max_age_str) if max_age_str and max_age_str.strip() else None
+
+        # Duration
+        duration_str = request.form.get('duration')
+        activity.duration = int(duration_str) if duration_str and duration_str.strip() else None
+
+        # Picture upload
+        if 'picture' in request.files:
+            picture_file = request.files['picture']
+            if picture_file and picture_file.filename:
+                # Create uploads/activities directory if it doesn't exist
+                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'activities')
+                os.makedirs(upload_dir, exist_ok=True)
+                
+                # Delete old picture if exists
+                if activity.picture:
+                    old_picture_path = os.path.join(current_app.root_path, 'static', activity.picture)
+                    if os.path.exists(old_picture_path):
+                        os.remove(old_picture_path)
+                
+                # Generate unique filename
+                filename = secure_filename(picture_file.filename)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                unique_filename = f"{timestamp}_{filename}"
+                file_path = os.path.join(upload_dir, unique_filename)
+                
+                picture_file.save(file_path)
+                # Store relative path for database
+                activity.picture = f"uploads/activities/{unique_filename}"
 
         if not activity.name or not activity.type or not activity.destination:
             flash("Please fill in all required fields.", "error")

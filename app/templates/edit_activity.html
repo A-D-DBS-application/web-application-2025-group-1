@@ -231,7 +231,8 @@
 
     <form method="POST"
           action="{{ url_for('main.edit_activity', activity_id=activity.activity_type_id) }}"
-          id="editActivityForm">
+          id="editActivityForm"
+          enctype="multipart/form-data">
 
       <label>Name</label>
       <input type="text" name="name" value="{{ activity.name }}" required>
@@ -264,6 +265,22 @@
         <div>
           <label>Age Suitability - Maximum Age</label>
           <input type="number" name="max_age" min="0" max="120" value="{{ activity.max_age if activity.max_age is not none else '' }}" placeholder="e.g. 65" step="1">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+        <div>
+          <label>Duration (in hours)</label>
+          <input type="number" name="duration" min="1" value="{{ activity.duration if activity.duration is not none else '' }}" placeholder="e.g. 2" step="1">
+        </div>
+        <div>
+          <label>Picture</label>
+          <input type="file" name="picture" accept="image/*">
+          {% if activity.picture %}
+            <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); margin-top: 5px;">
+              Current: <a href="{{ url_for('static', filename=activity.picture) }}" target="_blank" style="color: #2a9d8f;">View current picture</a>
+            </p>
+          {% endif %}
         </div>
       </div>
 

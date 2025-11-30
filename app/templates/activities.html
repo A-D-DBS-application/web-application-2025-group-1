@@ -57,7 +57,7 @@
     .bg-blob-3 { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: hsla(38, 80%, 55%, 0.05); }
 
     /* Navbar */
-    nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 72rem; margin: 0 auto; }
+    nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 90rem; margin: 0 auto; }
     .nav-inner {
       background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.85), hsla(35, 30%, 96%, 0.75));
       backdrop-filter: blur(20px);
@@ -85,7 +85,7 @@
     .page-header p { font-size: 1.125rem; color: var(--muted-foreground); max-width: 36rem; margin: 0 auto; }
 
     /* Container */
-    .container { max-width: 72rem; margin: 0 auto; padding: 0 1rem 3rem; }
+    .container { max-width: 90rem; margin: 0 auto; padding: 0 1rem 3rem; }
 
     /* Flash messages */
     .flash-message { padding: 0.75rem 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-size: 0.875rem; }
@@ -432,7 +432,7 @@
         <h2>Add New Activity</h2>
       </div>
 
-      <form method="POST" action="{{ url_for('main.my_activities') }}" id="activityForm">
+      <form method="POST" action="{{ url_for('main.my_activities') }}" id="activityForm" enctype="multipart/form-data">
         <label>Activity Name</label>
         <input type="text" name="name" placeholder="Enter activity name" required>
 
@@ -516,6 +516,17 @@
           </div>
         </div>
 
+        <div class="form-row">
+          <div>
+            <label>Duration (in hours)</label>
+            <input type="number" name="duration" min="1" placeholder="e.g. 2" step="1">
+          </div>
+          <div>
+            <label>Picture</label>
+            <input type="file" name="picture" accept="image/*">
+          </div>
+        </div>
+
         <label>Description</label>
         <textarea name="description" placeholder="Describe the activity..."></textarea>
 
@@ -540,6 +551,7 @@
               <th>Difficulty</th>
               <th>Destination</th>
               <th>Suitable Age</th>
+              <th>Duration</th>
               {% if is_my_activities %}
               <th>Actions</th>
               {% elif is_agency %}
@@ -575,6 +587,13 @@
                     {% endif %}
                   {% else %}
                     <span style="color: var(--muted-foreground);">All ages</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if a.duration is not none %}
+                    {{ a.duration }} {% if a.duration == 1 %}hour{% else %}hours{% endif %}
+                  {% else %}
+                    <span style="color: var(--muted-foreground);">–</span>
                   {% endif %}
                 </td>
                 {% if is_my_activities %}

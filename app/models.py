@@ -164,6 +164,8 @@ class ActivityType(db.Model):
     longitude = db.Column(db.Float, nullable=True)
     min_age   = db.Column(db.Integer, nullable=True, name='Min_Age')
     max_age   = db.Column(db.Integer, nullable=True, name='Max_Age')
+    duration  = db.Column(db.Integer, nullable=True, name='Duration')
+    picture   = db.Column(db.Text, nullable=True, name='Picture')
 
     agency_id = db.Column(
         db.BigInteger,

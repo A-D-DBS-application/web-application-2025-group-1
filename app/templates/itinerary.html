@@ -55,7 +55,7 @@
     .bg-blob-3 { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: hsla(38, 80%, 55%, 0.05); }
 
     /* Navbar */
-    nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 72rem; margin: 0 auto; }
+    nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 90rem; margin: 0 auto; }
     .nav-inner {
       background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.85), hsla(35, 30%, 96%, 0.75));
       backdrop-filter: blur(20px);
@@ -99,7 +99,7 @@
     .trip-dates-badge .icon { font-size: 1.1rem; }
 
     /* Container */
-    .container { max-width: 56rem; margin: 0 auto; padding: 0 1rem 3rem; }
+    .container { max-width: 90rem; margin: 0 auto; padding: 0 1rem 3rem; }
 
     /* Section */
     .section-card {
@@ -132,6 +132,15 @@
       box-shadow: var(--shadow-md);
     }
 
+    .activity-image {
+      width: 8rem;
+      height: 8rem;
+      border-radius: 0.75rem;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
     .activity-icon {
       width: 3rem;
       height: 3rem;
@@ -147,6 +156,19 @@
     }
 
     .activity-content { flex: 1; }
+
+    .activity-duration {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--gold);
+      background: hsla(38, 80%, 55%, 0.1);
+      padding: 0.25rem 0.65rem;
+      border-radius: 1rem;
+      margin-top: 0.5rem;
+    }
 
     .activity-date {
       display: inline-flex;
@@ -272,12 +294,21 @@
         <div class="activities-list">
           {% for act in activities %}
             <div class="activity-card animate-fade-in delay-{{ loop.index }}">
-              <div class="activity-icon">🎯</div>
+              {% if act.activity.picture %}
+                <img src="{{ url_for('static', filename=act.activity.picture) }}" alt="{{ act.activity.name }}" class="activity-image">
+              {% else %}
+                <div class="activity-icon">🎯</div>
+              {% endif %}
               <div class="activity-content">
                 <div class="activity-date">
                   <span>📆</span> {{ act.date }}
                 </div>
                 <div class="activity-name">{{ act.activity.name }}</div>
+                {% if act.activity.duration %}
+                  <div class="activity-duration">
+                    <span>⏱️</span> {{ act.activity.duration }} {% if act.activity.duration == 1 %}hour{% else %}hours{% endif %}
+                  </div>
+                {% endif %}
                 {% if act.notes %}
                   <p class="activity-notes">{{ act.notes }}</p>
                 {% endif %}
