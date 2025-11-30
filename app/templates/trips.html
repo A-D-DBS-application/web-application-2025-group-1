@@ -690,6 +690,18 @@
       background: hsla(195, 50%, 20%, 1);
     }
 
+    .btn-danger {
+      background: hsl(0, 72%, 51%);
+      color: var(--primary-foreground);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-danger:hover {
+      background: hsl(0, 72%, 45%);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
     .btn-teal {
       background: var(--primary);
       color: var(--primary-foreground);
@@ -760,6 +772,7 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+      position: relative;
     }
 
     .trip-card-title {
@@ -782,6 +795,35 @@
       justify-content: center;
       font-size: 1.5rem;
       box-shadow: var(--shadow-sm);
+    }
+
+    .trip-card-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-delete-small {
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border-radius: 0.5rem;
+      background: hsl(0, 72%, 51%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-delete-small:hover {
+      background: hsl(0, 72%, 45%);
+      transform: scale(1.1);
+      box-shadow: var(--shadow-md);
     }
 
     .trip-card-body {
@@ -936,6 +978,124 @@
       border: 1px solid hsl(0, 72%, 55%);
     }
 
+    .inline-error {
+      display: none;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      background: hsla(0, 72%, 55%, 0.1);
+      color: hsl(0, 72%, 45%);
+      border: 1px solid hsl(0, 72%, 55%);
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .inline-error.show {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Confirmation Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: hsla(25, 30%, 12%, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: linear-gradient(135deg, 
+        hsla(35, 40%, 98%, 0.95), 
+        hsla(35, 30%, 96%, 0.9));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 1.5rem;
+      border: 1px solid hsla(35, 25%, 88%, 0.5);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      max-width: 28rem;
+      width: 90%;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--foreground);
+    }
+
+    .modal-message {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-btn-cancel {
+      background: var(--accent);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+    }
+
+    .modal-btn-cancel:hover {
+      background: var(--muted);
+    }
+
+    .modal-btn-confirm {
+      background: hsl(0, 72%, 51%);
+      color: white;
+    }
+
+    .modal-btn-confirm:hover {
+      background: hsl(0, 72%, 45%);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     /* Mobile nav */
     @media (max-width: 768px) {
       nav ul { display: none; }
@@ -978,6 +1138,18 @@
           {% endfor %}
         {% endif %}
       {% endwith %}
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+      <div class="modal">
+        <div class="modal-title">Confirm Action</div>
+        <div class="modal-message" id="confirmMessage"></div>
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancel</button>
+          <button class="modal-btn modal-btn-confirm" id="confirmOk">OK</button>
+        </div>
+      </div>
+    </div>
 
       <div class="card-header">
         <div class="card-header-icon">+</div>
@@ -1026,6 +1198,8 @@
           <h3 class="step-title">What's your destination?</h3>
           <p class="step-subtitle">Choose one of our African destinations.</p>
 
+          <div class="inline-error" id="destinationError"></div>
+
           <input type="hidden" name="destination" id="destinationInput">
 
           <div class="destination-grid">
@@ -1059,6 +1233,8 @@
         <div class="form-step" data-step="1">
           <h3 class="step-title">When do you want to go?</h3>
           <p class="step-subtitle">Choose your start and end date.</p>
+
+          <div class="inline-error" id="dateError"></div>
 
           <label for="start_date">Start Date</label>
           <input type="date" name="start_date" id="start_date" required>
@@ -1218,8 +1394,13 @@
                   </div>
                   <div class="trip-card-date">Created {{ trip.created_at.strftime('%b %d, %Y') }}</div>
                 </div>
-                <div class="trip-card-flag">
-                  {% if trip.destination == 'South Africa' %}🇿🇦{% elif trip.destination == 'Morocco' %}🇲🇦{% else %}🌍{% endif %}
+                <div class="trip-card-header-actions">
+                  <div class="trip-card-flag">
+                    {% if trip.destination == 'South Africa' %}🇿🇦{% elif trip.destination == 'Morocco' %}🇲🇦{% else %}🌍{% endif %}
+                  </div>
+                  <button type="button" class="btn-delete-small" title="Delete trip" onclick="confirmDelete({{ trip.trip_id }}, '{{ trip.destination or 'this trip' }}')">✕</button>
+                  <form method="POST" action="{{ url_for('main.delete_trip', trip_id=trip.trip_id) }}" id="deleteForm{{ trip.trip_id }}" style="display: none;">
+                  </form>
                 </div>
               </div>
 
@@ -1327,10 +1508,17 @@
     });
 
     // When end date changes, validate it's not before start date
+    const dateError = document.getElementById("dateError");
     endInput.addEventListener("change", function() {
       if (startInput.value && endInput.value && endInput.value < startInput.value) {
-        alert("End date cannot be before start date.");
+        dateError.textContent = "End date cannot be before start date.";
+        dateError.classList.add("show");
         endInput.value = "";
+        setTimeout(() => {
+          dateError.classList.remove("show");
+        }, 5000);
+      } else {
+        dateError.classList.remove("show");
       }
     });
 
@@ -1465,10 +1653,32 @@
       }
     });
 
+    const destinationError = document.getElementById("destinationError");
     nextBtn.addEventListener("click", function () {
       if (currentStep === 0 && !destinationInput.value) {
-        alert("Please choose a destination first.");
+        destinationError.textContent = "Please choose a destination first.";
+        destinationError.classList.add("show");
+        setTimeout(() => {
+          destinationError.classList.remove("show");
+        }, 5000);
         return;
+      } else {
+        destinationError.classList.remove("show");
+      }
+
+      if (currentStep === 1) {
+        const startDate = startInput.value;
+        const endDate = endInput.value;
+        if (!startDate || !endDate) {
+          dateError.textContent = "Please select both start and end dates.";
+          dateError.classList.add("show");
+          setTimeout(() => {
+            dateError.classList.remove("show");
+          }, 5000);
+          return;
+        } else {
+          dateError.classList.remove("show");
+        }
       }
 
       if (currentStep === 3) {
@@ -1486,6 +1696,43 @@
 
     updateUI();
   })();
+
+  // Confirmation Modal Functions
+  const confirmModal = document.getElementById("confirmModal");
+  const confirmMessage = document.getElementById("confirmMessage");
+  const confirmOk = document.getElementById("confirmOk");
+  const confirmCancel = document.getElementById("confirmCancel");
+  let pendingFormId = null;
+
+  function confirmDelete(tripId, destination) {
+    confirmMessage.textContent = `Are you sure you want to delete your trip to ${destination}? This action cannot be undone.`;
+    pendingFormId = `deleteForm${tripId}`;
+    confirmModal.classList.add("show");
+  }
+
+  confirmOk.addEventListener("click", function() {
+    if (pendingFormId) {
+      const form = document.getElementById(pendingFormId);
+      if (form) {
+        form.submit();
+      }
+    }
+    confirmModal.classList.remove("show");
+    pendingFormId = null;
+  });
+
+  confirmCancel.addEventListener("click", function() {
+    confirmModal.classList.remove("show");
+    pendingFormId = null;
+  });
+
+  // Close modal when clicking outside
+  confirmModal.addEventListener("click", function(e) {
+    if (e.target === confirmModal) {
+      confirmModal.classList.remove("show");
+      pendingFormId = null;
+    }
+  });
   </script>
 </body>
 </html>

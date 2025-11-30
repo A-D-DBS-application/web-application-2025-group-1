@@ -204,6 +204,37 @@ def trips():
     trips = Trip.query.filter_by(user_id=user.user_id).all()
     return render_template('trips.html', trips=trips)
 
+@main.route('/delete_trip/<int:trip_id>', methods=['POST'])
+def delete_trip(trip_id):
+    """Delete a trip"""
+    if 'user_id' not in session:
+        flash("You must be logged in to delete trips.", "error")
+        return redirect(url_for('main.login'))
+    
+    user = User.query.get(session['user_id'])
+    if user and user.role == 'AGENCY':
+        flash("Agencies cannot delete trips.", "error")
+        return redirect(url_for('main.activities'))
+    
+    trip = Trip.query.get_or_404(trip_id)
+    
+    # Verify trip belongs to current user
+    if trip.user_id != session.get('user_id'):
+        flash("You cannot delete someone else's trip.", "error")
+        return redirect(url_for('main.trips'))
+    
+    # Delete related records first (cascade should handle this, but being explicit)
+    from .models import Traveller, ActivityPlanned
+    Traveller.query.filter_by(trip_id=trip.trip_id).delete()
+    ActivityPlanned.query.filter_by(trip_id=trip.trip_id).delete()
+    
+    # Delete the trip
+    db.session.delete(trip)
+    db.session.commit()
+    
+    flash("Trip deleted successfully!", "success")
+    return redirect(url_for('main.trips'))
+
 @main.route('/travellers/<int:trip_id>', methods=['GET', 'POST'])
 def travellers(trip_id): 
     if 'user_id' not in session:
