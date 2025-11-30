@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Trip</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 15px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .button-row {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Edit Trip</h1>
+
+    <form method="POST">
+
+        <label>Destination</label>
+        <input type="text" name="destination" value="{{ trip.destination }}" required>
+
+        <label>Start Date</label>
+        <input type="date" name="start_date" value="{{ trip.start_date }}" required>
+
+        <label>End Date</label>
+        <input type="date" name="end_date" value="{{ trip.end_date }}" required>
+
+        <label>Number of Travellers</label>
+        <input type="number" name="num_travellers" min="1" value="{{ trip.number_of_travellers }}" required>
+
+        <label>Preferences (optional)</label>
+        <input type="text" name="preferences" value="{{ trip.preferences }}">
+
+        <div class="button-row">
+            <a href="{{ url_for('main.trips') }}" class="btn btn-secondary">Back</a>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>

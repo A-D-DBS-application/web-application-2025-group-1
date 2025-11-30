@@ -201,8 +201,46 @@ def trips():
         flash("Trip succesvol aangemaakt!", "success")
         return redirect(url_for('main.trips'))
 
-    trips = Trip.query.filter_by(user_id=user.user_id).all()
+    trips = (
+        Trip.query
+        .filter_by(user_id=user.user_id)
+        .order_by(Trip.created_at.desc())
+        .all()
+    )
     return render_template('trips.html', trips=trips)
+
+@main.route('/trips/<int:trip_id>/edit', methods=['GET', 'POST'])
+def edit_trip(trip_id):
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+
+    trip = Trip.query.get_or_404(trip_id)
+
+    if request.method == 'POST':
+        destination = request.form.get('destination')
+        start_date_str = request.form.get('start_date')
+        end_date_str = request.form.get('end_date')
+        num_travellers = int(request.form.get('num_travellers'))
+        preferences = request.form.get('preferences')
+
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
+
+        if end_date and start_date and end_date < start_date:
+            flash("End date cannot be before start date.", "error")
+            return redirect(url_for('main.edit_trip', trip_id=trip_id))
+
+        trip.destination = destination
+        trip.start_date = start_date
+        trip.end_date = end_date
+        trip.number_of_travellers = num_travellers
+        trip.preferences = preferences
+
+        db.session.commit()
+        flash("Trip updated successfully!", "success")
+        return redirect(url_for('main.trips'))
+
+    return render_template('edit_trip.html', trip=trip)
 
 @main.route('/delete_trip/<int:trip_id>', methods=['POST'])
 def delete_trip(trip_id):
