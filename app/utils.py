@@ -5,7 +5,7 @@ import numpy as np
 from scipy.spatial import distance_matrix
 from sqlalchemy import func
 
-from .models import db, ActivityType, ActivityPlanned
+from .models import db, ActivityType, ActivityPlanned, Traveller
 
 
 # -----------------------------------------
@@ -211,6 +211,7 @@ def generate_itinerary(trip):
       - trip.preferences
       - activiteit-scores
       - minimale totale afstand tussen activiteiten (TSP-achtig)
+      - leeftijd van travellers (age suitability)
     """
 
     # Veiligheid: zorg dat start/end bestaan
@@ -221,6 +222,14 @@ def generate_itinerary(trip):
     n_days = (trip.end_date - trip.start_date).days + 1
     if n_days <= 0:
         return False
+
+    # Check of travellers zijn toegevoegd
+    travellers = Traveller.query.filter_by(trip_id=trip.trip_id).all()
+    if not travellers:
+        return None  # Special return value to indicate travellers missing
+
+    # Bereken leeftijden van travellers
+    traveller_ages = [t.age for t in travellers]
 
     # 1. Alle activiteiten voor de bestemming + met coördinaten
     activities = (
@@ -238,8 +247,37 @@ def generate_itinerary(trip):
     if not activities:
         return False
 
+    # Filter activiteiten op basis van leeftijd
+    # Een activiteit is geschikt als ALLE travellers binnen de leeftijdsrange vallen
+    suitable_activities = []
+    for activity in activities:
+        # Check of de kolommen bestaan (voor backwards compatibility)
+        min_age = getattr(activity, 'min_age', None)
+        max_age = getattr(activity, 'max_age', None)
+        
+        # Als er geen leeftijdsbeperking is, is de activiteit geschikt
+        if min_age is None and max_age is None:
+            suitable_activities.append(activity)
+            continue
+        
+        # Check of alle travellers binnen de leeftijdsrange vallen
+        all_suitable = True
+        for age in traveller_ages:
+            if min_age is not None and age < min_age:
+                all_suitable = False
+                break
+            if max_age is not None and age > max_age:
+                all_suitable = False
+                break
+        
+        if all_suitable:
+            suitable_activities.append(activity)
+
+    if not suitable_activities:
+        return False
+
     # 2. Score berekenen
-    scored = [(a, score_activity(a, trip)) for a in activities]
+    scored = [(a, score_activity(a, trip)) for a in suitable_activities]
 
     # 3. Sorteren op score aflopend
     scored.sort(key=lambda x: x[1], reverse=True)

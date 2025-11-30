@@ -349,6 +349,12 @@ def my_activities():
         score_relaxation = int(request.form.get('score_relaxation', 3))
         score_nature     = int(request.form.get('score_nature', 3))
 
+        # Age suitability
+        min_age_str = request.form.get('min_age')
+        max_age_str = request.form.get('max_age')
+        min_age = int(min_age_str) if min_age_str and min_age_str.strip() else None
+        max_age = int(max_age_str) if max_age_str and max_age_str.strip() else None
+
         if not name or not type_ or not destination:
             flash("Please fill in all required fields.", "error")
             return redirect(url_for('main.my_activities'))
@@ -365,6 +371,8 @@ def my_activities():
             score_nature=score_nature,
             latitude=float(latitude),
             longitude=float(longitude),
+            min_age=min_age,
+            max_age=max_age,
             agency_id=user_agency.agency_id,
             created_at=datetime.utcnow()
         )
@@ -426,6 +434,12 @@ def edit_activity(activity_id):
         activity.score_adventure  = int(request.form.get('score_adventure')  or activity.score_adventure  or 3)
         activity.score_relaxation = int(request.form.get('score_relaxation') or activity.score_relaxation or 3)
         activity.score_nature     = int(request.form.get('score_nature')     or activity.score_nature     or 3)
+
+        # Age suitability
+        min_age_str = request.form.get('min_age')
+        max_age_str = request.form.get('max_age')
+        activity.min_age = int(min_age_str) if min_age_str and min_age_str.strip() else None
+        activity.max_age = int(max_age_str) if max_age_str and max_age_str.strip() else None
 
         if not activity.name or not activity.type or not activity.destination:
             flash("Please fill in all required fields.", "error")
@@ -525,7 +539,10 @@ def generate(trip_id):
 
     created = generate_itinerary(trip)
 
-    if not created:
+    if created is None:
+        flash("First add travellers details", "error")
+        return redirect(url_for('main.travellers', trip_id=trip.trip_id))
+    elif not created:
         flash("No suitable activities were found for this trip.", "error")
         return redirect(url_for('main.trips'))
 

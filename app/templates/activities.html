@@ -505,6 +505,17 @@
           </div>
         </div>
 
+        <div class="form-row">
+          <div>
+            <label>Age Suitability - Minimum Age</label>
+            <input type="number" name="min_age" min="0" max="120" placeholder="e.g. 8" step="1">
+          </div>
+          <div>
+            <label>Age Suitability - Maximum Age</label>
+            <input type="number" name="max_age" min="0" max="120" placeholder="e.g. 65" step="1">
+          </div>
+        </div>
+
         <label>Description</label>
         <textarea name="description" placeholder="Describe the activity..."></textarea>
 
@@ -528,6 +539,7 @@
               <th>Type</th>
               <th>Difficulty</th>
               <th>Destination</th>
+              <th>Suitable Age</th>
               {% if is_my_activities %}
               <th>Actions</th>
               {% elif is_agency %}
@@ -552,6 +564,19 @@
                   {% endif %}
                 </td>
                 <td>{{ a.destination }}</td>
+                <td>
+                  {% if a.min_age is not none or a.max_age is not none %}
+                    {% if a.min_age is not none and a.max_age is not none %}
+                      {{ a.min_age }} - {{ a.max_age }} years
+                    {% elif a.min_age is not none %}
+                      {{ a.min_age }}+ years
+                    {% elif a.max_age is not none %}
+                      Up to {{ a.max_age }} years
+                    {% endif %}
+                  {% else %}
+                    <span style="color: var(--muted-foreground);">All ages</span>
+                  {% endif %}
+                </td>
                 {% if is_my_activities %}
                 <td>
                   <a class="btn btn-outline" href="{{ url_for('main.edit_activity', activity_id=a.activity_type_id) }}">Edit</a>

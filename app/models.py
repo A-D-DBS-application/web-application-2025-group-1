@@ -162,6 +162,8 @@ class ActivityType(db.Model):
     score_nature     = db.Column(db.Integer, default=3)
     latitude  = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
+    min_age   = db.Column(db.Integer, nullable=True, name='Min_Age')
+    max_age   = db.Column(db.Integer, nullable=True, name='Max_Age')
 
     agency_id = db.Column(
         db.BigInteger,

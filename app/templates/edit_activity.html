@@ -256,6 +256,17 @@
         <option value="HARD" {% if activity.difficulty == 'HARD' %}selected{% endif %}>Hard</option>
       </select>
 
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+        <div>
+          <label>Age Suitability - Minimum Age</label>
+          <input type="number" name="min_age" min="0" max="120" value="{{ activity.min_age if activity.min_age is not none else '' }}" placeholder="e.g. 8" step="1">
+        </div>
+        <div>
+          <label>Age Suitability - Maximum Age</label>
+          <input type="number" name="max_age" min="0" max="120" value="{{ activity.max_age if activity.max_age is not none else '' }}" placeholder="e.g. 65" step="1">
+        </div>
+      </div>
+
       <p style="margin-top: 20px; font-weight:600;">
         How well does this activity fit each preference?
       </p>
