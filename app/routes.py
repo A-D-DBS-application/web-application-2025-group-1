@@ -136,7 +136,7 @@ def agency_login():
                 return redirect(url_for('main.agency_login'))
             session['user_id'] = user.user_id
             flash(f"Logged in successfully as {user.name}!", "success")
-            return redirect(url_for('main.activities'))
+            return redirect(url_for('main.home'))
         else:
             flash("Agency not found.", "error")
             return redirect(url_for('main.agency_login'))
