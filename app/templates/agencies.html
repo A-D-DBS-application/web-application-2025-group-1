@@ -126,6 +126,15 @@
       justify-content: center;
       font-size: 1.5rem;
       box-shadow: var(--shadow-md);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .agency-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 0.25rem;
+      background: var(--card);
     }
     .agency-name {
       font-size: 1.25rem;
@@ -270,7 +279,17 @@
       {% for item in agencies %}
       <div class="agency-card">
         <div class="agency-header">
-          <div class="agency-avatar">🏢</div>
+          <div class="agency-avatar">
+            {% if item.logo %}
+              {% if item.logo.startswith('http') %}
+                <img src="{{ item.logo }}" alt="{{ item.agency.name }} Logo" onerror="this.parentElement.innerHTML='🏢';">
+              {% else %}
+                <img src="{{ url_for('static', filename=item.logo) }}" alt="{{ item.agency.name }} Logo" onerror="this.parentElement.innerHTML='🏢';">
+              {% endif %}
+            {% else %}
+              🏢
+            {% endif %}
+          </div>
           <div class="agency-name">{{ item.agency.name }}</div>
         </div>
         <div class="agency-info">

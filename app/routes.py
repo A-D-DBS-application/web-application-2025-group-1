@@ -604,13 +604,45 @@ def agencies():
     # Get all agencies with their user information
     all_agencies = TravelAgency.query.order_by(TravelAgency.name).all()
     
-    # Get user information for each agency
+    # Simple direct mapping of agency names to logo files
+    agency_logo_mapping = {
+        'Jaron Decaluwé': 'uploads/logos/Logo_Jaron_Decaluwe.png',
+        'Cape Adventures Co.': 'uploads/logos/Logo_Cape_Adventures_Co.png',
+        'Cape Adventure Co.': 'uploads/logos/Logo_Cape_Adventures_Co.png',
+        'Cape Adventure Co': 'uploads/logos/Logo_Cape_Adventures_Co.png',
+        'African Heritage Tours': 'uploads/logos/Logo_African_Heritage_Tours.png',
+        'Atlas Adventures': 'uploads/logos/Logo_Atlas_Adventures.png',
+        'Axelle Vanbesien': 'uploads/logos/Logo_Axelle_Vanbesien.png',
+        'Marrakech Cultural Experiences': 'uploads/logos/Logo_Marrakech_Cultural_Experiences.png',
+        'Reisje': 'uploads/logos/Logo_Reisje.png',
+        'Reiswinkeltje': 'uploads/logos/Logo_Reiswinkeltje.png',
+        'Safari Horizons': 'uploads/logos/Logo_Safari_Horizons.png',
+        'Sahara Nomad Tours': 'uploads/logos/Logo_Sahara_Nomad_Tours.png',
+        'Wild Coast Experiences': 'uploads/logos/Logo_Wild_Coast_Experiences.png',
+    }
+    
+    def find_agency_logo(agency_name):
+        """Get logo path for an agency - check database first, then mapping"""
+        # First check if logo is stored in database (contact_info field)
+        agency = TravelAgency.query.filter_by(name=agency_name).first()
+        if agency and agency.contact_info and agency.contact_info.startswith('uploads/'):
+            return agency.contact_info
+        
+        # Otherwise use direct mapping
+        return agency_logo_mapping.get(agency_name)
+    
+    # Get user information and logo for each agency
     agencies_with_users = []
     for agency in all_agencies:
         user = User.query.get(agency.user_id)
+        logo_path = find_agency_logo(agency.name)
+        # Also check for external URLs in contact_info
+        if not logo_path and agency.contact_info and agency.contact_info.startswith('http'):
+            logo_path = agency.contact_info
         agencies_with_users.append({
             'agency': agency,
-            'user': user
+            'user': user,
+            'logo': logo_path
         })
     
     return render_template('agencies.html', user=current_user, agencies=agencies_with_users, is_agency=is_agency, current_user=current_user)
