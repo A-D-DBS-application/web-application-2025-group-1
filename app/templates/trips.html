@@ -708,6 +708,20 @@
       box-shadow: var(--shadow-md);
     }
 
+    .btn-edit {
+      background: linear-gradient(135deg, hsla(38, 80%, 55%, 0.15), hsla(38, 80%, 55%, 0.08));
+      color: hsl(38, 70%, 35%);
+      border: 2px solid hsla(38, 80%, 55%, 0.4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-edit:hover {
+      background: linear-gradient(135deg, hsla(38, 80%, 55%, 0.25), hsla(38, 80%, 55%, 0.15));
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px hsla(38, 80%, 55%, 0.2);
+    }
+
     .step-buttons {
       display: flex;
       justify-content: space-between;
@@ -915,6 +929,10 @@
 
     .trip-actions .btn-full {
       flex: 1 1 100%;       
+    }
+
+    .trip-actions .btn-half {
+      flex: 1 1 calc(50% - 0.25rem);
     }
 
     @media (max-width: 500px) {
@@ -1444,8 +1462,8 @@
                 <div class="trip-actions">
                   <a href="{{ url_for('main.generate', trip_id=trip.trip_id) }}" class="btn btn-primary">✨ Generate Itinerary</a>
                   <a href="{{ url_for('main.itinerary_view', trip_id=trip.trip_id) }}" class="btn btn-outline">👁 View Itinerary</a>
-                  <a href="{{ url_for('main.travellers', trip_id=trip.trip_id) }}" class="btn btn-secondary btn-full">👥 Manage Travellers</a>
-                  <a href="{{ url_for('main.edit_trip', trip_id=trip.trip_id) }}" class="btn btn-secondary btn-full">✏️ Edit Trip</a>
+                  <a href="{{ url_for('main.travellers', trip_id=trip.trip_id) }}" class="btn btn-secondary btn-half">👥 Manage Travellers</a>
+                  <a href="{{ url_for('main.edit_trip', trip_id=trip.trip_id) }}" class="btn btn-edit btn-half">✏️ Edit Trip</a>
                 </div>
               </div>
             </div>
