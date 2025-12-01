@@ -116,6 +116,22 @@
     /* Activity cards */
     .activities-list { display: flex; flex-direction: column; gap: 1rem; }
 
+    /* Itinerary day grouping */
+    .itinerary-days { display: flex; flex-direction: column; gap: 1.25rem; }
+    .day-group { display: flex; flex-direction: column; gap: 0.75rem; }
+    .day-bar {
+      background: var(--primary);
+      color: var(--primary-foreground);
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: var(--shadow-sm);
+      width: 100%;
+    }
+
     .activity-card {
       background: var(--card);
       border-radius: 1rem;
@@ -299,30 +315,37 @@
     <!-- Activities section -->
     <div class="section-card">
       {% if activities %}
-        <div class="activities-list">
-          {% for act in activities %}
-            <div class="activity-card animate-fade-in delay-{{ loop.index }}">
-              {% if act.activity.picture %}
-                <img src="{{ url_for('static', filename=act.activity.picture) }}" alt="{{ act.activity.name }}" class="activity-image">
-              {% else %}
-                <div class="activity-icon">🎯</div>
-              {% endif %}
-              <div class="activity-content">
-                <div class="activity-date">
-                  <span>📆</span> {{ act.date }}
-                </div>
-                <div class="activity-name">{{ act.activity.name }}</div>
-                {% if act.activity.duration %}
-                  <div class="activity-duration">
-                    <span>⏱️</span> {{ act.activity.duration }} {% if act.activity.duration == 1 %}hour{% else %}hours{% endif %}
+        {% set grouped = activities|groupby('date') %}
+        <div class="itinerary-days">
+          {% for group in grouped %}
+            <div class="day-group">
+              <div class="day-bar animate-fade-in delay-{{ loop.index }}">
+                <span>📅</span> {{ group.grouper }}
+              </div>
+              <div class="activities-list">
+                {% for act in group.list %}
+                  <div class="activity-card animate-fade-in delay-{{ loop.index }}">
+                    {% if act.activity.picture %}
+                      <img src="{{ url_for('static', filename=act.activity.picture) }}" alt="{{ act.activity.name }}" class="activity-image">
+                    {% else %}
+                      <div class="activity-icon">🎯</div>
+                    {% endif %}
+                    <div class="activity-content">
+                      <div class="activity-name">{{ act.activity.name }}</div>
+                      {% if act.activity.duration %}
+                        <div class="activity-duration">
+                          <span>⏱️</span> {{ act.activity.duration }} {% if act.activity.duration == 1 %}hour{% else %}hours{% endif %}
+                        </div>
+                      {% endif %}
+                      {% if act.activity.description %}
+                        <p class="activity-description">{{ act.activity.description }}</p>
+                      {% endif %}
+                      {% if act.notes %}
+                        <p class="activity-notes">{{ act.notes }}</p>
+                      {% endif %}
+                    </div>
                   </div>
-                {% endif %}
-                {% if act.activity.description %}
-                  <p class="activity-description">{{ act.activity.description }}</p>
-                {% endif %}
-                {% if act.notes %}
-                  <p class="activity-notes">{{ act.notes }}</p>
-                {% endif %}
+                {% endfor %}
               </div>
             </div>
           {% endfor %}
