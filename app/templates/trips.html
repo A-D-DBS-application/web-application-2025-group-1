@@ -129,6 +129,10 @@
       background: var(--accent);
       color: var(--foreground);
     }
+    nav ul li a.active {
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
 
     .btn-logout {
       background: var(--secondary);
@@ -1131,7 +1135,7 @@
         <span>AfriGuide</span>
       </a>
       <ul>
-        <li><a href="{{ url_for('main.trips') }}">🧭 Trips</a></li>
+        <li><a href="{{ url_for('main.trips') }}" class="active">🧭 Trips</a></li>
         <li><a href="{{ url_for('main.activities') }}">📍 Activities</a></li>
         <li><a href="{{ url_for('main.agencies') }}">🏢 Agencies</a></li>
         <li><a href="{{ url_for('main.logout') }}" class="btn-logout">🚪 Logout</a></li>
@@ -1416,7 +1420,7 @@
                   <div class="trip-card-flag">
                     {% if trip.destination == 'South Africa' %}🇿🇦{% elif trip.destination == 'Morocco' %}🇲🇦{% else %}🌍{% endif %}
                   </div>
-                  <button type="button" class="btn-delete-small" title="Delete trip" onclick="confirmDelete({{ trip.trip_id }}, '{{ trip.destination or 'this trip' }}')">✕</button>
+                  <button type="button" class="btn-delete-small" title="Delete trip" data-trip-id="{{ trip.trip_id }}" data-destination="{{ trip.destination or 'this trip' }}">✕</button>
                   <form method="POST" action="{{ url_for('main.delete_trip', trip_id=trip.trip_id) }}" id="deleteForm{{ trip.trip_id }}" style="display: none;">
                   </form>
                 </div>
@@ -1750,6 +1754,15 @@
     if (e.target === confirmModal) {
       confirmModal.classList.remove("show");
       pendingFormId = null;
+    }
+  });
+
+  // Handle delete button clicks using data attributes
+  document.addEventListener("click", function(e) {
+    if (e.target.classList.contains("btn-delete-small")) {
+      const tripId = e.target.getAttribute("data-trip-id");
+      const destination = e.target.getAttribute("data-destination");
+      confirmDelete(tripId, destination);
     }
   });
   </script>
