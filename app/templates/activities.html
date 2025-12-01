@@ -45,6 +45,11 @@
       position: relative;
     }
 
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
     /* Background blobs */
     .bg-blob {
       position: fixed;
@@ -393,6 +398,75 @@
     .delay-1 { animation-delay: 0.1s; opacity: 0; }
     .delay-2 { animation-delay: 0.2s; opacity: 0; }
 
+    /* Destination Grid */
+    .destinations-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .destination-card {
+      background: var(--card);
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .destination-card:hover {
+      transform: translateX(4px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .destination-info {
+      flex: 1;
+    }
+
+    .destination-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--foreground);
+      margin-bottom: 0.25rem;
+    }
+
+    /* destination-count removed — only country name is displayed */
+
+    .destination-arrow {
+      font-size: 1.5rem;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* Back button for destination view */
+    .back-to-destinations {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      background: var(--accent);
+      color: var(--foreground);
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .back-to-destinations:hover {
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .form-row { grid-template-columns: 1fr; }
@@ -401,6 +475,8 @@
       .dest-buttons { flex-direction: column; }
       nav ul { gap: 0; }
       nav ul li a { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+      .destination-card { padding: 1.25rem; gap: 1rem; }
+      .destination-name { font-size: 1rem; }
     }
   </style>
 </head>
@@ -569,84 +645,130 @@
     </div>
     {% endif %}
 
-    <!-- Activities Table -->
+    <!-- Activities Table / Destination View -->
     <div class="glass-card animate-fade-in delay-2">
-      <div class="section-header">
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div class="section-icon teal">🎯</div>
-          <h2>{% if is_my_activities %}My Activities{% elif is_agency %}All Activities{% else %}All Activities{% endif %}</h2>
+      {% if not selected_destination and not is_my_activities %}
+        <!-- Destination Overview -->
+        <div class="section-header">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="section-icon primary">🌍</div>
+            <h2>Destinations</h2>
+          </div>
         </div>
-        {% if is_my_activities %}
-        <button type="button" class="btn btn-primary" id="toggleAddActivityBtn" onclick="toggleAddActivityForm()">➕ Add Activity</button>
-        {% endif %}
-      </div>
 
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Difficulty</th>
-              <th>Destination</th>
-              <th>Suitable Age</th>
-              <th>Duration</th>
-              {% if is_my_activities %}
-              <th>Actions</th>
-              {% elif is_agency %}
-              <th>Travel Agency</th>
-              {% else %}
-              <th>Travel Agency</th>
-              {% endif %}
-            </tr>
-          </thead>
-          <tbody>
-            {% for a in activities %}
+        {% if destinations %}
+          <div class="destinations-grid">
+            {% for destination in destinations %}
+              <a href="{{ url_for('main.activities', destination=destination) }}" class="destination-card animate-fade-in delay-{{ loop.index }}">
+                <div class="destination-info">
+                  <div class="destination-name">{{ destination }}</div>
+                </div>
+                <div class="destination-arrow">→</div>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">🌍</div>
+            <h3>No destinations available</h3>
+            <p>Check back soon for exciting travel destinations!</p>
+          </div>
+        {% endif %}
+      {% else %}
+        <!-- Activities List for Selected Destination or My Activities -->
+        {% if selected_destination and not is_my_activities %}
+          <a href="{{ url_for('main.activities') }}" class="back-to-destinations">← Back to Destinations</a>
+        {% endif %}
+
+        <div class="section-header">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="section-icon teal">🎯</div>
+            <h2>{% if is_my_activities %}My Activities{% elif selected_destination %}{{ selected_destination }} Activities{% else %}All Activities{% endif %}</h2>
+          </div>
+          {% if is_my_activities %}
+          <button type="button" class="btn btn-primary" id="toggleAddActivityBtn" onclick="toggleAddActivityForm()">➕ Add Activity</button>
+          {% endif %}
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
               <tr>
-                <td><strong>{{ a.name }}</strong></td>
-                <td>
-                  <span class="type-badge type-{{ a.type|lower }}">{{ a.type }}</span>
-                </td>
-                <td>
-                  {% if a.difficulty %}
-                  <span class="difficulty-badge difficulty-{{ a.difficulty|lower }}">{{ a.difficulty }}</span>
-                  {% else %}
-                  <span style="color: var(--muted-foreground);">–</span>
-                  {% endif %}
-                </td>
-                <td>{{ a.destination }}</td>
-                <td>
-                  {% if a.min_age is not none or a.max_age is not none %}
-                    {% if a.min_age is not none and a.max_age is not none %}
-                      {{ a.min_age }} - {{ a.max_age }} years
-                    {% elif a.min_age is not none %}
-                      {{ a.min_age }}+ years
-                    {% elif a.max_age is not none %}
-                      Up to {{ a.max_age }} years
-                    {% endif %}
-                  {% else %}
-                    <span style="color: var(--muted-foreground);">All ages</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if a.duration is not none %}
-                    {{ a.duration }} {% if a.duration == 1 %}hour{% else %}hours{% endif %}
-                  {% else %}
-                    <span style="color: var(--muted-foreground);">–</span>
-                  {% endif %}
-                </td>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Difficulty</th>
+                {% if not selected_destination %}
+                <th>Destination</th>
+                {% endif %}
+                <th>Suitable Age</th>
+                <th>Duration</th>
                 {% if is_my_activities %}
-                <td>
-                  <a class="btn btn-outline" href="{{ url_for('main.edit_activity', activity_id=a.activity_type_id) }}">Edit</a>
-                </td>
+                <th>Actions</th>
+                {% elif is_agency %}
+                <th>Travel Agency</th>
                 {% else %}
-                <td>{{ a.agency.name if a.agency else '–' }}</td>
+                <th>Travel Agency</th>
                 {% endif %}
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {% if activities %}
+                {% for a in activities %}
+                  <tr>
+                    <td><strong>{{ a.name }}</strong></td>
+                    <td>
+                      <span class="type-badge type-{{ a.type|lower }}">{{ a.type }}</span>
+                    </td>
+                    <td>
+                      {% if a.difficulty %}
+                      <span class="difficulty-badge difficulty-{{ a.difficulty|lower }}">{{ a.difficulty }}</span>
+                      {% else %}
+                      <span style="color: var(--muted-foreground);">–</span>
+                      {% endif %}
+                    </td>
+                    {% if not selected_destination %}
+                    <td>{{ a.destination }}</td>
+                    {% endif %}
+                    <td>
+                      {% if a.min_age is not none or a.max_age is not none %}
+                        {% if a.min_age is not none and a.max_age is not none %}
+                          {{ a.min_age }} - {{ a.max_age }} years
+                        {% elif a.min_age is not none %}
+                          {{ a.min_age }}+ years
+                        {% elif a.max_age is not none %}
+                          Up to {{ a.max_age }} years
+                        {% endif %}
+                      {% else %}
+                        <span style="color: var(--muted-foreground);">All ages</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if a.duration is not none %}
+                        {{ a.duration }} {% if a.duration == 1 %}hour{% else %}hours{% endif %}
+                      {% else %}
+                        <span style="color: var(--muted-foreground);">–</span>
+                      {% endif %}
+                    </td>
+                    {% if is_my_activities %}
+                    <td>
+                      <a class="btn btn-outline" href="{{ url_for('main.edit_activity', activity_id=a.activity_type_id) }}">Edit</a>
+                    </td>
+                    {% else %}
+                    <td>{{ a.agency.name if a.agency else '–' }}</td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="{% if not selected_destination %}7{% else %}6{% endif %}" style="text-align: center; color: var(--muted-foreground); padding: 2rem;">
+                    No activities found
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
     </div>
   </div>
 
