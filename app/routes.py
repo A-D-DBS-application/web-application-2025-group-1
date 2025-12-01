@@ -366,14 +366,26 @@ def activities():
             is_agency = True
 
     # Get all activities
-    activities = ActivityType.query.options(joinedload(ActivityType.agency)).order_by(ActivityType.created_at.desc()).all()
+    all_activities = ActivityType.query.options(joinedload(ActivityType.agency)).order_by(ActivityType.created_at.desc()).all()
+    
+    # Get unique destinations
+    destinations = db.session.query(ActivityType.destination).filter(ActivityType.destination.isnot(None)).distinct().all()
+    destinations = sorted([d[0] for d in destinations if d[0]])
+    
+    # Check if a specific destination was requested
+    selected_destination = request.args.get('destination', None)
+    activities = all_activities
+    if selected_destination:
+        activities = [a for a in all_activities if a.destination == selected_destination]
 
     return render_template(
         'activities.html',
         activities=activities,
         agencies=agencies,
         current_user=current_user,
-        is_agency=is_agency
+        is_agency=is_agency,
+        destinations=destinations,
+        selected_destination=selected_destination
     )
 
 @main.route('/my_activities', methods=['GET', 'POST'])
