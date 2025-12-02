@@ -174,13 +174,6 @@
       max-width: 90rem;
       margin: 0 auto;
       padding: 0 1rem 3rem;
-      display: grid;
-      grid-template-columns: 2fr 3fr;
-      gap: 2rem;
-    }
-
-    @media (max-width: 1024px) {
-      .container { grid-template-columns: 1fr; }
     }
 
     /* Glass card */
@@ -761,6 +754,7 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      width: 100%;
     }
 
     /* Trip card */
@@ -773,7 +767,9 @@
       transition: all 0.3s;
 
       display: flex;       
-      flex-direction: column; 
+      flex-direction: column;
+      padding: 0.5rem;
+      width: 100%;
     }
 
     .trip-card:hover {
@@ -786,7 +782,7 @@
         hsla(14, 72%, 55%, 0.1), 
         hsla(38, 80%, 55%, 0.1), 
         hsla(168, 55%, 40%, 0.1));
-      padding: 1rem;
+      padding: 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -794,24 +790,25 @@
     }
 
     .trip-card-title {
-      font-size: 1.125rem;
+      font-size: 1.375rem;
       font-weight: 700;
     }
 
     .trip-card-date {
-      font-size: 0.875rem;
+      font-size: 1rem;
       color: var(--muted-foreground);
     }
 
     .trip-card-flag {
-      width: 2.5rem;
-      height: 2.5rem;
+      width: 3rem;
+      height: 3rem;
       background: var(--card);
       border-radius: 0.75rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
       box-shadow: var(--shadow-sm);
     }
 
@@ -822,8 +819,8 @@
     }
 
     .btn-delete-small {
-      width: 2rem;
-      height: 2rem;
+      width: 2.5rem;
+      height: 2.5rem;
       padding: 0;
       border-radius: 0.5rem;
       background: hsl(0, 72%, 51%);
@@ -833,7 +830,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: 1.25rem;
       transition: all 0.2s;
       box-shadow: var(--shadow-sm);
     }
@@ -845,10 +842,10 @@
     }
 
     .trip-card-body {
-      padding: 1rem;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.25rem;
     }
 
     .trip-badges {
@@ -862,9 +859,9 @@
       display: inline-flex;
       align-items: center;
       gap: 0.25rem;
-      padding: 0.25rem 0.75rem;
+      padding: 0.375rem 0.875rem;
       border-radius: 9999px;
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       font-weight: 500;
     }
 
@@ -889,7 +886,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.875rem;
+      font-size: 1rem;
       color: var(--muted-foreground);
     }
 
@@ -916,27 +913,26 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.875rem;
+      font-size: 0.9375rem;
       color: var(--muted-foreground);
     }
 
     .trip-actions {
       display: flex;        
       flex-wrap: wrap;      
-      gap: 0.5rem;       
+      gap: 1rem;
+      margin-top: 0.75rem;
     }
 
     .trip-actions .btn {
       flex: 1 1 auto;       
-      min-width: 120px;   
+      min-width: 140px;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
     }
 
     .trip-actions .btn-full {
       flex: 1 1 100%;       
-    }
-
-    .trip-actions .btn-half {
-      flex: 1 1 calc(50% - 0.25rem);
     }
 
     @media (max-width: 500px) {
@@ -1148,263 +1144,40 @@
     <p>Create new trips or view existing trips!</p>
   </div>
 
+  <!-- Flash Messages -->
+  <div class="container" style="padding-bottom: 0;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}" style="margin-bottom: 1.5rem;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Create New Trip Button - Positioned top right, aligned with nav -->
+  <div style="max-width: 90rem; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+    <a href="{{ url_for('main.create_trip') }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; font-size: 1.125rem; background: linear-gradient(135deg, var(--primary), var(--gold), var(--teal)); color: white; border: none;">
+      <span style="font-size: 1.5rem;">➕</span>
+      <span>Create New Trip</span>
+    </a>
+  </div>
+
   <div class="container">
-    <!-- Create Trip Form -->
-    <div class="glass-card">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
-              {{ message }}
-            </p>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
-
-    <!-- Confirmation Modal -->
-    <div class="modal-overlay" id="confirmModal">
-      <div class="modal">
-        <div class="modal-title">Confirm Action</div>
-        <div class="modal-message" id="confirmMessage"></div>
-        <div class="modal-actions">
-          <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancel</button>
-          <button class="modal-btn modal-btn-confirm" id="confirmOk">OK</button>
-        </div>
-      </div>
-    </div>
-
-      <div class="card-header">
-        <div class="card-header-icon">+</div>
-        <div>
-          <h2>Create Trip</h2>
-          <p>Build your perfect journey</p>
-        </div>
-      </div>
-
-      <!-- Wizard Progress -->
-      <div class="wizard-progress">
-        <div class="wizard-steps">
-          <div class="wizard-step" data-step="0">
-            <div class="wizard-step-circle active">1</div>
-            <span class="wizard-step-label">Destination</span>
-          </div>
-          <div class="wizard-step" data-step="1">
-            <div class="wizard-step-circle">2</div>
-            <span class="wizard-step-label">Dates</span>
-          </div>
-          <div class="wizard-step" data-step="2">
-            <div class="wizard-step-circle">3</div>
-            <span class="wizard-step-label">Travellers</span>
-          </div>
-          <div class="wizard-step" data-step="3">
-            <div class="wizard-step-circle">4</div>
-            <span class="wizard-step-label">Preferences</span>
-          </div>
-          <div class="wizard-step" data-step="4">
-            <div class="wizard-step-circle">5</div>
-            <span class="wizard-step-label">Overview</span>
-          </div>
-        </div>
-        <div class="wizard-progress-bar">
-          <div class="wizard-progress-fill" id="wizardProgressFill" style="width: 20%;"></div>
-        </div>
-        <div class="wizard-step-counter">
-          <span id="wizardProgressLabel">Step 1 of 5</span>
-        </div>
-      </div>
-
-      <form method="POST" action="{{ url_for('main.trips') }}" id="tripForm">
-
-        <!-- STEP 1: Destination -->
-        <div class="form-step active" data-step="0">
-          <h3 class="step-title">What's your destination?</h3>
-          <p class="step-subtitle">Choose one of our African destinations.</p>
-
-          <div class="inline-error" id="destinationError"></div>
-
-          <input type="hidden" name="destination" id="destinationInput">
-
-          <div class="destination-grid">
-            <button type="button" class="destination-card" data-value="South Africa">
-              <div class="check-indicator">✓</div>
-              <img src="{{ url_for('static', filename='img/south-africa.webp') }}" alt="South Africa" />
-              <div class="destination-card-body">
-                <div class="destination-title-row">
-                  <span class="destination-flag">🇿🇦</span>
-                  <span class="destination-name">South Africa</span>
-                </div>
-                <p class="destination-desc">Safaris, coastline & vibrant cities.</p>
-              </div>
-            </button>
-
-            <button type="button" class="destination-card" data-value="Morocco">
-              <div class="check-indicator">✓</div>
-              <img src="{{ url_for('static', filename='img/morocco.jpg') }}" alt="Morocco" />
-              <div class="destination-card-body">
-                <div class="destination-title-row">
-                  <span class="destination-flag">🇲🇦</span>
-                  <span class="destination-name">Morocco</span>
-                </div>
-                <p class="destination-desc">Desert, souks & colourful medinas.</p>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- STEP 2: Dates -->
-        <div class="form-step" data-step="1">
-          <h3 class="step-title">When do you want to go?</h3>
-          <p class="step-subtitle">Choose your start and end date.</p>
-
-          <div class="inline-error" id="dateError"></div>
-
-          <label for="start_date">Start Date</label>
-          <input type="date" name="start_date" id="start_date" required>
-
-          <label for="end_date">End Date</label>
-          <input type="date" name="end_date" id="end_date" required>
-        </div>
-
-        <!-- STEP 3: Travellers -->
-        <div class="form-step" data-step="2">
-          <h3 class="step-title">Who's going?</h3>
-          <p class="step-subtitle">Tell us who you're travelling with.</p>
-
-          <label for="num_travellers">Number of travellers</label>
-          <input type="number" name="num_travellers" id="num_travellers" min="1" value="1" required>
-        </div>
-
-        <!-- STEP 4: Preferences -->
-        <div class="form-step" data-step="3">
-          <h3 class="step-title">What are your preferences?</h3>
-          <p class="step-subtitle">Tell us what you like to do.</p>
-
-          <input type="hidden" name="preferences" id="preferencesInput">
-
-          <div class="interest-list">
-            <div class="interest-row">
-              <div class="interest-header">
-                <div class="interest-left">
-                  <span class="interest-icon">🏛️</span>
-                  <span class="interest-label">Culture</span>
-                </div>
-                <span class="interest-tag" data-for="CULTURE">I could try</span>
-              </div>
-              <input type="range" min="1" max="5" value="3" class="interest-slider" name="interest_culture" data-key="CULTURE">
-              <div class="interest-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
-            </div>
-
-            <div class="interest-row">
-              <div class="interest-header">
-                <div class="interest-left">
-                  <span class="interest-icon">🧗‍♂️</span>
-                  <span class="interest-label">Adventure</span>
-                </div>
-                <span class="interest-tag" data-for="ADVENTURE">I could try</span>
-              </div>
-              <input type="range" min="1" max="5" value="3" class="interest-slider" name="interest_adventure" data-key="ADVENTURE">
-              <div class="interest-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
-            </div>
-
-            <div class="interest-row">
-              <div class="interest-header">
-                <div class="interest-left">
-                  <span class="interest-icon">🧘‍♀️</span>
-                  <span class="interest-label">Relaxation</span>
-                </div>
-                <span class="interest-tag" data-for="RELAXATION">I could try</span>
-              </div>
-              <input type="range" min="1" max="5" value="3" class="interest-slider" name="interest_relaxation" data-key="RELAXATION">
-              <div class="interest-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
-            </div>
-
-            <div class="interest-row">
-              <div class="interest-header">
-                <div class="interest-left">
-                  <span class="interest-icon">🌿</span>
-                  <span class="interest-label">Nature</span>
-                </div>
-                <span class="interest-tag" data-for="NATURE">I could try</span>
-              </div>
-              <input type="range" min="1" max="5" value="3" class="interest-slider" name="interest_nature" data-key="NATURE">
-              <div class="interest-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 5: Overview -->
-        <div class="form-step" data-step="4">
-          <h3 class="step-title">Trip overview</h3>
-          <p class="step-subtitle">Check your info. If everything looks good, we'll create your trip.</p>
-
-          <div class="overview-grid">
-            <div class="overview-item primary">
-              <div class="overview-icon">📍</div>
-              <div>
-                <span class="overview-label">Destination</span>
-                <div class="overview-value" id="ovDestination">–</div>
-              </div>
-            </div>
-
-            <div class="overview-item gold">
-              <div class="overview-icon">👥</div>
-              <div>
-                <span class="overview-label">Travellers</span>
-                <div class="overview-value" id="ovTravellers">–</div>
-              </div>
-            </div>
-
-            <div class="overview-item teal">
-              <div class="overview-icon">📅</div>
-              <div>
-                <span class="overview-label">Travel Dates</span>
-                <div class="overview-value" id="ovDates">–</div>
-              </div>
-            </div>
-
-            <div class="overview-item overview-highlight teal">
-              <div class="overview-icon">✨</div>
-              <div>
-                <span class="overview-label">Main Preference</span>
-                <div class="overview-value" id="ovMainPreference">–</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="overview-preferences">
-            <h4>All Preferences</h4>
-            <div id="ovPreferences"></div>
-          </div>
-
-          <div class="overview-notice">
-            <span>✓</span>
-            <span>On submit we'll save your trip and you'll see it in the list on the right.</span>
-          </div>
-        </div>
-
-        <!-- Navigation buttons -->
-        <div class="step-buttons">
-          <button type="button" class="btn btn-outline hidden" id="prevStepBtn">
-            ← Back
-          </button>
-          <button type="button" class="btn btn-primary" id="nextStepBtn">
-            Next →
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Your Trips -->
+    <!-- Your Trips Section -->
     <div>
-      <div class="trips-header">
+      <div class="trips-header" style="margin-bottom: 1.5rem;">
         <h2>Your Trips</h2>
         <span class="trips-count">{{ trips|length if trips else 0 }} trip(s)</span>
       </div>
 
-      <div class="trips-list">
+        <!-- Your Trips List -->
+        <div class="trips-list">
         {% if trips %}
           {% for trip in trips %}
-            <div class="trip-card">
+            <div class="trip-card" data-trip-id="{{ trip.trip_id }}">
               <div class="trip-card-header">
                 <div>
                   <div class="trip-card-title">
@@ -1418,7 +1191,7 @@
                 </div>
                 <div class="trip-card-header-actions">
                   <div class="trip-card-flag">
-                    {% if trip.destination == 'South Africa' %}🇿🇦{% elif trip.destination == 'Morocco' %}🇲🇦{% else %}🌍{% endif %}
+                    {% if trip.destination == 'South Africa' %}SA{% elif trip.destination == 'Morocco' %}MO{% else %}🌍{% endif %}
                   </div>
                   <button type="button" class="btn-delete-small" title="Delete trip" data-trip-id="{{ trip.trip_id }}" data-destination="{{ trip.destination or 'this trip' }}">✕</button>
                   <form method="POST" action="{{ url_for('main.delete_trip', trip_id=trip.trip_id) }}" id="deleteForm{{ trip.trip_id }}" style="display: none;">
@@ -1464,10 +1237,8 @@
                 {% endif %}
 
                 <div class="trip-actions">
-                  <a href="{{ url_for('main.generate', trip_id=trip.trip_id) }}" class="btn btn-primary">✨ Generate Itinerary</a>
-                  <a href="{{ url_for('main.itinerary_view', trip_id=trip.trip_id) }}" class="btn btn-outline">👁 View Itinerary</a>
-                  <a href="{{ url_for('main.travellers', trip_id=trip.trip_id) }}" class="btn btn-secondary btn-half">👥 Manage Travellers</a>
-                  <a href="{{ url_for('main.edit_trip', trip_id=trip.trip_id) }}" class="btn btn-edit btn-half">✏️ Edit Trip</a>
+                  <a href="{{ url_for('main.itinerary_view', trip_id=trip.trip_id) }}" class="btn btn-primary">👁 View Itinerary</a>
+                  <a href="{{ url_for('main.edit_trip', trip_id=trip.trip_id) }}" class="btn btn-primary">✏️ Edit Trip</a>
                 </div>
               </div>
             </div>
@@ -1476,15 +1247,35 @@
           <div class="empty-state">
             <div class="empty-icon">+</div>
             <h3>No trips yet</h3>
-            <p>Create your first trip using the form on the left.</p>
+            <p>Create your first trip using the button above.</p>
           </div>
         {% endif %}
+        </div>
+    </div>
+
+    <!-- Confirmation Modal for Delete -->
+    <div class="modal-overlay" id="confirmModal">
+      <div class="modal">
+        <div class="modal-title">Confirm Action</div>
+        <div class="modal-message" id="confirmMessage"></div>
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancel</button>
+          <button class="modal-btn modal-btn-confirm" id="confirmOk">OK</button>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
   (function () {
+    // Only run wizard code if the form exists (trip creation page)
+    const form = document.getElementById("tripForm");
+    if (!form) {
+      // This is the trips listing page, not the creation page
+      // Exit early to avoid errors
+      return;
+    }
+
     const steps = Array.from(document.querySelectorAll(".form-step"));
     const wizardSteps = Array.from(document.querySelectorAll(".wizard-step"));
     const totalSteps = steps.length;
@@ -1494,14 +1285,19 @@
     const progressLabel = document.getElementById("wizardProgressLabel");
     const prevBtn = document.getElementById("prevStepBtn");
     const nextBtn = document.getElementById("nextStepBtn");
-    const form = document.getElementById("tripForm");
 
     const startInput = document.getElementById("start_date");
     const endInput = document.getElementById("end_date");
     const travellersInput = document.getElementById("num_travellers");
+    
+    // Only add event listeners if elements exist
+    if (!startInput || !endInput || !prevBtn || !nextBtn) {
+      return;
+    }
 
     // Date picker logic: when start date is selected, end date calendar should open at that month
-    startInput.addEventListener("change", function() {
+    if (startInput) {
+      startInput.addEventListener("change", function() {
       if (startInput.value) {
         // Set minimum date for end date to be the start date
         endInput.min = startInput.value;
@@ -1516,34 +1312,40 @@
 
     // When end date input is focused and there's a start date, set temporary value
     // so the calendar opens at the month of the start date
-    endInput.addEventListener("focus", function() {
-      if (startInput.value) {
-        // If end date is empty, set it to start date + 1 day
-        // This ensures the calendar opens at the correct month (the month of the start date)
-        // and shows a reasonable default value
-        if (!endInput.value) {
-          const startDate = new Date(startInput.value);
-          startDate.setDate(startDate.getDate() + 1);
-          const nextDay = startDate.toISOString().split('T')[0];
-          endInput.value = nextDay;
+    if (endInput) {
+      endInput.addEventListener("focus", function() {
+        if (startInput && startInput.value) {
+          // If end date is empty, set it to start date + 1 day
+          // This ensures the calendar opens at the correct month (the month of the start date)
+          // and shows a reasonable default value
+          if (!endInput.value) {
+            const startDate = new Date(startInput.value);
+            startDate.setDate(startDate.getDate() + 1);
+            const nextDay = startDate.toISOString().split('T')[0];
+            endInput.value = nextDay;
+          }
         }
-      }
-    });
+      });
+    }
 
     // When end date changes, validate it's not before start date
     const dateError = document.getElementById("dateError");
-    endInput.addEventListener("change", function() {
-      if (startInput.value && endInput.value && endInput.value < startInput.value) {
-        dateError.textContent = "End date cannot be before start date.";
-        dateError.classList.add("show");
-        endInput.value = "";
-        setTimeout(() => {
-          dateError.classList.remove("show");
-        }, 5000);
-      } else {
-        dateError.classList.remove("show");
-      }
-    });
+    if (endInput) {
+      endInput.addEventListener("change", function() {
+        if (startInput && startInput.value && endInput.value && endInput.value < startInput.value) {
+          if (dateError) {
+            dateError.textContent = "End date cannot be before start date.";
+            dateError.classList.add("show");
+          }
+          endInput.value = "";
+          setTimeout(() => {
+            if (dateError) dateError.classList.remove("show");
+          }, 5000);
+        } else {
+          if (dateError) dateError.classList.remove("show");
+        }
+      });
+    }
 
     const ovDestination = document.getElementById("ovDestination");
     const ovDates = document.getElementById("ovDates");
@@ -1674,10 +1476,12 @@
         currentStep--;
         updateUI();
       }
-    });
+      });
+    }
 
     const destinationError = document.getElementById("destinationError");
-    nextBtn.addEventListener("click", function () {
+    if (nextBtn) {
+      nextBtn.addEventListener("click", function () {
       if (currentStep === 0 && !destinationInput.value) {
         destinationError.textContent = "Please choose a destination first.";
         destinationError.classList.add("show");
@@ -1713,9 +1517,10 @@
         currentStep++;
         updateUI();
       } else {
-        form.submit();
+        if (form) form.submit();
       }
-    });
+      });
+    }
 
     updateUI();
   })();
@@ -1728,34 +1533,70 @@
   let pendingFormId = null;
 
   function confirmDelete(tripId, destination) {
+    if (!confirmModal || !confirmMessage) return;
     confirmMessage.textContent = `Are you sure you want to delete your trip to ${destination}? This action cannot be undone.`;
     pendingFormId = `deleteForm${tripId}`;
     confirmModal.classList.add("show");
   }
 
-  confirmOk.addEventListener("click", function() {
-    if (pendingFormId) {
-      const form = document.getElementById(pendingFormId);
-      if (form) {
-        form.submit();
+  // Only set up event listeners if elements exist
+  if (confirmOk) {
+    confirmOk.addEventListener("click", function(e) {
+      e.preventDefault();
+      if (pendingFormId) {
+        const form = document.getElementById(pendingFormId);
+        if (form) {
+          // Get trip ID from form ID
+          const tripId = pendingFormId.replace('deleteForm', '');
+          const tripCard = document.querySelector(`.trip-card[data-trip-id="${tripId}"]`);
+          
+          // Remove trip card from DOM immediately with animation
+          if (tripCard) {
+            tripCard.style.transition = 'opacity 0.3s, transform 0.3s';
+            tripCard.style.opacity = '0';
+            tripCard.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+              tripCard.remove();
+              // Update trip count
+              const tripsCount = document.querySelector('.trips-count');
+              if (tripsCount) {
+                const currentCount = parseInt(tripsCount.textContent) || 0;
+                const newCount = Math.max(0, currentCount - 1);
+                tripsCount.textContent = `${newCount} trip(s)`;
+              }
+            }, 300);
+          }
+          
+          // Submit form to delete from server (will cause page reload, but card is already removed)
+          form.submit();
+        }
       }
-    }
-    confirmModal.classList.remove("show");
-    pendingFormId = null;
-  });
+      if (confirmModal) {
+        confirmModal.classList.remove("show");
+      }
+      pendingFormId = null;
+    });
+  }
 
-  confirmCancel.addEventListener("click", function() {
-    confirmModal.classList.remove("show");
-    pendingFormId = null;
-  });
+  if (confirmCancel) {
+    confirmCancel.addEventListener("click", function() {
+      if (confirmModal) {
+        confirmModal.classList.remove("show");
+      }
+      pendingFormId = null;
+    });
+  }
 
   // Close modal when clicking outside
-  confirmModal.addEventListener("click", function(e) {
-    if (e.target === confirmModal) {
-      confirmModal.classList.remove("show");
-      pendingFormId = null;
-    }
-  });
+  if (confirmModal) {
+    confirmModal.addEventListener("click", function(e) {
+      if (e.target === confirmModal) {
+        confirmModal.classList.remove("show");
+        pendingFormId = null;
+      }
+    });
+  }
 
   // Handle delete button clicks using data attributes
   document.addEventListener("click", function(e) {

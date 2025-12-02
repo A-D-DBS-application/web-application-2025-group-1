@@ -530,8 +530,8 @@
 
   <!-- Page Header -->
   <div class="page-header">
-    <h1><span class="text-gradient">Activities</span></h1>
-    <p>Discover unique experiences and tours across Africa</p>
+    <h1><span class="text-gradient">{% if is_my_activities %}My Activities{% else %}Activities{% endif %}</span></h1>
+    <p>Create or manage your unique experiences and tours across Africa</p>
   </div>
 
   <div class="container">

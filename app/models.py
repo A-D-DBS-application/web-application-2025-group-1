@@ -63,6 +63,12 @@ class Trip(db.Model):
         name='created_at',
         default=datetime.utcnow,
     )
+    # Store required and excluded activity IDs as comma-separated strings
+    # Note: Column names match what's actually in Supabase (case-sensitive)
+    required_activity_ids = db.Column(db.Text, nullable=True, name='Required_Activity_IDS')
+    excluded_activity_ids = db.Column(db.Text, nullable=True, name='Excluded_Activity_Ids')
+    # Store individual preference scores as JSON string: {"CULTURE": 3, "ADVENTURE": 5, "RELAXATION": 2, "NATURE": 4}
+    preference_scores = db.Column(db.Text, nullable=True, name='Preference_Scores')
 
     travellers = db.relationship('Traveller', backref='trip', lazy=True)
     planned_activities = db.relationship('ActivityPlanned', backref='trip', lazy=True)

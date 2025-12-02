@@ -1,15 +1,16 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, current_app
 from datetime import datetime
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 import os
+import json
 from .models import db, User, Traveller, Trip, ActivityPlanned, ActivityType, TravelAgency
 from .utils import generate_itinerary
 
 
 # ⬇️ Maak een Blueprint aan i.p.v. rechtstreeks met app werken
 main = Blueprint('main', __name__)
-#hallo
+
 @main.route('/')
 def index():
     if 'user_id' in session:
@@ -152,7 +153,7 @@ def logout():
 
 
 #hiermee kan de user een trip aanmaken
-@main.route('/trips', methods=['GET', 'POST'])
+@main.route('/trips', methods=['GET'])
 def trips():
     if 'user_id' not in session:
         return redirect(url_for('main.login'))
@@ -162,45 +163,6 @@ def trips():
     if user and user.role == 'AGENCY':
         return redirect(url_for('main.activities'))
 
-    if request.method == 'POST':
-        destination = request.form.get('destination')
-        start_date_str = request.form.get('start_date')
-        end_date_str = request.form.get('end_date')
-        num_travellers = int(request.form.get('num_travellers'))
-        preferences = request.form.get('preferences')
-
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
-
-        if start_date and end_date and end_date < start_date:
-            flash("End date cannot be before start date.", "error")
-            return redirect(url_for('main.trips'))
-
-        if not destination:
-            flash("Please enter a destination.", "error")
-            return redirect(url_for('main.trips'))
-
-        try:
-            num_travellers = int(num_travellers)
-        except (TypeError, ValueError):
-            num_travellers = 1
-
-
-        new_trip = Trip(
-            created_at=datetime.now(),
-            start_date=start_date,
-            end_date=end_date,
-            number_of_travellers=num_travellers,
-            preferences=preferences if preferences else None,
-            destination=destination,
-            user_id=user.user_id
-        )
-        db.session.add(new_trip)
-        db.session.commit()
-
-        flash("Trip succesvol aangemaakt!", "success")
-        return redirect(url_for('main.trips'))
-
     trips = (
         Trip.query
         .filter_by(user_id=user.user_id)
@@ -208,6 +170,128 @@ def trips():
         .all()
     )
     return render_template('trips.html', trips=trips)
+
+@main.route('/trips/create', methods=['GET', 'POST'])
+def create_trip():
+    """Create a new trip with 6-step wizard"""
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+    
+    user = User.query.get(session['user_id'])
+    if user and user.role == 'AGENCY':
+        return redirect(url_for('main.activities'))
+    
+    if request.method == 'POST':
+        # Get form data from all steps
+        destination = request.form.get('destination')
+        start_date_str = request.form.get('start_date')
+        end_date_str = request.form.get('end_date')
+        preferences = request.form.get('preferences')
+        required_activity_ids = request.form.get('required_activity_ids', '')
+        excluded_activity_ids = request.form.get('excluded_activity_ids', '')
+        
+        # Get individual preference scores
+        preference_scores = {
+            "CULTURE": int(request.form.get('pref_CULTURE', 3)),
+            "ADVENTURE": int(request.form.get('pref_ADVENTURE', 3)),
+            "RELAXATION": int(request.form.get('pref_RELAXATION', 3)),
+            "NATURE": int(request.form.get('pref_NATURE', 3))
+        }
+        
+        # Parse dates
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
+        
+        # Validation
+        if not destination:
+            flash("Please select a destination.", "error")
+            return redirect(url_for('main.create_trip'))
+        
+        if not start_date or not end_date:
+            flash("Please select start and end dates.", "error")
+            return redirect(url_for('main.create_trip'))
+        
+        if end_date < start_date:
+            flash("End date cannot be before start date.", "error")
+            return redirect(url_for('main.create_trip'))
+        
+        # Create trip
+        new_trip = Trip(
+            created_at=datetime.now(),
+            start_date=start_date,
+            end_date=end_date,
+            number_of_travellers=0,  # Will be updated when travellers are added
+            preferences=preferences if preferences else None,
+            destination=destination,
+            user_id=user.user_id,
+            required_activity_ids=required_activity_ids if required_activity_ids else None,
+            excluded_activity_ids=excluded_activity_ids if excluded_activity_ids else None,
+            preference_scores=json.dumps(preference_scores)
+        )
+        db.session.add(new_trip)
+        db.session.commit()
+        
+        # Get travellers from form (Step 3)
+        traveller_names = request.form.getlist('traveller_name[]')
+        traveller_birth_dates = request.form.getlist('traveller_birth_date[]')
+        traveller_fitness = request.form.getlist('traveller_fitness[]')
+        
+        # Add travellers
+        for i, name in enumerate(traveller_names):
+            if name and i < len(traveller_birth_dates) and traveller_birth_dates[i]:
+                try:
+                    birth_date = datetime.strptime(traveller_birth_dates[i], "%Y-%m-%d").date()
+                    fitness = traveller_fitness[i] if i < len(traveller_fitness) else None
+                    
+                    traveller = Traveller(
+                        name=name,
+                        birth_date=birth_date,
+                        fitness=fitness if fitness else None,
+                        trip_id=new_trip.trip_id,
+                        created_at=datetime.utcnow()
+                    )
+                    db.session.add(traveller)
+                except ValueError:
+                    continue
+        
+        new_trip.number_of_travellers = len([n for n in traveller_names if n])
+        db.session.commit()
+        
+        # Generate itinerary immediately if we have travellers
+        travellers = Traveller.query.filter_by(trip_id=new_trip.trip_id).all()
+        if travellers:
+            from .utils import generate_itinerary
+            result = generate_itinerary(new_trip)
+            if result is None:
+                flash("Trip created successfully! Note: Add traveller details to generate itinerary.", "success")
+            elif result == "NO_COORDINATES":
+                flash("Trip created successfully! Note: Activities for this destination exist but are missing coordinates (latitude/longitude). Please add coordinates to activities to generate an itinerary.", "success")
+            elif result == "AGE_FILTERED":
+                traveller_ages = [t.age for t in travellers]
+                max_age = max(traveller_ages) if traveller_ages else 0
+                flash(f"Trip created successfully! Note: No activities found suitable for traveller age ({max_age} years). Activities may have age restrictions that exclude this traveller.", "success")
+            elif result is False:
+                flash("Trip created successfully! Note: No suitable activities found for itinerary. Please check that activities exist for this destination with coordinates.", "success")
+            elif result:
+                flash("Trip created successfully! Itinerary generated.", "success")
+        else:
+            flash("Trip created successfully! Note: Add travellers to generate itinerary.", "success")
+        
+        return redirect(url_for('main.trips'))
+    
+    # GET: Show creation form
+    # Get activities for filtering (will be filtered by destination and age in template)
+    all_activities = ActivityType.query.all()
+    # Serialize activities for JavaScript
+    activities_data = [{
+        'activity_type_id': a.activity_type_id,
+        'name': a.name,
+        'description': a.description or '',
+        'destination': a.destination,
+        'min_age': a.min_age,
+        'max_age': a.max_age
+    } for a in all_activities]
+    return render_template('create_trip.html', activities=activities_data)
 
 @main.route('/trips/<int:trip_id>/edit', methods=['GET', 'POST'])
 def edit_trip(trip_id):
@@ -222,6 +306,8 @@ def edit_trip(trip_id):
         end_date_str = request.form.get('end_date')
         num_travellers = int(request.form.get('num_travellers'))
         preferences = request.form.get('preferences')
+        required_activity_ids = request.form.get('required_activity_ids', '')
+        excluded_activity_ids = request.form.get('excluded_activity_ids', '')
 
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
@@ -235,12 +321,71 @@ def edit_trip(trip_id):
         trip.end_date = end_date
         trip.number_of_travellers = num_travellers
         trip.preferences = preferences
+        trip.required_activity_ids = required_activity_ids if required_activity_ids else None
+        trip.excluded_activity_ids = excluded_activity_ids if excluded_activity_ids else None
+        
+        # Update preference scores
+        preference_scores = {
+            "CULTURE": int(request.form.get('pref_CULTURE', 3)),
+            "ADVENTURE": int(request.form.get('pref_ADVENTURE', 3)),
+            "RELAXATION": int(request.form.get('pref_RELAXATION', 3)),
+            "NATURE": int(request.form.get('pref_NATURE', 3))
+        }
+        trip.preference_scores = json.dumps(preference_scores)
 
         db.session.commit()
-        flash("Trip updated successfully!", "success")
+        
+        # Auto-regenerate itinerary if trip has travellers and dates
+        travellers = Traveller.query.filter_by(trip_id=trip.trip_id).all()
+        if travellers and trip.start_date and trip.end_date:
+            from .utils import generate_itinerary
+            result = generate_itinerary(trip)
+            if result is None:
+                flash("Trip updated successfully! Note: Add traveller details to generate itinerary.", "success")
+            elif result == "NO_COORDINATES":
+                flash("Trip updated successfully! Note: Activities for this destination exist but are missing coordinates (latitude/longitude). Please add coordinates to activities to generate an itinerary.", "success")
+            elif result == "AGE_FILTERED":
+                traveller_ages = [t.age for t in travellers]
+                max_age = max(traveller_ages) if traveller_ages else 0
+                flash(f"Trip updated successfully! Note: No activities found suitable for traveller age ({max_age} years). Activities may have age restrictions that exclude this traveller.", "success")
+            elif result is False:
+                flash("Trip updated successfully! Note: No suitable activities found for itinerary. Please check that activities exist for this destination with coordinates.", "success")
+            elif result:
+                flash("Trip updated and itinerary regenerated successfully!", "success")
+        else:
+            flash("Trip updated successfully!", "success")
+        
         return redirect(url_for('main.trips'))
 
-    return render_template('edit_trip.html', trip=trip)
+    # Get activities for activity selection
+    from .models import ActivityType
+    all_activities = ActivityType.query.all()
+    activities_data = [{
+        'activity_type_id': a.activity_type_id,
+        'name': a.name,
+        'description': a.description or '',
+        'destination': a.destination,
+        'min_age': a.min_age,
+        'max_age': a.max_age
+    } for a in all_activities]
+    
+    # Serialize travellers for JavaScript
+    travellers_data = [{
+        'traveller_id': t.traveller_id,
+        'name': t.name,
+        'birth_date': t.birth_date.isoformat() if t.birth_date else None,
+        'fitness': t.fitness
+    } for t in trip.travellers]
+    
+    # Parse preference scores for template
+    preference_scores_dict = {}
+    if trip.preference_scores:
+        try:
+            preference_scores_dict = json.loads(trip.preference_scores)
+        except (json.JSONDecodeError, TypeError):
+            preference_scores_dict = {}
+    
+    return render_template('edit_trip.html', trip=trip, activities=activities_data, travellers_data=travellers_data, preference_scores=preference_scores_dict)
 
 @main.route('/delete_trip/<int:trip_id>', methods=['POST'])
 def delete_trip(trip_id):

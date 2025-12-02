@@ -401,7 +401,7 @@
       </a>
       <ul>
         <li><a href="{{ url_for('main.home') }}">🏠 Home</a></li>
-        <li><a href="{{ url_for('main.trips') }}">🧭 Trips</a></li>
+        <li><a href="{{ url_for('main.my_activities') }}">🎯 My Activities</a></li>
         <li><a href="{{ url_for('main.activities') }}">📍 Activities</a></li>
         <li><a href="{{ url_for('main.agencies') }}">🏢 Agencies</a></li>
         <li><a href="{{ url_for('main.logout') }}" class="btn-logout">🚪 Logout</a></li>
@@ -416,7 +416,7 @@
   </div>
 
   <div class="back-btn-wrapper">
-    <a href="{{ url_for('main.activities') }}" class="btn btn-secondary">⬅️ Back to Activities</a>
+    <a href="{{ url_for('main.my_activities') }}" class="btn btn-secondary">⬅️ Back to My Activities</a>
   </div>
 
   <div class="container">
@@ -547,7 +547,7 @@
 
         <div class="button-group">
           <button type="submit" class="btn btn-primary">💾 Save Changes</button>
-          <a href="{{ url_for('main.activities') }}" class="btn btn-cancel">✖️ Cancel</a>
+          <a href="{{ url_for('main.my_activities') }}" class="btn btn-cancel">✖️ Cancel</a>
         </div>
 
       </form>

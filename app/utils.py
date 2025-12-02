@@ -33,29 +33,45 @@ def haversine(lat1, lon1, lat2, lon2):
 # -----------------------------------------
 def score_activity(activity: ActivityType, trip):
     """
-    Eenvoudige scoring: hoe beter de match met preference + bestemming,
-    hoe hoger de score. Dit kun je later uitbreiden.
+    Improved scoring: uses all preference scores for better matching.
     """
+    import json
     score = 0
-
-    # Main preference match (CULTURE/ADVENTURE/...)
-    if trip.preferences and trip.preferences == activity.type:
-        score += 40
 
     # Bestemming match
     if trip.destination and activity.destination:
         if trip.destination.strip().lower() == activity.destination.strip().lower():
             score += 20
 
-    # Gebruik de culture/adventure/relaxation/nature-scores van de activiteit
-    pref_map = {
+    # Use all preference scores if available (stored as JSON)
+    preference_scores = {}
+    if trip.preference_scores:
+        try:
+            preference_scores = json.loads(trip.preference_scores)
+        except (json.JSONDecodeError, TypeError):
+            preference_scores = {}
+    
+    # Activity preference scores
+    activity_pref_map = {
         "CULTURE": activity.score_culture,
         "ADVENTURE": activity.score_adventure,
         "RELAXATION": activity.score_relaxation,
         "NATURE": activity.score_nature,
     }
-    if trip.preferences in pref_map and pref_map[trip.preferences] is not None:
-        score += pref_map[trip.preferences] * 5  # gewicht
+    
+    # If we have individual preference scores, use weighted sum
+    if preference_scores:
+        for pref_type, user_score in preference_scores.items():
+            if pref_type in activity_pref_map and activity_pref_map[pref_type] is not None:
+                # Weight: user preference (1-5) * activity score (0-10) * multiplier
+                # Higher user preference = more weight
+                score += int(user_score) * activity_pref_map[pref_type] * 2
+    else:
+        # Fallback to old method: only use main preference
+        if trip.preferences and trip.preferences == activity.type:
+            score += 40
+        if trip.preferences in activity_pref_map and activity_pref_map[trip.preferences] is not None:
+            score += activity_pref_map[trip.preferences] * 5
 
     return score
 
@@ -245,6 +261,20 @@ def generate_itinerary(trip):
     )
 
     if not activities:
+        # Check if there are activities without coordinates
+        activities_no_coords = (
+            ActivityType.query
+            .filter(
+                func.lower(ActivityType.destination) == func.lower(trip.destination)
+            )
+            .filter(
+                (ActivityType.latitude.is_(None)) | (ActivityType.longitude.is_(None))
+            )
+            .count()
+        )
+        if activities_no_coords > 0:
+            # Return a specific error code to indicate missing coordinates
+            return "NO_COORDINATES"
         return False
 
     # Filter activiteiten op basis van leeftijd
@@ -274,7 +304,35 @@ def generate_itinerary(trip):
             suitable_activities.append(activity)
 
     if not suitable_activities:
+        # Check if it's an age filtering issue
+        if traveller_ages:
+            max_traveller_age = max(traveller_ages)
+            min_traveller_age = min(traveller_ages)
+            age_filtered_count = len([a for a in activities if 
+                (a.min_age is not None and max_traveller_age < a.min_age) or
+                (a.max_age is not None and min_traveller_age > a.max_age)])
+            if age_filtered_count > 0:
+                return "AGE_FILTERED"
         return False
+
+    # Handle required and excluded activities
+    required_ids = set()
+    excluded_ids = set()
+    
+    if trip.required_activity_ids:
+        required_ids = set(int(id.strip()) for id in trip.required_activity_ids.split(',') if id.strip())
+    if trip.excluded_activity_ids:
+        excluded_ids = set(int(id.strip()) for id in trip.excluded_activity_ids.split(',') if id.strip())
+    
+    # Filter out excluded activities
+    suitable_activities = [a for a in suitable_activities if a.activity_type_id not in excluded_ids]
+    
+    # Check if all required activities are available and suitable
+    required_activities = [a for a in suitable_activities if a.activity_type_id in required_ids]
+    if len(required_activities) < len(required_ids):
+        # Some required activities are not available or excluded
+        missing = required_ids - set(a.activity_type_id for a in required_activities)
+        return False  # Cannot create itinerary without all required activities
 
     # 2. Score berekenen
     scored = [(a, score_activity(a, trip)) for a in suitable_activities]
@@ -282,8 +340,22 @@ def generate_itinerary(trip):
     # 3. Sorteren op score aflopend
     scored.sort(key=lambda x: x[1], reverse=True)
 
-    # 4. Neem de top N activiteiten (één per dag)
-    top_activities = [a for a, s in scored[:n_days]]
+    # 4. Select activities: required first, then fill with top scored
+    top_activities = []
+    
+    # Add required activities first (sorted by score)
+    required_scored = [(a, s) for a, s in scored if a.activity_type_id in required_ids]
+    required_scored.sort(key=lambda x: x[1], reverse=True)
+    top_activities = [a for a, s in required_scored]
+    
+    # Fill remaining slots with other top-scored activities (excluding required ones)
+    remaining_slots = n_days - len(top_activities)
+    if remaining_slots > 0:
+        other_activities = [a for a, s in scored if a.activity_type_id not in required_ids]
+        top_activities.extend(other_activities[:remaining_slots])
+    
+    # Ensure we don't exceed n_days
+    top_activities = top_activities[:n_days]
 
     if not top_activities:
         return False
