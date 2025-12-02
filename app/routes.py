@@ -732,11 +732,6 @@ def edit_activity(activity_id):
     return render_template('edit_activity.html', activity=activity)
 
 
-
-@main.route('/hotels')
-def hotels():
-    return render_template('hotels.html')
-
 @main.route('/agencies')
 def agencies():
     current_user = None
