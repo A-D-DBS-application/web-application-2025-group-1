@@ -16,37 +16,123 @@
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: "DM Sans", sans-serif;
       background: hsl(35, 30%, 96%);
       color: hsl(25, 30%, 12%);
-      overflow: hidden;
+      overflow: hidden; /* map + sidebar full height */
     }
 
-    /* Layout: left sidebar + full map */
+    /* NAVBAR (bestaande stijl) */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 1rem;
+      max-width: 90rem;
+      margin: 0 auto 0.5rem;
+    }
+    .nav-inner {
+      background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.85), hsla(35, 30%, 96%, 0.75));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 1rem;
+      border: 1px solid hsla(35, 25%, 88%, 0.5);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .logo-icon {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.6rem;
+      background: hsl(14,72%,55%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+    }
+    nav ul {
+      list-style:none;
+      display:flex;
+      gap:0.5rem;
+    }
+    nav ul a {
+      text-decoration:none;
+      padding:0.5rem 1rem;
+      border-radius:0.75rem;
+      color: hsla(25, 30%, 12%, 0.8);
+      font-weight:500;
+    }
+    nav ul a:hover {
+      background: hsl(35, 55%, 90%);
+      color: hsl(25, 30%, 12%);
+    }
+
+    /* HOOFDLAYOUT: sidebar links + map rechts */
     .layout {
       display: grid;
-      grid-template-columns: 350px 1fr;
+      grid-template-columns: 420px 1fr; /* iets bredere sidebar */
       height: calc(100vh - 90px);
-      gap: 0;
+      max-width: 90rem;
+      margin: 0 auto 1rem;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
     /* SIDEBAR */
     .sidebar {
       overflow-y: auto;
-      padding: 1rem;
-      background: hsla(35, 40%, 98%, 0.8);
+      padding: 1rem 1rem 1.25rem;
+      background: hsla(35, 40%, 98%, 0.9);
       backdrop-filter: blur(20px);
       border-right: 1px solid hsl(35, 25%, 88%);
+    }
+
+    .sidebar-header {
+      margin-bottom: 1rem;
+    }
+    .sidebar-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .sidebar-subtitle {
+      font-size: 0.9rem;
+      color: hsl(25, 15%, 50%);
     }
 
     .day-title {
       background: hsl(14, 72%, 55%);
       color: white;
-      padding: 0.6rem 1rem;
+      padding: 0.6rem 0.85rem;
       border-radius: 0.75rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .day-title-main {
+      font-size: 0.95rem;
+    }
+    .day-title-date {
+      font-size: 0.8rem;
+      opacity: 0.85;
+      font-weight: 500;
     }
 
     .activity-card {
@@ -59,16 +145,37 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       cursor: pointer;
       margin-bottom: 0.75rem;
-      transition: transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
-    .activity-card:hover { transform: translateY(-2px); }
+    .activity-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.09);
+      border-color: hsl(14, 72%, 55%);
+    }
+    .activity-card.active {
+      border-color: hsl(14, 72%, 55%);
+      box-shadow: 0 4px 16px rgba(230, 126, 34, 0.3);
+    }
 
     .activity-image {
-      width: 70px;
-      height: 70px;
+      width: 72px;
+      height: 72px;
       border-radius: 0.5rem;
       object-fit: cover;
       flex-shrink: 0;
+      background: #eee;
+    }
+    .activity-fallback-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 0.5rem;
+      background: linear-gradient(135deg, hsl(168,55%,45%), hsl(195, 50%, 28%));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 1.6rem;
+      color: white;
+      flex-shrink:0;
     }
 
     .activity-info h3 {
@@ -76,27 +183,134 @@
       font-weight: 700;
       margin-bottom: 0.25rem;
     }
+    .activity-meta {
+      font-size: 0.8rem;
+      color: hsl(25, 15%, 50%);
+      margin-bottom: 0.25rem;
+    }
+    .activity-duration {
+      font-size: 0.8rem;
+      color: hsl(25, 30%, 20%);
+    }
 
     /* MAP */
-    #map { width: 100%; height: 100%; }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
 
-    /* NAVBAR (jouw bestaande stijl volledig behouden) */
-    nav { 
-      position: sticky; top: 0; z-index: 50; padding: 1rem; 
-      max-width: 90rem; margin: 0 auto 0.5rem; 
+    /* POPUP STYLING */
+    .mapboxgl-popup-content {
+      padding: 0;
+      border-radius: 0.9rem;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      font-family: "DM Sans", sans-serif;
+      background: white;
+      max-width: 280px;
     }
-    .nav-inner {
-      background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.85), hsla(35, 30%, 96%, 0.75));
-      backdrop-filter: blur(20px);
-      border-radius: 1rem; border: 1px solid hsla(35, 25%, 88%, 0.5);
-      padding: 0.75rem 1.5rem; 
-      display: flex; justify-content: space-between; align-items: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+
+    .popup-card {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
     }
-    .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.25rem; text-decoration: none; color: inherit; }
-    .logo-icon { width: 2rem; height: 2rem; border-radius: 0.6rem; background: hsl(14,72%,55%); display:flex; align-items:center; justify-content:center; color:white; }
-    nav ul { list-style:none; display:flex; gap:0.5rem; }
-    nav ul a { text-decoration:none; padding:0.5rem 1rem; border-radius:0.75rem; }
+    .popup-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0.85rem 0.4rem;
+      background: linear-gradient(135deg, hsl(14,72%,55%), hsl(38,80%,55%));
+      color: white;
+    }
+    .popup-day {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .popup-date {
+      font-size: 0.75rem;
+      opacity: 0.9;
+    }
+    .popup-nav {
+      display: flex;
+      gap: 0.25rem;
+    }
+    .popup-nav button {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      border-radius: 999px;
+      width: 1.6rem;
+      height: 1.6rem;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 0;
+    }
+    .popup-nav button:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .popup-image-wrap {
+      max-height: 150px;
+      overflow: hidden;
+    }
+    .popup-image-wrap img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .popup-body {
+      padding: 0.75rem 0.85rem 0.9rem;
+    }
+    .popup-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: hsl(25,30%,12%);
+    }
+    .popup-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+    .popup-pill {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      background: hsl(35, 55%, 90%);
+      color: hsl(25, 30%, 20%);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-weight: 500;
+    }
+    .popup-description {
+      font-size: 0.85rem;
+      color: hsl(25,15%,40%);
+      line-height: 1.4;
+    }
+
+    .mapboxgl-popup-tip {
+      border-top-color: white !important;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 100%;
+        grid-template-rows: 45% 55%;
+        height: calc(100vh - 90px);
+      }
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid hsl(35,25%,88%);
+      }
+    }
   </style>
 </head>
 
@@ -123,26 +337,51 @@
 
     <!-- LEFT: ACTIVITIES LIST -->
     <div class="sidebar">
-      {% set grouped = activities|groupby('date') %}
-      {% for group in grouped %}
-        <div class="day-title">📅 {{ group.grouper }}</div>
+      <div class="sidebar-header">
+        <div class="sidebar-title">Itinerary for {{ trip.destination }}</div>
+        <div class="sidebar-subtitle">
+          📅 {{ trip.start_date }} — {{ trip.end_date }}
+        </div>
+      </div>
 
-        {% for act in group.list %}
-          <div class="activity-card" onclick="focusActivity({{ act.activity.activity_type_id }})">
-            {% if act.activity.picture %}
-              <img src="{{ url_for('static', filename=act.activity.picture) }}" class="activity-image">
-            {% endif %}
-            <div class="activity-info">
-              <h3>{{ act.activity.name }}</h3>
-              {% if act.activity.duration %}
-                <p style="font-size:0.85rem; color:#777;">
-                  ⏱️ {{ act.activity.duration }}h
-                </p>
-              {% endif %}
-            </div>
+      {% if activities %}
+        {% set grouped = activities|groupby('date') %}
+        {% for group in grouped %}
+          <div class="day-title">
+            <div class="day-title-main">Dag {{ loop.index }}</div>
+            <div class="day-title-date">{{ group.grouper }}</div>
           </div>
+
+          {% for act in group.list %}
+            <div
+              class="activity-card"
+              id="activity-card-{{ act.activity.activity_type_id }}"
+              onclick="focusActivity({{ act.activity.activity_type_id }})"
+            >
+              {% if act.activity.picture %}
+                <img src="{{ url_for('static', filename=act.activity.picture) }}" class="activity-image" alt="{{ act.activity.name }}">
+              {% else %}
+                <div class="activity-fallback-icon">🎯</div>
+              {% endif %}
+
+              <div class="activity-info">
+                <h3>{{ act.activity.name }}</h3>
+                <div class="activity-meta">
+                  Dag {{ loop.previtem_loop.index if false }} <!-- placeholder, we gebruiken dag in popup/logica -->
+                  {{ group.grouper }}
+                </div>
+                {% if act.activity.duration %}
+                  <div class="activity-duration">
+                    ⏱️ {{ act.activity.duration }} {% if act.activity.duration == 1 %}hour{% else %}hours{% endif %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
         {% endfor %}
-      {% endfor %}
+      {% else %}
+        <p>No activities planned yet.</p>
+      {% endif %}
     </div>
 
     <!-- RIGHT: MAP -->
@@ -158,63 +397,187 @@
       container: 'map',
       style: 'mapbox://styles/mapbox/outdoors-v12',
       center: [16.5, -28.5],
-      zoom: 5
+      zoom: 4.5
     });
 
     const markers = {};
     let currentPopup = null;
+    let currentIndex = 0;
 
+    // Eerst: unieke datums verzamelen om Dag 1, Dag 2, ... te bepalen
+    const dateToDay = {};
+    (function buildDateMap() {
+      let dayCounter = 1;
+      {% for act in activities %}
+        {% if act.date %}
+          {% set date_str = act.date|string %}
+          {% if date_str not in [] %}{% endif %}
+          if (!dateToDay["{{ date_str }}"]) {
+            dateToDay["{{ date_str }}"] = dayCounter++;
+          }
+        {% endif %}
+      {% endfor %}
+    })();
+
+    // Activiteiten-array in JS (in volgorde van activities-list)
     const points = [
       {% for act in activities %}
         {% if act.activity.latitude and act.activity.longitude %}
-        {
-          id: {{ act.activity.activity_type_id }},
-          name: {{ act.activity.name|tojson }},
-          lat: {{ act.activity.latitude }},
-          lng: {{ act.activity.longitude }}
-        },
+          {
+            id: {{ act.activity.activity_type_id }},
+            name: {{ act.activity.name|tojson }},
+            lat: {{ act.activity.latitude }},
+            lng: {{ act.activity.longitude }},
+            date: {{ (act.date|string)|tojson }},
+            day: dateToDay[{{ (act.date|string)|tojson }}] || 1,
+            duration: {{ act.activity.duration if act.activity.duration is not none else 'null' }},
+            description: {{ (act.activity.description or '')|tojson }},
+            image: {% if act.activity.picture %}
+                     {{ url_for('static', filename=act.activity.picture)|tojson }}
+                   {% else %}
+                     null
+                   {% endif %}
+          },
         {% endif %}
       {% endfor %}
     ];
 
-    points.forEach(a => {
-      const popupHTML = `
-        <div style="font-family:'DM Sans'; padding:10px 14px;">
-          <h3 style="margin:0 0 6px 0; font-size:1rem; font-weight:700; color:#333;">
-            ${a.name}
-          </h3>
-          <p style="margin:0; font-size:0.85rem; color:#666;">
-            Planned activity • AfriGuide
-          </p>
-        </div>`;
-
-      const popup = new mapboxgl.Popup({ closeOnClick: false })
-        .setHTML(popupHTML);
-
+    // Maak markers op de kaart
+    points.forEach((p, idx) => {
       const marker = new mapboxgl.Marker({ color: "#E67E22" })
-        .setLngLat([a.lng, a.lat])
-        .setPopup(popup)
+        .setLngLat([p.lng, p.lat])
         .addTo(map);
-
-      markers[a.id] = marker;
+      marker.getElement().addEventListener("click", () => {
+        openPopupByIndex(idx);   // idx is diezelfde index uit points.forEach(...)
+        });
+      markers[p.id] = marker;
     });
 
-    function focusActivity(id) {
-      const marker = markers[id];
+    function truncate(text, maxLen) {
+      if (!text) return "";
+      if (text.length <= maxLen) return text;
+      return text.slice(0, maxLen - 3) + "...";
+    }
+
+    function setActiveCard(id) {
+      // Alle cards resetten
+      document.querySelectorAll('.activity-card').forEach(card => {
+        card.classList.remove('active');
+      });
+      const card = document.getElementById('activity-card-' + id);
+      if (card) card.classList.add('active');
+    }
+
+    function openPopupByIndex(index) {
+      if (!points.length) return;
+      if (index < 0 || index >= points.length) return;
+      currentIndex = index;
+
+      const p = points[index];
+      const marker = markers[p.id];
       if (!marker) return;
 
-      const lngLat = marker.getLngLat();
+      const lngLat = [p.lng, p.lat];
 
+      // Eventuele vorige popup sluiten
       if (currentPopup) {
         currentPopup.remove();
+        currentPopup = null;
       }
 
-      map.flyTo({ center: lngLat, zoom: 12, speed: 0.8 });
+      // Map centreren / zoomen
+      map.flyTo({
+        center: lngLat,
+        zoom: 11,
+        speed: 0.8,
+        offset: [0, -180],
+        curve: 1.2,
+        essential: true
+      });
 
-      const popup = marker.getPopup();
-      popup.addTo(map);
+      // Popup HTML
+      const desc = truncate(p.description, 180);
+
+      const popupHTML = `
+        <div class="popup-card">
+          <div class="popup-header">
+            <div>
+              <div class="popup-day">Dag ${p.day}</div>
+              <div class="popup-date">${p.date}</div>
+            </div>
+            <div class="popup-nav">
+              <button id="popup-prev" title="Vorige activiteit">←</button>
+              <button id="popup-next" title="Volgende activiteit">→</button>
+            </div>
+          </div>
+          ${p.image ? `
+            <div class="popup-image-wrap">
+              <img src="${p.image}" alt="${p.name}">
+            </div>
+          ` : ''}
+          <div class="popup-body">
+            <div class="popup-title">${p.name}</div>
+            <div class="popup-meta-row">
+              ${p.duration !== null ? `
+                <div class="popup-pill">
+                  ⏱️ ${p.duration} ${p.duration === 1 ? 'hour' : 'hours'}
+                </div>
+              ` : ''}
+            </div>
+            ${desc ? `
+              <div class="popup-description">
+                ${desc}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      const popup = new mapboxgl.Popup({
+        closeOnClick: false,
+        offset: 18
+      })
+      .setLngLat(lngLat)
+      .setHTML(popupHTML)
+      .addTo(map);
+
       currentPopup = popup;
+      setActiveCard(p.id);
+
+      // Buttons koppelen nadat popup in DOM zit
+      setTimeout(() => {
+        const prevBtn = document.getElementById('popup-prev');
+        const nextBtn = document.getElementById('popup-next');
+        if (prevBtn) {
+          prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            const prevIndex = (currentIndex - 1 + points.length) % points.length;
+            openPopupByIndex(prevIndex);
+          };
+        }
+        if (nextBtn) {
+          nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            const nextIndex = (currentIndex + 1) % points.length;
+            openPopupByIndex(nextIndex);
+          };
+        }
+      }, 0);
     }
+
+    // Aanroepen vanuit sidebar
+    function focusActivity(id) {
+      const idx = points.findIndex(p => p.id === id);
+      if (idx === -1) return;
+      openPopupByIndex(idx);
+    }
+
+    // Na load: focus automatisch op eerste activiteit (als er één is)
+    map.on('load', () => {
+      if (points.length > 0) {
+        openPopupByIndex(0);
+      }
+    });
   </script>
 
 </body>
