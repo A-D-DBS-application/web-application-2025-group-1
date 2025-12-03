@@ -118,7 +118,7 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user:
             session['user_id'] = user.user_id
-            flash(f"Logged in successfully as {user.name} !", "success")
+            flash(f"Welcome {user.name}", "success")
             return redirect(url_for('main.home'))
         else:
             flash("User not found.", "error")
@@ -136,7 +136,7 @@ def agency_login():
                 flash("This account is not registered as an agency.", "error")
                 return redirect(url_for('main.agency_login'))
             session['user_id'] = user.user_id
-            flash(f"Logged in successfully as {user.name}!", "success")
+            flash(f"Welcome {user.name}", "success")
             return redirect(url_for('main.home'))
         else:
             flash("Agency not found.", "error")
