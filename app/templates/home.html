@@ -146,15 +146,17 @@
     /* Agency header styling - same style as rest of website */
     body.agency-home .page-header {
       position: absolute;
-      top: 50%;
+      top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 100%;
       padding: 0 1rem;
       margin: 0;
+      animation: none;
+      opacity: 1;
     }
     body.agency-home .page-header h1 {
-      font-size: clamp(3.5rem, 8vw, 6rem);
+      font-size: clamp(2.25rem, 6.5vw, 5rem);
       font-weight: 700;
       margin-bottom: 1rem;
       line-height: 1.2;
@@ -163,46 +165,48 @@
       align-items: center;
       gap: 0.25rem;
       color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
     }
     body.agency-home .page-header h1 .welcome-text {
       display: block;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-size: clamp(1.75rem, 5vw, 3.5rem);
       color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
       font-weight: 700;
     }
     body.agency-home .page-header h1 .text-gradient {
       display: block;
-      font-size: clamp(3.5rem, 8vw, 6rem);
+      font-size: clamp(2.25rem, 6.5vw, 5rem);
       color: white;
       background: none;
       -webkit-background-clip: unset;
       -webkit-text-fill-color: white;
       background-clip: unset;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
       font-weight: 700;
     }
     body.agency-home .page-header p {
       color: white;
-      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-size: clamp(0.875rem, 1.75vw, 1.0625rem);
       margin-top: 1.5rem;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3);
       font-weight: 400;
     }
 
     /* Traveller header styling */
     body.traveller-home .page-header {
       position: absolute;
-      top: 50%;
+      top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 100%;
       padding: 0 1rem;
       margin: 0;
+      animation: none;
+      opacity: 1;
     }
     body.traveller-home .page-header h1 {
-      font-size: clamp(3.5rem, 8vw, 6rem);
+      font-size: clamp(2.25rem, 6.5vw, 5rem);
       font-weight: 700;
       margin-bottom: 1rem;
       line-height: 1.2;
@@ -211,31 +215,31 @@
       align-items: center;
       gap: 0.25rem;
       color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
     }
     body.traveller-home .page-header h1 .welcome-text {
       display: block;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-size: clamp(1.75rem, 5vw, 3.5rem);
       color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
       font-weight: 700;
     }
     body.traveller-home .page-header h1 .text-gradient {
       display: block;
-      font-size: clamp(3.5rem, 8vw, 6rem);
+      font-size: clamp(2.25rem, 6.5vw, 5rem);
       color: white;
       background: none;
       -webkit-background-clip: unset;
       -webkit-text-fill-color: white;
       background-clip: unset;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
       font-weight: 700;
     }
     body.traveller-home .page-header p {
       color: white;
-      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-size: clamp(0.875rem, 1.75vw, 1.0625rem);
       margin-top: 1.5rem;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3);
       font-weight: 400;
     }
 
@@ -254,6 +258,27 @@
     .flash-message { padding: 0.75rem 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-size: 0.875rem; max-width: 90rem; margin-left: auto; margin-right: auto; }
     .flash-success { background: hsla(168, 55%, 40%, 0.1); color: var(--teal); border: 1px solid var(--teal); }
     .flash-error { background: hsla(0, 72%, 55%, 0.1); color: hsl(0, 72%, 45%); border: 1px solid hsl(0, 72%, 55%); }
+    
+    /* Flash messages for agency/traveller home - absolute positioned */
+    body.agency-home .flash-message-container,
+    body.traveller-home .flash-message-container {
+      position: fixed;
+      top: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 90rem;
+      padding: 0 1rem;
+      z-index: 40;
+      pointer-events: none;
+    }
+    body.agency-home .flash-message-container .flash-message,
+    body.traveller-home .flash-message-container .flash-message {
+      pointer-events: auto;
+      margin-bottom: 0;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
     /* Cards Grid */
     .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
@@ -301,7 +326,7 @@
       -webkit-backdrop-filter: blur(20px);
       border-radius: 1.5rem;
       border: 1px solid hsla(35, 25%, 88%, 0.6);
-      padding: 1.5rem;
+      padding: 1rem;
       box-shadow: var(--shadow-lg);
       transition: all 0.3s;
       text-align: center;
@@ -314,14 +339,14 @@
       box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15);
     }
     .traveller-card-icon {
-      width: 4rem;
-      height: 4rem;
+      width: 3rem;
+      height: 3rem;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.75rem;
-      margin: 0 auto 1rem;
+      font-size: 1.5rem;
+      margin: 0 auto 0.75rem;
       box-shadow: var(--shadow-md);
       transition: transform 0.3s;
     }
@@ -333,7 +358,7 @@
     .traveller-card-icon.teal { background: linear-gradient(135deg, var(--teal), hsla(168, 55%, 35%, 1)); color: var(--teal-foreground); }
     .traveller-card-icon.secondary { background: linear-gradient(135deg, var(--secondary), hsla(195, 50%, 18%, 1)); color: var(--secondary-foreground); }
     .traveller-card-title {
-      font-size: 1.125rem;
+      font-size: 1rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
       color: var(--foreground);
@@ -343,7 +368,7 @@
       color: var(--primary);
     }
     .traveller-card-subtitle {
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
       color: var(--muted-foreground);
       line-height: 1.5;
     }
@@ -355,13 +380,13 @@
     .create-trip-button {
       display: inline-block;
       margin-top: 2rem;
-      padding: 1rem 2.5rem;
+      padding: clamp(1rem, 2.5vw, 1.25rem) clamp(2rem, 5vw, 3rem);
       background: white;
       color: var(--primary);
       text-decoration: none;
       border-radius: 0.75rem;
       font-weight: 600;
-      font-size: 1.125rem;
+      font-size: clamp(1rem, 2.5vw, 1.375rem);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
       transition: all 0.3s;
     }
@@ -389,7 +414,7 @@
       -webkit-backdrop-filter: blur(20px);
       border-radius: 1.5rem;
       border: 1px solid hsla(35, 25%, 88%, 0.6);
-      padding: 1.5rem;
+      padding: 1rem;
       box-shadow: var(--shadow-lg);
       transition: all 0.3s;
       text-align: center;
@@ -402,14 +427,14 @@
       box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15);
     }
     .agency-card-icon {
-      width: 4rem;
-      height: 4rem;
+      width: 3rem;
+      height: 3rem;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.75rem;
-      margin: 0 auto 1rem;
+      font-size: 1.5rem;
+      margin: 0 auto 0.75rem;
       box-shadow: var(--shadow-md);
       transition: transform 0.3s;
     }
@@ -421,7 +446,7 @@
     .agency-card-icon.gold { background: linear-gradient(135deg, var(--gold), hsla(38, 80%, 50%, 1)); color: var(--gold-foreground); }
     .agency-card-icon.secondary { background: linear-gradient(135deg, var(--secondary), hsla(195, 50%, 18%, 1)); color: var(--secondary-foreground); }
     .agency-card-title {
-      font-size: 1.125rem;
+      font-size: 1rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
       color: var(--foreground);
@@ -431,7 +456,7 @@
       color: var(--primary);
     }
     .agency-card-subtitle {
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
       color: var(--muted-foreground);
       line-height: 1.5;
     }
@@ -547,6 +572,15 @@
   <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
+      {% if user %}
+      <div class="flash-message-container">
+        {% for category, message in messages %}
+          <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+            {{ message }}
+          </p>
+        {% endfor %}
+      </div>
+      {% else %}
       <div class="container" style="padding-bottom: 0;">
         {% for category, message in messages %}
           <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
@@ -554,6 +588,7 @@
           </p>
         {% endfor %}
       </div>
+      {% endif %}
     {% endif %}
   {% endwith %}
 
