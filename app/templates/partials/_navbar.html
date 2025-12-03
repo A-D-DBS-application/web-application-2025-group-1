@@ -1,0 +1,29 @@
+<!-- Navigation -->
+<nav>
+  <div class="nav-inner">
+    <a href="{{ url_for('main.home') }}" class="logo">
+      <div class="logo-icon">🧭</div>
+      <span>AfriGuide</span>
+    </a>
+    <ul>
+      {% set user_obj = user if user is defined else current_user if current_user is defined else none %}
+      {% set is_agency_user = (user_obj and user_obj.role == 'AGENCY') or (is_agency is defined and is_agency) %}
+      
+      {% if user_obj and not is_agency_user %}
+      <li><a href="{{ url_for('main.trips') }}" {% if request.endpoint == 'main.trips' %}class="active"{% endif %}>🧭 Trips</a></li>
+      {% endif %}
+      {% if is_agency_user %}
+      <li><a href="{{ url_for('main.my_activities') }}" {% if request.endpoint == 'main.my_activities' %}class="active"{% endif %}>🎯 My Activities</a></li>
+      {% endif %}
+      <li><a href="{{ url_for('main.activities') }}" {% if request.endpoint == 'main.activities' %}class="active"{% endif %}>📍 Activities</a></li>
+      {% if is_agency_user %}
+      <li><a href="{{ url_for('main.my_agency') }}" {% if request.endpoint == 'main.my_agency' %}class="active"{% endif %}>🏢 My Agency</a></li>
+      {% endif %}
+      <li><a href="{{ url_for('main.agencies') }}" {% if request.endpoint == 'main.agencies' %}class="active"{% endif %}>🏢 Agencies</a></li>
+      {% if user_obj %}
+      <li><a href="{{ url_for('main.logout') }}" class="btn-logout">🚪 Logout</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+

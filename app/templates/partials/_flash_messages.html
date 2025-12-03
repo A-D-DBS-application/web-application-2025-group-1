@@ -1,0 +1,37 @@
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% set user_obj = user if user is defined else current_user if current_user is defined else none %}
+    {% if user_obj %}
+      <!-- Check if we're on home page (agency-home or traveller-home class) -->
+      {% set is_home_page = user_obj.role == 'AGENCY' or user_obj.role != 'AGENCY' %}
+      {% if is_home_page %}
+        <!-- Special flash message container for home pages with background image -->
+        <div class="flash-message-container">
+          {% for category, message in messages %}
+            <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+              {{ message }}
+            </p>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Regular flash messages in container -->
+        <div class="container" style="padding-bottom: 0;">
+          {% for category, message in messages %}
+            <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+              {{ message }}
+            </p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% else %}
+      <!-- Flash messages for non-authenticated pages (like index page after logout) -->
+      {% for category, message in messages %}
+        <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+          {{ message }}
+        </p>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+{% endwith %}
+

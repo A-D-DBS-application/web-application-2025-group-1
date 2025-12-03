@@ -1,0 +1,14 @@
+<!-- Page Header -->
+<div class="page-header">
+  <h1>
+    {% if header_title %}
+      {{ header_title|safe }}
+    {% else %}
+      <span class="text-gradient">{{ default_title|default('Page') }}</span>
+    {% endif %}
+  </h1>
+  {% if header_subtitle %}
+    <p>{{ header_subtitle }}</p>
+  {% endif %}
+</div>
+

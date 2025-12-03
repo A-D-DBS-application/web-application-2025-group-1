@@ -104,6 +104,50 @@ class Traveller(db.Model):
         return f'<Traveller {self.traveller_id}>'
 
 # -----------------------------
+# DESTINATIONS (Database table for dynamic destinations)
+# -----------------------------
+class Destination(db.Model):
+    __tablename__ = 'Destination'
+
+    destination_id = db.Column(db.BigInteger, primary_key=True, name='Destination_id')
+    name = db.Column(db.String(100), nullable=False, unique=True, name='Name')
+    flag_emoji = db.Column(db.String(10), nullable=True, name='Flag_emoji')
+    country_code = db.Column(db.String(10), nullable=True, name='Country_code')
+    image_path = db.Column(db.String(255), nullable=True, name='Image_path')
+    is_active = db.Column(db.Boolean, default=True, nullable=False, name='Is_active')
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        nullable=False,
+        name='created_at',
+        default=datetime.utcnow,
+    )
+
+    def __repr__(self):
+        return f'<Destination {self.name}>'
+
+    @staticmethod
+    def get_all_active():
+        """Get all active destinations ordered by name"""
+        try:
+            return Destination.query.filter_by(is_active=True).order_by(Destination.name).all()
+        except Exception as e:
+            # Log error but don't crash
+            import traceback
+            print(f"Error in get_all_active: {e}")
+            print(traceback.format_exc())
+            # Fallback if table doesn't exist yet - return empty list
+            return []
+
+    @staticmethod
+    def get_by_name(name):
+        """Get destination by name"""
+        try:
+            return Destination.query.filter_by(name=name, is_active=True).first()
+        except Exception:
+            return None
+
+
+# -----------------------------
 # TRAVEL AGENCIES
 # -----------------------------
 class TravelAgency(db.Model):
@@ -157,7 +201,7 @@ class ActivityType(db.Model):
 
     name        = db.Column(db.String(120), nullable=False)
     type        = db.Column(db.String(30),  nullable=False)   # CULTURE / ADVENTURE / ...
-    difficulty  = db.Column(db.String(20))                    # of een Enum als je dat later wil
+    difficulty  = db.Column(db.String(20), nullable=True)  # Fallback to String if enum doesn't exist
     destination = db.Column(db.String(50),  nullable=False)
 
     description = db.Column(db.Text)
@@ -225,11 +269,32 @@ def _register_sqlite_autoincrement(model, pk_field):
         setattr(target, pk_field, (max_id or 0) + 1)
 
 
+# -----------------------------
+# HELPER FUNCTIONS FOR ENUMS
+# -----------------------------
+def get_activity_types():
+    """Get all activity type preferences with icons and labels"""
+    return [
+        {'value': 'CULTURE', 'label': 'Culture', 'icon': '🏛️'},
+        {'value': 'ADVENTURE', 'label': 'Adventure', 'icon': '🧗‍♂️'},
+        {'value': 'RELAXATION', 'label': 'Relaxation', 'icon': '🧘‍♀️'},
+        {'value': 'NATURE', 'label': 'Nature', 'icon': '🌿'},
+    ]
+
+def get_difficulty_levels():
+    """Get all difficulty levels"""
+    return [
+        {'value': 'EASY', 'label': 'Easy'},
+        {'value': 'MODERATE', 'label': 'Moderate'},
+        {'value': 'HARD', 'label': 'Hard'},
+    ]
+
 for model, field in [
     (User, 'user_id'),
     (Trip, 'trip_id'),
     (Traveller, 'traveller_id'),
     (TravelAgency, 'agency_id'),
     (ActivityType, 'activity_type_id'),
+    (Destination, 'destination_id'),
 ]:
     _register_sqlite_autoincrement(model, field)

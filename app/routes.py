@@ -1,15 +1,71 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, current_app
 from datetime import datetime
 from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import OperationalError, ProgrammingError
 from werkzeug.utils import secure_filename
 import os
 import json
-from .models import db, User, Traveller, Trip, ActivityPlanned, ActivityType, TravelAgency
+from .models import (
+    db, User, Traveller, Trip, ActivityPlanned, ActivityType, TravelAgency, Destination,
+    get_activity_types, get_difficulty_levels
+)
 from .utils import generate_itinerary
 
 
 # ⬇️ Maak een Blueprint aan i.p.v. rechtstreeks met app werken
 main = Blueprint('main', __name__)
+
+def _get_destinations_safe():
+    """Safely get destinations with fallback if table doesn't exist"""
+    try:
+        # Check if table exists first
+        from sqlalchemy import inspect
+        from sqlalchemy.exc import OperationalError, ProgrammingError
+        
+        try:
+            from sqlalchemy import inspect
+            inspector = inspect(db.engine)
+            tables = inspector.get_table_names()
+            
+            if 'Destination' not in tables:
+                # Table doesn't exist, return defaults
+                return _create_default_destinations()
+        except (OperationalError, ProgrammingError, AttributeError):
+            # Can't inspect tables (e.g., SQLite without proper setup), try query anyway
+            pass
+        
+        # Try to query the table
+        destinations = Destination.query.filter_by(is_active=True).order_by(Destination.name).all()
+        if not destinations:
+            # Create default destination objects if table is empty
+            return _create_default_destinations()
+        return destinations
+    except (OperationalError, ProgrammingError, AttributeError, TypeError) as e:
+        # Database errors - table doesn't exist or can't be queried
+        import traceback
+        print(f"Error getting destinations (table may not exist): {e}")
+        # Fallback if Destination table doesn't exist yet
+        return _create_default_destinations()
+    except Exception as e:
+        # Other unexpected errors
+        import traceback
+        print(f"Unexpected error getting destinations: {e}")
+        print(traceback.format_exc())
+        return _create_default_destinations()
+
+def _create_default_destinations():
+    """Create default destination objects"""
+    class DestinationObj:
+        def __init__(self, name, flag_emoji=None, country_code=None, image_path=None):
+            self.name = name
+            self.flag_emoji = flag_emoji
+            self.country_code = country_code
+            self.image_path = image_path
+    
+    return [
+        DestinationObj(name='South Africa', flag_emoji='🇿🇦', country_code='SA', image_path='img/south-africa.webp'),
+        DestinationObj(name='Morocco', flag_emoji='🇲🇦', country_code='MO', image_path='img/morocco.jpg')
+    ]
 
 @main.route('/')
 def index():
@@ -19,7 +75,7 @@ def index():
         if user and user.role == 'AGENCY':
             return redirect(url_for('main.activities'))
         trips = Trip.query.filter_by(user_id=user.user_id).all()
-        return render_template('trips.html', trips=trips)
+        return render_template('trips.html', trips=trips, user=user, activity_types=get_activity_types())
     return render_template('index.html')
 
 @main.route('/home')
@@ -169,7 +225,7 @@ def trips():
         .order_by(Trip.created_at.desc())
         .all()
     )
-    return render_template('trips.html', trips=trips)
+    return render_template('trips.html', trips=trips, user=user)
 
 @main.route('/trips/create', methods=['GET', 'POST'])
 def create_trip():
@@ -180,6 +236,10 @@ def create_trip():
     user = User.query.get(session['user_id'])
     if user and user.role == 'AGENCY':
         return redirect(url_for('main.activities'))
+    
+    # Get data from models
+    destinations = _get_destinations_safe()
+    activity_types = get_activity_types()
     
     if request.method == 'POST':
         # Get form data from all steps
@@ -291,13 +351,20 @@ def create_trip():
         'min_age': a.min_age,
         'max_age': a.max_age
     } for a in all_activities]
-    return render_template('create_trip.html', activities=activities_data)
+    return render_template(
+        'create_trip.html', 
+        activities=activities_data, 
+        user=user,
+        destinations=destinations,
+        activity_types=activity_types
+    )
 
 @main.route('/trips/<int:trip_id>/edit', methods=['GET', 'POST'])
 def edit_trip(trip_id):
     if 'user_id' not in session:
         return redirect(url_for('main.login'))
 
+    user = User.query.get(session['user_id'])
     trip = Trip.query.get_or_404(trip_id)
 
     if request.method == 'POST':
@@ -385,7 +452,16 @@ def edit_trip(trip_id):
         except (json.JSONDecodeError, TypeError):
             preference_scores_dict = {}
     
-    return render_template('edit_trip.html', trip=trip, activities=activities_data, travellers_data=travellers_data, preference_scores=preference_scores_dict)
+    return render_template(
+        'edit_trip.html', 
+        trip=trip, 
+        activities=activities_data, 
+        travellers_data=travellers_data, 
+        preference_scores=preference_scores_dict, 
+        user=user,
+        destinations=_get_destinations_safe(),
+        activity_types=get_activity_types()
+    )
 
 @main.route('/delete_trip/<int:trip_id>', methods=['POST'])
 def delete_trip(trip_id):
@@ -493,7 +569,7 @@ def travellers(trip_id):
             return redirect(url_for('main.travellers', trip_id=trip.trip_id))
 
     travellers = Traveller.query.filter_by(trip_id=trip.trip_id).all()
-    return render_template('travellers.html', trip=trip, travellers=travellers)  
+    return render_template('travellers.html', trip=trip, travellers=travellers, user=user)  
 
 
 @main.route('/activities', methods=['GET'])
@@ -513,9 +589,9 @@ def activities():
     # Get all activities
     all_activities = ActivityType.query.options(joinedload(ActivityType.agency)).order_by(ActivityType.created_at.desc()).all()
     
-    # Get unique destinations
-    destinations = db.session.query(ActivityType.destination).filter(ActivityType.destination.isnot(None)).distinct().all()
-    destinations = sorted([d[0] for d in destinations if d[0]])
+    # Get destinations from database
+    destinations = _get_destinations_safe()
+    destination_names = [d.name for d in destinations]
     
     # Check if a specific destination was requested
     selected_destination = request.args.get('destination', None)
@@ -529,8 +605,10 @@ def activities():
         agencies=agencies,
         current_user=current_user,
         is_agency=is_agency,
-        destinations=destinations,
-        selected_destination=selected_destination
+        destinations=destination_names,
+        selected_destination=selected_destination,
+        difficulty_levels=get_difficulty_levels(),
+        activity_types=get_activity_types()
     )
 
 @main.route('/my_activities', methods=['GET', 'POST'])
@@ -644,7 +722,10 @@ def my_activities():
         agencies=[user_agency],
         current_user=current_user,
         is_agency=True,
-        is_my_activities=True
+        is_my_activities=True,
+        destinations=_get_destinations_safe(),
+        difficulty_levels=get_difficulty_levels(),
+        activity_types=get_activity_types()
     )
 
 
@@ -729,7 +810,14 @@ def edit_activity(activity_id):
         return redirect(url_for('main.my_activities'))
     
     # ------- GET: toon edit formulier -------
-    return render_template('edit_activity.html', activity=activity)
+    return render_template(
+        'edit_activity.html', 
+        activity=activity, 
+        user=current_user,
+        destinations=_get_destinations_safe(),
+        difficulty_levels=get_difficulty_levels(),
+        activity_types=get_activity_types()
+    )
 
 
 @main.route('/agencies')
@@ -873,7 +961,7 @@ def itinerary_view(trip_id):
         .order_by(ActivityPlanned.date)
         .all()
     )
-    return render_template('itinerary.html', trip=trip, activities=activities)
+    return render_template('itinerary.html', trip=trip, activities=activities, user=user)
 
 @main.route('/itinerary/select')
 def itinerary_select():
@@ -886,4 +974,4 @@ def itinerary_select():
         return redirect(url_for('main.activities'))
     
     trips = Trip.query.filter_by(user_id=user.user_id).all()
-    return render_template('itinerary_select.html', trips=trips)
+    return render_template('itinerary_select.html', trips=trips, user=user)

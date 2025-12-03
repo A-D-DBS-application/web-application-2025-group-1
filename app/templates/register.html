@@ -1,123 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AfriGuide | Register</title>
-
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
-
-    body {
-      background: url("{{ url_for('static', filename='img/Homepage.jpg') }}") no-repeat center center fixed;
-      background-size: cover;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; color: #333;
-    }
-
-    .container {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 45px;
-      border-radius: 25px;
-      width: 400px;
-      text-align: center;
-      box-shadow: 0 12px 35px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease;
-    }
-
-    .container:hover {
-      transform: translateY(-5px);
-    }
-
-    .logo {
-      width: 80px; height: 80px;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-      border-radius: 50%;
-      margin: 0 auto 20px;
-      display: flex; justify-content: center; align-items: center;
-      font-weight: 700; color: #fff; font-size: 1.8rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-
-    h1 { font-size: 2rem; margin-bottom: 10px; color: #264653; }
-    p { margin-bottom: 30px; font-size: 1rem; opacity: 0.85; }
-
-    .choice-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 20px;
-    }
-
-    .choice-btn {
-      width: 100%;
-      padding: 16px;
-      border-radius: 12px;
-      border: 2px solid #ccc;
-      background: rgba(255, 255, 255, 0.9);
-      color: #264653;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-decoration: none;
-      display: block;
-      text-align: center;
-    }
-
-    .choice-btn:hover {
-      border-color: #264653;
-      background: rgba(38, 70, 83, 0.1);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .register {
-      margin-top: 18px;
-      font-size: 0.95rem;
-    }
-
-    .register a {
-      color: #264653;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .register a:hover { text-decoration: underline; }
-
-    .back-home a {
-      color: #264653;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .back-home a:hover { text-decoration: underline; }
-
-    .flash-message {
-      font-weight: 600; font-size: 0.95rem;
-      margin-bottom: 15px; padding: 10px;
-      border-radius: 8px;
-    }
-    .flash-error { background:#e63946; color:#fff; }
-    .flash-success { background:#38b000; color:#fff; }
-  </style>
-</head>
-<body>
+{% set page_title = 'Register' %}
+{% set extra_css = '<style>
+  :root {
+    --homepage-bg-image: url("' + url_for('static', filename='img/Homepage.jpg') + '");
+  }
+</style>' %}
+{% include 'partials/_head.html' %}
+<body class="auth-page">
 
   <div class="container">
     <div class="logo">AG</div>
     <h1>Create an Account</h1>
     <p>Choose your account type to get started.</p>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div>
-          {% for category, message in messages %}
-            <p class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
-              {{ message }}
-            </p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+    {% include 'partials/_flash_messages.html' %}
 
     <div class="choice-buttons">
       <a href="{{ url_for('main.register_traveller') }}" class="choice-btn">
