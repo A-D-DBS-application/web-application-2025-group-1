@@ -34,6 +34,10 @@
       --shadow-lg: 0 8px 40px hsla(25, 30%, 12%, 0.12);
     }
 
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: "DM Sans", system-ui, sans-serif;
       background: var(--background);
@@ -41,6 +45,29 @@
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       position: relative;
+    }
+
+    /* Agency background with desert image */
+    body.agency-home {
+      background-image: url("{{ url_for('static', filename='img/Woestijn_achtergrond.webp') }}");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      min-height: 100vh;
+    }
+    body.agency-home::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.2);
+      z-index: -1;
     }
 
     /* Background blobs */
@@ -53,6 +80,9 @@
     .bg-blob-1 { top: 5rem; left: 2rem; width: 18rem; height: 18rem; background: hsla(14, 72%, 55%, 0.1); }
     .bg-blob-2 { bottom: 5rem; right: 2rem; width: 24rem; height: 24rem; background: hsla(168, 55%, 40%, 0.1); }
     .bg-blob-3 { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: hsla(38, 80%, 55%, 0.05); }
+    body.agency-home .bg-blob {
+      display: none;
+    }
 
     /* Navbar */
     nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 90rem; margin: 0 auto; }
@@ -65,6 +95,9 @@
       padding: 0.75rem 1.5rem;
       box-shadow: var(--shadow-md);
       display: flex; justify-content: space-between; align-items: center;
+    }
+    body.agency-home .nav-inner {
+      background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.85));
     }
     .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.25rem; color: var(--foreground); text-decoration: none; transition: color 0.2s; }
     .logo:hover { color: var(--primary); }
@@ -80,9 +113,61 @@
     .page-header h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; margin-bottom: 0.5rem; }
     .text-gradient { background: linear-gradient(135deg, var(--primary), var(--gold), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .page-header p { font-size: 1.125rem; color: var(--muted-foreground); max-width: 36rem; margin: 0 auto; }
+    
+    /* Agency header styling - same style as rest of website */
+    body.agency-home .page-header {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      padding: 0 1rem;
+      margin: 0;
+    }
+    body.agency-home .page-header h1 {
+      font-size: clamp(3.5rem, 8vw, 6rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    body.agency-home .page-header h1 .welcome-text {
+      display: block;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      font-weight: 700;
+    }
+    body.agency-home .page-header h1 .text-gradient {
+      display: block;
+      font-size: clamp(3.5rem, 8vw, 6rem);
+      color: white;
+      background: none;
+      -webkit-background-clip: unset;
+      -webkit-text-fill-color: white;
+      background-clip: unset;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      font-weight: 700;
+    }
+    body.agency-home .page-header p {
+      color: white;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      margin-top: 1.5rem;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+      font-weight: 400;
+    }
 
     /* Container */
     .container { max-width: 90rem; margin: 0 auto; padding: 0 1rem 3rem; }
+    body.agency-home .container { 
+      padding-bottom: 20rem;
+      min-height: calc(100vh - 300px);
+    }
 
     /* Flash messages */
     .flash-message { padding: 0.75rem 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-size: 0.875rem; max-width: 90rem; margin-left: auto; margin-right: auto; }
@@ -94,6 +179,85 @@
     @media (max-width: 768px) { .cards-grid { grid-template-columns: 1fr; } }
     .card-full-width { grid-column: span 2; }
     @media (max-width: 768px) { .card-full-width { grid-column: span 1; } }
+
+    /* Agency horizontal cards layout */
+    .agency-cards-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2rem 1rem;
+      background: transparent;
+      z-index: 10;
+    }
+    .agency-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 90rem;
+      margin: 0 auto;
+    }
+    @media (max-width: 1200px) {
+      .agency-cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .agency-cards-grid { grid-template-columns: 1fr; }
+    }
+    .agency-card {
+      background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.85));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 1.5rem;
+      border: 1px solid hsla(35, 25%, 88%, 0.6);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      transition: all 0.3s;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .agency-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15);
+    }
+    .agency-card-icon {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin: 0 auto 1rem;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s;
+    }
+    .agency-card:hover .agency-card-icon {
+      transform: scale(1.1);
+    }
+    .agency-card-icon.primary { background: linear-gradient(135deg, var(--primary), hsla(14, 72%, 50%, 1)); color: var(--primary-foreground); }
+    .agency-card-icon.teal { background: linear-gradient(135deg, var(--teal), hsla(168, 55%, 35%, 1)); color: var(--teal-foreground); }
+    .agency-card-icon.gold { background: linear-gradient(135deg, var(--gold), hsla(38, 80%, 50%, 1)); color: var(--gold-foreground); }
+    .agency-card-icon.secondary { background: linear-gradient(135deg, var(--secondary), hsla(195, 50%, 18%, 1)); color: var(--secondary-foreground); }
+    .agency-card-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--foreground);
+      transition: color 0.2s;
+    }
+    .agency-card:hover .agency-card-title {
+      color: var(--primary);
+    }
+    .agency-card-subtitle {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+    .agency-card:hover .agency-card-subtitle {
+      color: var(--foreground);
+    }
 
     .card-link { text-decoration: none; color: inherit; }
     .glass-card { background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.85), hsla(35, 30%, 96%, 0.75)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 1.5rem; border: 1px solid hsla(35, 25%, 88%, 0.5); padding: 1.5rem; box-shadow: var(--shadow-lg); transition: all 0.3s; }
@@ -170,7 +334,7 @@
     .delay-4 { animation-delay: 0.4s; opacity: 0; }
   </style>
 </head>
-<body>
+<body {% if user.role == 'AGENCY' %}class="agency-home"{% endif %}>
   <!-- Background blobs -->
   <div class="bg-blob bg-blob-1"></div>
   <div class="bg-blob bg-blob-2"></div>
@@ -215,7 +379,11 @@
 
   <!-- Hero Section -->
   <div class="page-header">
+    {% if user.role == 'AGENCY' %}
+    <h1><span class="welcome-text">Welcome to</span><span class="text-gradient">AfriGuide</span></h1>
+    {% else %}
     <h1>Welcome to <span class="text-gradient">AfriGuide</span></h1>
+    {% endif %}
     {% if user.role == 'AGENCY' %}
     <p>Simplify traveler customization. Provide your activities to be instantly selected and woven into perfectly tailored, bookable itineraries.</p>
     {% else %}
@@ -271,57 +439,7 @@
       {% endif %}
 
       {% if user.role == 'AGENCY' %}
-      <!-- My Activities -->
-      <a href="{{ url_for('main.my_activities') }}" class="card-link">
-        <div class="glass-card animate-fade-in delay-1">
-          <div class="card-inner">
-            <div class="card-icon primary">🎯</div>
-            <div class="card-content">
-              <h2>My Activities</h2>
-              <p>Manage your own activities</p>
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <!-- Activities -->
-      <a href="{{ url_for('main.activities') }}" class="card-link">
-        <div class="glass-card animate-fade-in delay-2">
-          <div class="card-inner">
-            <div class="card-icon teal">📍</div>
-            <div class="card-content">
-              <h2>My Activities</h2>
-              <p>Browse all available activities</p>
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <!-- My Agency -->
-      <a href="{{ url_for('main.my_agency') }}" class="card-link">
-        <div class="glass-card animate-fade-in delay-3">
-          <div class="card-inner">
-            <div class="card-icon gold">🏢</div>
-            <div class="card-content">
-              <h2>My Agency</h2>
-              <p>View and edit your agency profile</p>
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <!-- Agencies -->
-      <a href="{{ url_for('main.agencies') }}" class="card-link">
-        <div class="glass-card animate-fade-in delay-4">
-          <div class="card-inner">
-            <div class="card-icon secondary">🏢</div>
-            <div class="card-content">
-              <h2>Agencies</h2>
-              <p>View all travel agencies</p>
-            </div>
-          </div>
-        </div>
-      </a>
+      <!-- Agency cards will be shown at the bottom -->
       {% else %}
       <!-- Browse Activities -->
       <a href="{{ url_for('main.activities') }}" class="card-link">
@@ -351,5 +469,40 @@
       {% endif %}
     </div>
   </div>
+
+  {% if user.role == 'AGENCY' %}
+  <!-- Agency Navigation Cards at Bottom -->
+  <div class="agency-cards-container">
+    <div class="agency-cards-grid">
+      <!-- My Activities -->
+      <a href="{{ url_for('main.my_activities') }}" class="agency-card animate-fade-in delay-1">
+        <div class="agency-card-icon primary">🎯</div>
+        <h3 class="agency-card-title">My Activities</h3>
+        <p class="agency-card-subtitle">Manage your own activities</p>
+      </a>
+
+      <!-- Activities -->
+      <a href="{{ url_for('main.activities') }}" class="agency-card animate-fade-in delay-2">
+        <div class="agency-card-icon teal">📍</div>
+        <h3 class="agency-card-title">Activities</h3>
+        <p class="agency-card-subtitle">Browse all available activities</p>
+      </a>
+
+      <!-- My Agency -->
+      <a href="{{ url_for('main.my_agency') }}" class="agency-card animate-fade-in delay-3">
+        <div class="agency-card-icon gold">🏢</div>
+        <h3 class="agency-card-title">My Agency</h3>
+        <p class="agency-card-subtitle">View and edit your agency profile</p>
+      </a>
+
+      <!-- Agencies -->
+      <a href="{{ url_for('main.agencies') }}" class="agency-card animate-fade-in delay-4">
+        <div class="agency-card-icon secondary">🏢</div>
+        <h3 class="agency-card-title">Agencies</h3>
+        <p class="agency-card-subtitle">View all travel agencies</p>
+      </a>
+    </div>
+  </div>
+  {% endif %}
 </body>
 </html>
