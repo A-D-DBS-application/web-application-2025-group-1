@@ -70,6 +70,32 @@
       z-index: -1;
     }
 
+    /* Traveller background with desert image */
+    body.traveller-home {
+      background-image: url("{{ url_for('static', filename='img/Woestijn_achtergrond.webp') }}");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      min-height: 100vh;
+    }
+    body.traveller-home::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.2);
+      z-index: -1;
+    }
+    body.traveller-home .bg-blob {
+      display: none;
+    }
+
     /* Background blobs */
     .bg-blob {
       position: fixed;
@@ -97,6 +123,9 @@
       display: flex; justify-content: space-between; align-items: center;
     }
     body.agency-home .nav-inner {
+      background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.85));
+    }
+    body.traveller-home .nav-inner {
       background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.85));
     }
     .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.25rem; color: var(--foreground); text-decoration: none; transition: color 0.2s; }
@@ -162,9 +191,61 @@
       font-weight: 400;
     }
 
+    /* Traveller header styling */
+    body.traveller-home .page-header {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      padding: 0 1rem;
+      margin: 0;
+    }
+    body.traveller-home .page-header h1 {
+      font-size: clamp(3.5rem, 8vw, 6rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    body.traveller-home .page-header h1 .welcome-text {
+      display: block;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      font-weight: 700;
+    }
+    body.traveller-home .page-header h1 .text-gradient {
+      display: block;
+      font-size: clamp(3.5rem, 8vw, 6rem);
+      color: white;
+      background: none;
+      -webkit-background-clip: unset;
+      -webkit-text-fill-color: white;
+      background-clip: unset;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+      font-weight: 700;
+    }
+    body.traveller-home .page-header p {
+      color: white;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      margin-top: 1.5rem;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+      font-weight: 400;
+    }
+
     /* Container */
     .container { max-width: 90rem; margin: 0 auto; padding: 0 1rem 3rem; }
     body.agency-home .container { 
+      padding-bottom: 20rem;
+      min-height: calc(100vh - 300px);
+    }
+    body.traveller-home .container {
       padding-bottom: 20rem;
       min-height: calc(100vh - 300px);
     }
@@ -189,6 +270,105 @@
       padding: 2rem 1rem;
       background: transparent;
       z-index: 10;
+    }
+
+    /* Traveller horizontal cards layout */
+    .traveller-cards-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2rem 1rem;
+      background: transparent;
+      z-index: 10;
+    }
+    .traveller-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 90rem;
+      margin: 0 auto;
+    }
+    @media (max-width: 1200px) {
+      .traveller-cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .traveller-cards-grid { grid-template-columns: 1fr; }
+    }
+    .traveller-card {
+      background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.85));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 1.5rem;
+      border: 1px solid hsla(35, 25%, 88%, 0.6);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      transition: all 0.3s;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .traveller-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15);
+    }
+    .traveller-card-icon {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin: 0 auto 1rem;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s;
+    }
+    .traveller-card:hover .traveller-card-icon {
+      transform: scale(1.1);
+    }
+    .traveller-card-icon.primary { background: linear-gradient(135deg, var(--primary), hsla(14, 72%, 50%, 1)); color: var(--primary-foreground); }
+    .traveller-card-icon.gold { background: linear-gradient(135deg, var(--gold), hsla(38, 80%, 50%, 1)); color: var(--gold-foreground); }
+    .traveller-card-icon.teal { background: linear-gradient(135deg, var(--teal), hsla(168, 55%, 35%, 1)); color: var(--teal-foreground); }
+    .traveller-card-icon.secondary { background: linear-gradient(135deg, var(--secondary), hsla(195, 50%, 18%, 1)); color: var(--secondary-foreground); }
+    .traveller-card-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--foreground);
+      transition: color 0.2s;
+    }
+    .traveller-card:hover .traveller-card-title {
+      color: var(--primary);
+    }
+    .traveller-card-subtitle {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+    .traveller-card:hover .traveller-card-subtitle {
+      color: var(--foreground);
+    }
+
+    /* Create Trip Button for Travellers */
+    .create-trip-button {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 1rem 2.5rem;
+      background: white;
+      color: var(--primary);
+      text-decoration: none;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 1.125rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s;
+    }
+    .create-trip-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+      color: hsla(14, 72%, 45%, 1);
     }
     .agency-cards-grid {
       display: grid;
@@ -334,7 +514,7 @@
     .delay-4 { animation-delay: 0.4s; opacity: 0; }
   </style>
 </head>
-<body {% if user.role == 'AGENCY' %}class="agency-home"{% endif %}>
+<body {% if user.role == 'AGENCY' %}class="agency-home"{% elif user.role != 'AGENCY' %}class="traveller-home"{% endif %}>
   <!-- Background blobs -->
   <div class="bg-blob bg-blob-1"></div>
   <div class="bg-blob bg-blob-2"></div>
@@ -382,12 +562,15 @@
     {% if user.role == 'AGENCY' %}
     <h1><span class="welcome-text">Welcome to</span><span class="text-gradient">AfriGuide</span></h1>
     {% else %}
-    <h1>Welcome to <span class="text-gradient">AfriGuide</span></h1>
+    <h1><span class="welcome-text">Welcome to</span><span class="text-gradient">AfriGuide</span></h1>
     {% endif %}
     {% if user.role == 'AGENCY' %}
     <p>Simplify traveler customization. Provide your activities to be instantly selected and woven into perfectly tailored, bookable itineraries.</p>
     {% else %}
     <p>Discover the magic of Africa. Plan your perfect adventure with personalized itineraries and local experiences.</p>
+    {% if user.role != 'AGENCY' %}
+    <a href="{{ url_for('main.create_trip') }}" class="create-trip-button">Create Your Trip</a>
+    {% endif %}
     {% endif %}
   </div>
 
@@ -395,77 +578,11 @@
     <!-- Cards Grid -->
     <div class="cards-grid">
       {% if user.role != 'AGENCY' %}
-      <!-- Create New Trip - Full Width -->
-      <a href="{{ url_for('main.create_trip') }}" class="card-link card-full-width">
-        <div class="glass-card animate-fade-in create-trip-card" style="border: none; position: relative;">
-          <div class="card-inner" style="justify-content: center; padding: 1.5rem 2rem;">
-            <div class="card-content" style="text-align: center;">
-              <h2 class="create-trip-title" style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; color: white;">
-                Create A New Trip
-              </h2>
-              <p class="create-trip-subtitle" style="font-size: 0.9375rem; color: rgba(255, 255, 255, 0.9); margin: 0;">
-                Start planning your next adventure
-              </p>
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <!-- Your Trips -->
-      <a href="{{ url_for('main.trips') }}" class="card-link">
-        <div class="glass-card animate-fade-in delay-1">
-          <div class="card-inner">
-            <div class="card-icon primary">🧳</div>
-            <div class="card-content">
-              <h2>Manage your trips</h2>
-              <p>View and manage all your planned adventures</p>
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <!-- View Itinerary -->
-      <a href="{{ url_for('main.itinerary_select') }}" class="card-link">
-        <div class="glass-card animate-fade-in delay-2">
-          <div class="card-inner">
-            <div class="card-icon gold">📅</div>
-            <div class="card-content">
-              <h2>View Itinerary</h2>
-              <p>Check your day-by-day travel schedule of planned trips</p>
-            </div>
-          </div>
-        </div>
-      </a>
+      <!-- Traveller cards will be shown at the bottom -->
       {% endif %}
 
       {% if user.role == 'AGENCY' %}
       <!-- Agency cards will be shown at the bottom -->
-      {% else %}
-      <!-- Browse Activities -->
-      <a href="{{ url_for('main.activities') }}" class="card-link">
-        <div class="glass-card animate-fade-in delay-3">
-          <div class="card-inner">
-            <div class="card-icon teal">🎯</div>
-            <div class="card-content">
-              <h2>Browse Activities</h2>
-              <p>Discover unique experiences and tours</p>
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <!-- Travel Agencies -->
-      <a href="{{ url_for('main.agencies') }}" class="card-link">
-        <div class="glass-card animate-fade-in delay-4">
-          <div class="card-inner">
-            <div class="card-icon secondary">🏢</div>
-            <div class="card-content">
-              <h2>Travel Agencies</h2>
-              <p>Connect with trusted local partners</p>
-            </div>
-          </div>
-        </div>
-      </a>
       {% endif %}
     </div>
   </div>
@@ -500,6 +617,39 @@
         <div class="agency-card-icon secondary">🏢</div>
         <h3 class="agency-card-title">Agencies</h3>
         <p class="agency-card-subtitle">View all travel agencies</p>
+      </a>
+    </div>
+  </div>
+  {% else %}
+  <!-- Traveller Navigation Cards at Bottom -->
+  <div class="traveller-cards-container">
+    <div class="traveller-cards-grid">
+      <!-- Manage your trips -->
+      <a href="{{ url_for('main.trips') }}" class="traveller-card animate-fade-in delay-1">
+        <div class="traveller-card-icon primary">🧳</div>
+        <h3 class="traveller-card-title">Manage your trips</h3>
+        <p class="traveller-card-subtitle">View and manage all your planned adventures</p>
+      </a>
+
+      <!-- View Itinerary -->
+      <a href="{{ url_for('main.itinerary_select') }}" class="traveller-card animate-fade-in delay-2">
+        <div class="traveller-card-icon gold">📅</div>
+        <h3 class="traveller-card-title">View Itinerary</h3>
+        <p class="traveller-card-subtitle">Check your day-by-day travel schedule</p>
+      </a>
+
+      <!-- Browse Activities -->
+      <a href="{{ url_for('main.activities') }}" class="traveller-card animate-fade-in delay-3">
+        <div class="traveller-card-icon teal">🎯</div>
+        <h3 class="traveller-card-title">Browse Activities</h3>
+        <p class="traveller-card-subtitle">Discover unique experiences and tours</p>
+      </a>
+
+      <!-- Travel Agencies -->
+      <a href="{{ url_for('main.agencies') }}" class="traveller-card animate-fade-in delay-4">
+        <div class="traveller-card-icon secondary">🏢</div>
+        <h3 class="traveller-card-title">Travel Agencies</h3>
+        <p class="traveller-card-subtitle">Connect with trusted local partners</p>
       </a>
     </div>
   </div>
