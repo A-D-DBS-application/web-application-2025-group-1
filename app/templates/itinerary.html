@@ -21,12 +21,17 @@
         <div class="sidebar-subtitle">
           📅 {{ trip.start_date }} — {{ trip.end_date }}
         </div>
+        <div style="margin-top: 1rem;">
+          <a href="{{ url_for('main.trips') }}" class="btn btn-outline" style="display: inline-block;">← Back to Trips</a>
+        </div>
       </div>
 
       {% if activities %}
         {% set grouped = activities|groupby('date') %}
         {% for group in grouped %}
-          {% set day_number = loop.index %}
+          {% set activity_date = group.grouper %}
+          {% set days_since_start = (activity_date - trip.start_date).days %}
+          {% set day_number = days_since_start + 1 %}
           <div class="day-title">
             <div class="day-title-main">Day {{ day_number }}</div>
             <div class="day-title-date">{{ group.grouper }}</div>
@@ -68,6 +73,9 @@
 
   </div>
 
+  <!-- Trip start date for JavaScript -->
+  <script id="trip-start-date" type="application/json">{{ trip.start_date|tojson|safe }}</script>
+  
   <!-- Activities Data for JavaScript -->
   <script id="activities-data" type="application/json">
     [
@@ -88,251 +96,9 @@
     ]
   </script>
 
-  <!-- MAPBOX SCRIPT -->
-  <script>
-    mapboxgl.accessToken = "pk.eyJ1IjoiYXJ2ZXJib3YiLCJhIjoiY21pb2Uyc3VkMDB0aTNmc2MzaXY3aDZxeCJ9.BFBZ5hFN3SbOivGbGlCnnw";
-
-    const map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/outdoors-v12',
-      center: [16.5, -28.5],
-      zoom: 4.5
-    });
-
-    const markers = {};
-    let currentPopup = null;
-    let currentIndex = 0;
-
-    // Load activities data
-    let activitiesData = [];
-    try {
-      const activitiesDataEl = document.getElementById('activities-data');
-      if (activitiesDataEl) {
-        activitiesData = JSON.parse(activitiesDataEl.textContent);
-      }
-    } catch(e) {
-      console.warn('Could not load activities:', e);
-      activitiesData = [];
-    }
-
-    // Eerst: unieke datums verzamelen om Dag 1, Dag 2, ... te bepalen
-    const dateToDay = {};
-    (function buildDateMap() {
-      let dayCounter = 1;
-      activitiesData.forEach(function(act) {
-        if (act.date) {
-          const dateStr = String(act.date);
-          if (!dateToDay[dateStr]) {
-            dateToDay[dateStr] = dayCounter++;
-          }
-        }
-      });
-    })();
-
-    // Activiteiten-array in JS (in volgorde van activities-list)
-    const points = activitiesData
-      .filter(function(act) {
-        return act.activity && act.activity.latitude && act.activity.longitude;
-      })
-      .map(function(act) {
-        const dateStr = String(act.date || '');
-        return {
-          id: act.activity.activity_type_id,
-          name: act.activity.name || '',
-          lat: act.activity.latitude,
-          lng: act.activity.longitude,
-          date: dateStr,
-          day: dateToDay[dateStr] || 1,
-          duration: act.activity.duration !== null && act.activity.duration !== undefined ? act.activity.duration : null,
-          description: act.activity.description || '',
-          image: act.activity.picture ? '/static/' + act.activity.picture : null
-        };
-      });
-
-    // Maak markers op de kaart
-    points.forEach((p, idx) => {
-      const marker = new mapboxgl.Marker({ color: "#E67E22" })
-        .setLngLat([p.lng, p.lat])
-        .addTo(map);
-      marker.getElement().addEventListener("click", () => {
-        openPopupByIndex(idx);   // idx is diezelfde index uit points.forEach(...)
-        });
-      markers[p.id] = marker;
-    });
-
-    function truncate(text, maxLen) {
-      if (!text) return "";
-      if (text.length <= maxLen) return text;
-      return text.slice(0, maxLen - 3) + "...";
-    }
-
-    function setActiveCard(id) {
-      // Alle cards resetten
-      document.querySelectorAll('.activity-card').forEach(card => {
-        card.classList.remove('active');
-      });
-      const card = document.getElementById('activity-card-' + id);
-      if (card) card.classList.add('active');
-    }
-
-    function openPopupByIndex(index) {
-      if (!points.length) return;
-      if (index < 0 || index >= points.length) return;
-      currentIndex = index;
-
-      const p = points[index];
-      const marker = markers[p.id];
-      if (!marker) return;
-
-      const lngLat = [p.lng, p.lat];
-
-      // Eventuele vorige popup sluiten
-      if (currentPopup) {
-        currentPopup.remove();
-        currentPopup = null;
-      }
-
-      // Map centreren / zoomen
-      map.flyTo({
-        center: lngLat,
-        zoom: 11,
-        speed: 0.8,
-        offset: [0, -180],
-        curve: 1.2,
-        essential: true
-      });
-
-      // Popup HTML
-      const desc = truncate(p.description, 180);
-
-      const popupHTML = `
-        <div class="popup-card">
-          <div class="popup-header">
-            <div>
-              <div class="popup-day">Day ${p.day}</div>
-              <div class="popup-date">${p.date}</div>
-            </div>
-            <div class="popup-nav">
-              <button id="popup-prev" title="Vorige activiteit">←</button>
-              <button id="popup-next" title="Volgende activiteit">→</button>
-            </div>
-          </div>
-          ${p.image ? `
-            <div class="popup-image-wrap">
-              <img src="${p.image}" alt="${p.name}">
-            </div>
-          ` : ''}
-          <div class="popup-body">
-            <div class="popup-title">${p.name}</div>
-            <div class="popup-meta-row">
-              ${p.duration !== null ? `
-                <div class="popup-pill">
-                  ⏱️ ${p.duration} ${p.duration === 1 ? 'hour' : 'hours'}
-                </div>
-              ` : ''}
-            </div>
-            ${desc ? `
-              <div class="popup-description">
-                ${desc}
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      `;
-
-      const popup = new mapboxgl.Popup({
-        closeOnClick: false,
-        offset: 18
-      })
-      .setLngLat(lngLat)
-      .setHTML(popupHTML)
-      .addTo(map);
-
-      currentPopup = popup;
-      setActiveCard(p.id);
-
-      // Buttons koppelen nadat popup in DOM zit
-      setTimeout(() => {
-        const prevBtn = document.getElementById('popup-prev');
-        const nextBtn = document.getElementById('popup-next');
-        if (prevBtn) {
-          prevBtn.onclick = (e) => {
-            e.stopPropagation();
-            const prevIndex = (currentIndex - 1 + points.length) % points.length;
-            openPopupByIndex(prevIndex);
-          };
-        }
-        if (nextBtn) {
-          nextBtn.onclick = (e) => {
-            e.stopPropagation();
-            const nextIndex = (currentIndex + 1) % points.length;
-            openPopupByIndex(nextIndex);
-          };
-        }
-      }, 0);
-    }
-
-    // Aanroepen vanuit sidebar
-    function focusActivity(id) {
-      const idx = points.findIndex(p => p.id === id);
-      if (idx === -1) return;
-      openPopupByIndex(idx);
-    }
-
-    // Add event listeners to activity cards
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('.activity-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          const activityId = parseInt(this.getAttribute('data-activity-id'));
-          if (activityId) {
-            focusActivity(activityId);
-          }
-        });
-      });
-    });
-
-    // Na load: focus automatisch op eerste activiteit (als er één is)
-    map.on('load', () => {
-      if (points.length > 0) {
-        openPopupByIndex(0);
-      }
-    });
-  </script>
-
-  <!-- Sidebar Toggle for Mobile -->
-  <script>
-    (function() {
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.querySelector('.sidebar');
-      
-      if (sidebarToggle && sidebar) {
-        sidebarToggle.addEventListener('click', function(e) {
-          e.stopPropagation();
-          sidebar.classList.toggle('show');
-          
-          // Update button text
-          if (sidebar.classList.contains('show')) {
-            sidebarToggle.textContent = '✕';
-            sidebarToggle.title = 'Hide activities';
-          } else {
-            sidebarToggle.textContent = '☰';
-            sidebarToggle.title = 'Show activities';
-          }
-        });
-        
-        // Close sidebar when clicking outside
-        document.addEventListener('click', function(e) {
-          if (sidebar.classList.contains('show') && 
-              !sidebar.contains(e.target) && 
-              !sidebarToggle.contains(e.target)) {
-            sidebar.classList.remove('show');
-            sidebarToggle.textContent = '☰';
-            sidebarToggle.title = 'Show activities';
-          }
-        });
-      }
-    })();
-  </script>
+  <!-- All JavaScript functionality is now in external files -->
+  <script src="{{ url_for('static', filename='js/itinerary-mapbox.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/itinerary-sidebar.js') }}"></script>
   {% include 'partials/_bootstrap_js.html' %}
 </body>
 </html>

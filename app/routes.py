@@ -936,6 +936,12 @@ def generate(trip_id):
     if created is None:
         flash("First add travellers details", "error")
         return redirect(url_for('main.travellers', trip_id=trip.trip_id))
+    elif created == "NO_COORDINATES":
+        flash("Some activities are missing location coordinates. Please contact support.", "error")
+        return redirect(url_for('main.trips'))
+    elif created == "AGE_FILTERED":
+        flash("No activities found that match the age requirements of all travellers.", "error")
+        return redirect(url_for('main.trips'))
     elif not created:
         flash("No suitable activities were found for this trip.", "error")
         return redirect(url_for('main.trips'))

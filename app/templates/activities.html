@@ -181,7 +181,7 @@
             <h2>{% if is_my_activities %}My Activities{% elif selected_destination %}{{ selected_destination }} Activities{% else %}All Activities{% endif %}</h2>
           </div>
           {% if is_my_activities %}
-          <button type="button" class="btn btn-primary" id="toggleAddActivityBtn" onclick="toggleAddActivityForm()">➕ Add Activity</button>
+          <button type="button" class="btn btn-primary" id="toggleAddActivityBtn">➕ Add Activity</button>
           {% endif %}
         </div>
 
@@ -267,106 +267,7 @@
     </div>
   </div>
 
-  <script>
-    (function () {
-      const form = document.getElementById("activityForm");
-      if (!form) return;
-
-      /* Destination buttons */
-      const destInput = document.getElementById("destinationInput");
-      const destBtns = document.querySelectorAll(".dest-btn");
-
-      destBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-          destBtns.forEach(b => b.classList.remove("selected"));
-          btn.classList.add("selected");
-          destInput.value = btn.dataset.value;
-        });
-      });
-
-      /* Sliders */
-      const sliders = Array.from(document.querySelectorAll(".activity-slider"));
-      const typeInput = document.getElementById("typeInput");
-
-      function valueToText(v) {
-        const val = parseInt(v, 10);
-        switch (val) {
-          case 1: return "Not really";
-          case 2: return "A little bit";
-          case 3: return "Nice extra";
-          case 4: return "Great match";
-          case 5: return "Perfect fit";
-          default: return "";
-        }
-      }
-
-      function updateSliderFill(slider) {
-        const min = parseInt(slider.min || 0, 10);
-        const max = parseInt(slider.max || 100, 10);
-        const val = parseInt(slider.value, 10);
-        const pct = ((val - min) / (max - min)) * 100;
-        slider.style.background =
-          "linear-gradient(to right, hsl(168, 55%, 40%) 0%, hsl(168, 55%, 40%) " + pct + "%, hsl(35, 25%, 88%) " + pct + "%, hsl(35, 25%, 88%) 100%)";
-      }
-
-      sliders.forEach(slider => {
-        const key = slider.dataset.key;
-        const tag = document.querySelector('.pref-tag[data-for="' + key + '"]');
-        updateSliderFill(slider);
-        if (tag) tag.textContent = valueToText(slider.value);
-        slider.addEventListener("input", () => {
-          updateSliderFill(slider);
-          if (tag) tag.textContent = valueToText(slider.value);
-        });
-      });
-
-      function chooseMainType() {
-        let best = null;
-        sliders.forEach(slider => {
-          const val = parseInt(slider.value, 10);
-          if (!best || val > best.value) {
-            best = { key: slider.dataset.key, value: val };
-          }
-        });
-        if (best) typeInput.value = best.key;
-      }
-
-      form.addEventListener("submit", () => {
-        chooseMainType();
-      });
-    })();
-
-    // Toggle Add Activity Form
-    function toggleAddActivityForm() {
-      const form = document.getElementById("addActivityForm");
-      const btn = document.getElementById("toggleAddActivityBtn");
-      
-      if (form.style.display === "none" || form.style.display === "") {
-        form.style.display = "block";
-        btn.textContent = "✕ Cancel";
-        btn.classList.remove("btn-primary");
-        btn.classList.add("btn-outline");
-      } else {
-        form.style.display = "none";
-        btn.textContent = "➕ Add Activity";
-        btn.classList.remove("btn-outline");
-        btn.classList.add("btn-primary");
-      }
-    }
-
-    // Update file input text
-    const pictureInput = document.getElementById("pictureInput");
-    const fileInputText = document.getElementById("fileInputText");
-    if (pictureInput && fileInputText) {
-      pictureInput.addEventListener("change", function(e) {
-        if (e.target.files && e.target.files.length > 0) {
-          fileInputText.textContent = e.target.files[0].name;
-        } else {
-          fileInputText.textContent = "No file chosen";
-        }
-      });
-    }
-  </script>
+  <script src="{{ url_for('static', filename='js/activity-sliders.js') }}"></script>
   {% include 'partials/_bootstrap_js.html' %}
 </body>
 </html>

@@ -31,9 +31,10 @@ def haversine(lat1, lon1, lat2, lon2):
 # -----------------------------------------
 # Score een activiteit op basis van trip-voorkeuren
 # -----------------------------------------
-def score_activity(activity: ActivityType, trip):
+def score_activity(activity: ActivityType, trip, travellers=None):
     """
     Improved scoring: uses all preference scores for better matching.
+    Now also considers fitness level matching with activity difficulty.
     """
     import json
     score = 0
@@ -42,6 +43,35 @@ def score_activity(activity: ActivityType, trip):
     if trip.destination and activity.destination:
         if trip.destination.strip().lower() == activity.destination.strip().lower():
             score += 20
+
+    # Fitness level matching (if travellers provided)
+    if travellers and activity.difficulty:
+        # Map fitness levels to difficulty levels
+        # Based on actual difficulty values: EASY, MODERATE, HARD
+        fitness_to_difficulty = {
+            'LOW': ['EASY'],
+            'MEDIUM': ['EASY', 'MODERATE'],
+            'HIGH': ['EASY', 'MODERATE', 'HARD']
+        }
+        
+        # Check if all travellers' fitness levels are suitable
+        activity_difficulty_upper = activity.difficulty.upper()
+        all_suitable = True
+        travellers_with_fitness = [t for t in travellers if t.fitness]
+        
+        # Only check if we have travellers with fitness levels
+        if travellers_with_fitness:
+            for traveller in travellers_with_fitness:
+                traveller_fitness = traveller.fitness.upper()
+                suitable_difficulties = fitness_to_difficulty.get(traveller_fitness, [])
+                if activity_difficulty_upper not in suitable_difficulties:
+                    all_suitable = False
+                    break
+            
+            if all_suitable:
+                score += 15  # Bonus for fitness match
+            else:
+                score -= 10  # Penalty for fitness mismatch
 
     # Use all preference scores if available (stored as JSON)
     preference_scores = {}
@@ -334,28 +364,46 @@ def generate_itinerary(trip):
         missing = required_ids - set(a.activity_type_id for a in required_activities)
         return False  # Cannot create itinerary without all required activities
 
-    # 2. Score berekenen
-    scored = [(a, score_activity(a, trip)) for a in suitable_activities]
+    # 2. Score berekenen (with travellers for fitness matching)
+    scored = [(a, score_activity(a, trip, travellers)) for a in suitable_activities]
 
     # 3. Sorteren op score aflopend
     scored.sort(key=lambda x: x[1], reverse=True)
 
-    # 4. Select activities: required first, then fill with top scored
+    # 4. Select activities: required first, then fill with top scored (prioritize preferences)
+    # Account for multiday activities when selecting
     top_activities = []
+    days_used = 0
+    
+    # Helper function to calculate days needed for an activity
+    def get_activity_days(activity):
+        if activity.duration:
+            # Duration in hours, convert to days (round up)
+            return max(1, (activity.duration + 23) // 24)
+        return 1  # Default: 1 day if no duration specified
     
     # Add required activities first (sorted by score)
     required_scored = [(a, s) for a, s in scored if a.activity_type_id in required_ids]
     required_scored.sort(key=lambda x: x[1], reverse=True)
-    top_activities = [a for a, s in required_scored]
     
-    # Fill remaining slots with other top-scored activities (excluding required ones)
-    remaining_slots = n_days - len(top_activities)
-    if remaining_slots > 0:
-        other_activities = [a for a, s in scored if a.activity_type_id not in required_ids]
-        top_activities.extend(other_activities[:remaining_slots])
+    for activity, score in required_scored:
+        activity_days = get_activity_days(activity)
+        if days_used + activity_days <= n_days:
+            top_activities.append(activity)
+            days_used += activity_days
     
-    # Ensure we don't exceed n_days
-    top_activities = top_activities[:n_days]
+    # Fill remaining slots with highest-scored activities (best match with preferences)
+    remaining_days = n_days - days_used
+    if remaining_days > 0:
+        other_activities = [(a, s) for a, s in scored if a.activity_type_id not in required_ids]
+        # Already sorted by score (descending), so take activities that fit
+        for activity, score in other_activities:
+            if days_used >= n_days:
+                break
+            activity_days = get_activity_days(activity)
+            if days_used + activity_days <= n_days:
+                top_activities.append(activity)
+                days_used += activity_days
 
     if not top_activities:
         return False
@@ -367,16 +415,36 @@ def generate_itinerary(trip):
     ActivityPlanned.query.filter_by(trip_id=trip.trip_id).delete()
     db.session.commit()
 
-    # 7. Activities per dag inplannen
+    # 7. Activities per dag inplannen (rekening houdend met duration)
     current_date = trip.start_date
+    
     for act in optimal_order:
+        # Calculate how many days this activity takes
+        # Duration is in hours, so divide by 24 and round up
+        activity_duration_hours = act.duration if act.duration else 0
+        activity_duration_days = max(1, (activity_duration_hours + 23) // 24)  # Round up: 40 hours = 2 days
+        
+        # Check if we have enough days left
+        days_remaining = (trip.end_date - current_date).days + 1
+        if days_remaining < activity_duration_days:
+            # Not enough days left, skip this activity
+            continue
+        
+        # Plan activity for the first day (or multiple days if it's a multiday activity)
+        # For multiday activities, we mark the start date
         planned = ActivityPlanned(
             trip_id=trip.trip_id,
             activity_type_id=act.activity_type_id,
             date=current_date
         )
         db.session.add(planned)
-        current_date += timedelta(days=1)
+        
+        # Move to next available date (skip days occupied by this activity)
+        current_date += timedelta(days=activity_duration_days)
+        
+        # Stop if we've exceeded the end date
+        if current_date > trip.end_date:
+            break
 
     db.session.commit()
     return True

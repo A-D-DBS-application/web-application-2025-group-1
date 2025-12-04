@@ -1161,26 +1161,31 @@ textarea {
 .activity-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: var(--teal);
-  border: 3px solid var(--card);
-  box-shadow: var(--shadow-md);
+  background: white;
+  border: 3px solid var(--teal);
+  box-shadow: 0 2px 8px hsla(168, 55%, 40%, 0.4), 0 0 0 2px white;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  z-index: 1;
 }
 .activity-slider::-webkit-slider-thumb:hover {
   transform: scale(1.15);
+  box-shadow: 0 4px 12px hsla(168, 55%, 40%, 0.5), 0 0 0 2px white;
 }
 .activity-slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: var(--teal);
-  border: 3px solid var(--card);
-  box-shadow: var(--shadow-md);
+  background: white;
+  border: 3px solid var(--teal);
+  box-shadow: 0 2px 8px hsla(168, 55%, 40%, 0.4), 0 0 0 2px white;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 .pref-tag {
   width: 100px;
@@ -1750,27 +1755,33 @@ tbody tr:hover {
 
 .interest-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
-  background: var(--teal);
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 3px solid var(--teal);
   border-radius: 50%;
   cursor: grab;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2px 8px hsla(168, 55%, 40%, 0.4), 0 0 0 2px white;
   transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  z-index: 1;
 }
 
 .interest-slider::-webkit-slider-thumb:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 0 4px hsla(168, 55%, 40%, 0.2);
+  box-shadow: 0 4px 12px hsla(168, 55%, 40%, 0.5), 0 0 0 2px white;
 }
 
 .interest-slider::-moz-range-thumb {
-  width: 1.25rem;
-  height: 1.25rem;
-  background: var(--teal);
-  border: none;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 3px solid var(--teal);
   border-radius: 50%;
   cursor: grab;
+  box-shadow: 0 2px 8px hsla(168, 55%, 40%, 0.4), 0 0 0 2px white;
+  position: relative;
+  z-index: 1;
 }
 
 .interest-scale {
