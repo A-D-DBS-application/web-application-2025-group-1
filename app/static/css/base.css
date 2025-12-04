@@ -114,6 +114,96 @@ nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 90rem; ma
   box-shadow: var(--shadow-md);
   display: flex; justify-content: space-between; align-items: center;
 }
+
+/* Bootstrap Navbar Integration */
+.navbar-toggler {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  display: none;
+}
+
+.navbar-toggler-icon {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+  text-align: center;
+}
+
+.navbar-collapse {
+  display: flex;
+  flex-grow: 1;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  color: hsla(25, 30%, 12%, 0.8);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background: var(--accent);
+  color: var(--foreground);
+}
+
+.nav-link.active {
+  background: var(--accent);
+  color: var(--foreground);
+}
+
+/* Responsive Navbar */
+@media (max-width: 991.98px) {
+  .navbar-toggler {
+    display: block;
+  }
+  
+  .navbar-collapse {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  .navbar-collapse.show {
+    display: flex;
+  }
+  
+  .navbar-nav {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  
+  .nav-link {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+  
+  .nav-inner {
+    flex-wrap: wrap;
+  }
+}
 body.agency-home .nav-inner {
   background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.85));
 }
@@ -311,9 +401,9 @@ body.traveller-home .flash-message-container .flash-success {
 
 /* Cards Grid */
 .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
-@media (max-width: 768px) { .cards-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1200px) { .cards-grid { grid-template-columns: 1fr; } }
 .card-full-width { grid-column: span 2; }
-@media (max-width: 768px) { .card-full-width { grid-column: span 1; } }
+@media (max-width: 1200px) { .card-full-width { grid-column: span 1; } }
 
 /* Agency horizontal cards layout */
 .agency-cards-container {
@@ -321,7 +411,7 @@ body.traveller-home .flash-message-container .flash-success {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 2rem 1rem;
+  padding: 0.5rem 2rem;
   background: transparent;
   z-index: 10;
 }
@@ -332,7 +422,7 @@ body.traveller-home .flash-message-container .flash-success {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 2rem 1rem;
+  padding: 1rem 2rem;
   background: transparent;
   z-index: 10;
 }
@@ -346,8 +436,25 @@ body.traveller-home .flash-message-container .flash-success {
 @media (max-width: 1200px) {
   .traveller-cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 768px) {
-  .traveller-cards-grid { grid-template-columns: 1fr; }
+@media (max-width: 1200px) {
+  .traveller-cards-grid { 
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .traveller-card {
+    padding: 0.875rem 1rem;
+  }
+  .traveller-card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+  }
+  .traveller-card-title {
+    font-size: 0.9rem;
+  }
+  .traveller-card-subtitle {
+    font-size: 0.75rem;
+  }
 }
 .traveller-card {
   background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.85));
@@ -355,27 +462,31 @@ body.traveller-home .flash-message-container .flash-success {
   -webkit-backdrop-filter: blur(20px);
   border-radius: 1.5rem;
   border: 1px solid hsla(35, 25%, 88%, 0.6);
-  padding: 0.75rem;
+  padding: 1.5rem 1rem;
   box-shadow: var(--shadow-lg);
   transition: all 0.3s;
   text-align: center;
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
 }
 .traveller-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15);
 }
 .traveller-card-icon {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
-  margin: 0 auto 0.5rem;
+  font-size: 1.75rem;
+  margin: 0 auto 0.75rem;
   box-shadow: var(--shadow-md);
   transition: transform 0.3s;
 }
@@ -387,20 +498,23 @@ body.traveller-home .flash-message-container .flash-success {
 .traveller-card-icon.teal { background: linear-gradient(135deg, var(--teal), hsla(168, 55%, 35%, 1)); color: var(--teal-foreground); }
 .traveller-card-icon.secondary { background: linear-gradient(135deg, var(--secondary), hsla(195, 50%, 18%, 1)); color: var(--secondary-foreground); }
 .traveller-card-title {
-  font-size: 0.875rem;
+  font-size: 1.125rem;
   font-weight: 700;
-  margin-bottom: 0.375rem;
+  margin-bottom: 0.5rem;
   color: var(--foreground);
   transition: color 0.2s;
+  text-align: center;
 }
 .traveller-card:hover .traveller-card-title {
   color: var(--primary);
 }
 .traveller-card-subtitle {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--muted-foreground);
-  line-height: 1.4;
+  line-height: 1.5;
+  text-align: center;
 }
+
 .traveller-card:hover .traveller-card-subtitle {
   color: var(--foreground);
 }
@@ -419,6 +533,14 @@ body.traveller-home .flash-message-container .flash-success {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s;
 }
+
+/* Ensure create trip button is visible on mobile/tablet */
+@media (max-width: 1200px) {
+  .create-trip-button {
+    display: inline-block !important;
+    margin-top: 1.5rem;
+  }
+}
 .create-trip-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
@@ -427,42 +549,63 @@ body.traveller-home .flash-message-container .flash-success {
 .agency-cards-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+  gap: 1rem;
   max-width: 90rem;
   margin: 0 auto;
 }
 @media (max-width: 1200px) {
   .agency-cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 768px) {
-  .agency-cards-grid { grid-template-columns: 1fr; }
+@media (max-width: 1200px) {
+  .agency-cards-grid { 
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .agency-card {
+    padding: 0.875rem 1rem;
+  }
+  .agency-card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+  }
+  .agency-card-title {
+    font-size: 0.9rem;
+  }
+  .agency-card-subtitle {
+    font-size: 0.75rem;
+  }
 }
 .agency-card {
   background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.85));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: 1.5rem;
+  border-radius: 1rem;
   border: 1px solid hsla(35, 25%, 88%, 0.6);
-  padding: 0.75rem;
+  padding: 0.875rem 0.75rem;
   box-shadow: var(--shadow-lg);
   transition: all 0.3s;
   text-align: center;
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
 }
 .agency-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15);
 }
 .agency-card-icon {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   margin: 0 auto 0.5rem;
   box-shadow: var(--shadow-md);
   transition: transform 0.3s;
@@ -475,26 +618,65 @@ body.traveller-home .flash-message-container .flash-success {
 .agency-card-icon.gold { background: linear-gradient(135deg, var(--gold), hsla(38, 80%, 50%, 1)); color: var(--gold-foreground); }
 .agency-card-icon.secondary { background: linear-gradient(135deg, var(--secondary), hsla(195, 50%, 18%, 1)); color: var(--secondary-foreground); }
 .agency-card-title {
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 700;
   margin-bottom: 0.375rem;
   color: var(--foreground);
   transition: color 0.2s;
+  text-align: center;
 }
 .agency-card:hover .agency-card-title {
   color: var(--primary);
 }
 .agency-card-subtitle {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--muted-foreground);
   line-height: 1.4;
+  text-align: center;
 }
+
 .agency-card:hover .agency-card-subtitle {
   color: var(--foreground);
 }
 
 .card-link { text-decoration: none; color: inherit; }
 .glass-card { background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.8)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 1.5rem; border: 1px solid hsla(35, 25%, 88%, 0.5); padding: 2rem; box-shadow: var(--shadow-lg); transition: all 0.3s; margin-bottom: 1.5rem; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.card-header-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.manage-travellers-btn {
+  margin-left: auto;
+}
+
+/* Responsive: Move manage travellers button below on mobile/tablet */
+@media (max-width: 1200px) {
+  .card-header {
+    flex-wrap: wrap;
+  }
+  .manage-travellers-btn {
+    margin-left: 0;
+    margin-top: 1rem;
+    width: 100%;
+    text-align: center;
+  }
+}
 .glass-card:hover:not(.create-trip-card) { transform: translateY(-4px); box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15); }
 .create-trip-card:hover { box-shadow: 0 12px 50px hsla(25, 30%, 12%, 0.15); }
 .card-inner { display: flex; align-items: flex-start; gap: 1rem; }
@@ -585,8 +767,32 @@ body.auth-page .container {
   border-radius: 25px;
   text-align: center;
   width: 400px;
+  max-width: 90%;
   box-shadow: 0 12px 35px rgba(0,0,0,0.1);
   transition: transform 0.3s ease;
+}
+
+/* Make auth pages smaller on mobile/tablet to show background */
+@media (max-width: 1200px) {
+  body.auth-page .container {
+    width: 85%;
+    max-width: 350px;
+    padding: 30px 25px;
+  }
+  body.auth-page .logo {
+    width: 60px;
+    height: 60px;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+  }
+  body.auth-page h1 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  body.auth-page p {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
 }
 
 body.auth-page .container:hover {
@@ -1076,6 +1282,21 @@ tbody tr:hover {
   height: 12rem;
 }
 
+/* PC: Make destination cards wider so country name is visible next to image */
+@media (min-width: 1200px) {
+  .destinations-grid .destination-card {
+    min-width: 500px;
+    max-width: 600px;
+  }
+  .destinations-grid .destination-card img {
+    width: 20rem;
+  }
+  .destinations-grid .destination-info {
+    padding: 1.5rem 2rem;
+    min-width: 200px;
+  }
+}
+
 /* Destination Grid for create/edit trip (grid layout) */
 .destination-grid {
   display: grid;
@@ -1084,7 +1305,7 @@ tbody tr:hover {
   margin: 2rem 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .destination-grid {
     grid-template-columns: 1fr;
   }
@@ -1252,7 +1473,7 @@ tbody tr:hover {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .form-row {
     grid-template-columns: 1fr;
   }
@@ -1274,12 +1495,33 @@ tbody tr:hover {
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
   }
-  .destination-card {
+  /* Mobile/Tablet: Stack vertically with image on top, name below */
+  .destinations-grid .destination-card {
     flex-direction: column;
+    min-width: auto;
+    height: auto;
+    min-height: auto;
   }
-  .destination-card img {
+  .destinations-grid .destination-card img {
     width: 100%;
     height: 12rem;
+    border-radius: 1rem 1rem 0 0;
+    flex-shrink: 0;
+  }
+  .destinations-grid .destination-info {
+    flex-direction: column;
+    padding: 1.25rem;
+    border-radius: 0 0 1rem 1rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .destinations-grid .destination-name {
+    text-align: center;
+    font-size: 1.1rem;
+  }
+  .destinations-grid .destination-arrow {
+    margin-top: 0.25rem;
   }
   .destination-image {
     width: 100%;
@@ -1319,6 +1561,28 @@ tbody tr:hover {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Center wizard steps on mobile/tablet */
+@media (max-width: 1200px) {
+  .wizard-steps {
+    justify-content: center;
+    gap: 0.25rem;
+  }
+  .wizard-step {
+    flex: 0 0 auto;
+    min-width: 50px;
+  }
+  .wizard-step-label {
+    font-size: 0.65rem;
+  }
+  .wizard-step-circle {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.875rem;
+  }
 }
 
 .wizard-step {
@@ -2010,31 +2274,46 @@ tbody tr:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: hsla(25, 30%, 12%, 0.5);
+  background: hsla(25, 30%, 12%, 0.6);
   backdrop-filter: blur(4px);
-  z-index: 1000;
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.2s ease-out;
 }
 
 .modal-overlay.show {
-  display: flex;
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Ensure modal is always visible when shown */
+.modal-overlay.show .modal {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .modal {
   background: linear-gradient(135deg, 
-    hsla(35, 40%, 98%, 0.95), 
-    hsla(35, 30%, 96%, 0.9));
+    hsla(35, 40%, 98%, 0.98), 
+    hsla(35, 30%, 96%, 0.95));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 1.5rem;
-  border: 1px solid hsla(35, 25%, 88%, 0.5);
+  border: 2px solid hsla(35, 25%, 88%, 0.8);
   padding: 2rem;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 40px hsla(25, 30%, 12%, 0.3);
   max-width: 28rem;
   width: 90%;
+  max-width: calc(100% - 2rem);
   animation: slideDown 0.3s ease-out;
+  position: relative;
+  z-index: 10000;
+  color: var(--foreground);
+  margin: 1rem;
 }
 
 .modal-title {
@@ -2042,19 +2321,44 @@ tbody tr:hover {
   font-weight: 700;
   margin-bottom: 1rem;
   color: var(--foreground);
+  text-align: center;
 }
 
 .modal-message {
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
+  font-size: 1rem;
+  color: var(--foreground);
   margin-bottom: 1.5rem;
-  line-height: 1.5;
+  line-height: 1.6;
+  min-height: 2rem;
+  text-align: center;
+  font-weight: 500;
 }
 
 .modal-actions {
   display: flex;
   gap: 0.75rem;
-  justify-content: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1200px) {
+  .modal {
+    padding: 1.5rem;
+    width: calc(100% - 2rem);
+    max-width: calc(100% - 2rem);
+  }
+  .modal-title {
+    font-size: 1.125rem;
+  }
+  .modal-message {
+    font-size: 0.9rem;
+  }
+  .modal-actions {
+    flex-direction: column;
+  }
+  .modal-btn {
+    width: 100%;
+  }
 }
 
 .modal-btn {
@@ -2094,6 +2398,17 @@ tbody tr:hover {
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -2165,7 +2480,7 @@ tbody tr:hover {
   gap: 1rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .form-row {
     grid-template-columns: 1fr;
   }
@@ -2230,6 +2545,22 @@ tbody tr:hover {
   gap: 0.5rem;
 }
 
+/* Stack activity buttons vertically on mobile/tablet */
+@media (max-width: 1200px) {
+  .activity-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .btn-activity {
+    width: 100%;
+  }
+  .activity-item {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
 .btn-activity {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -2263,32 +2594,39 @@ tbody tr:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: hsla(25, 30%, 12%, 0.5);
+  background: hsla(25, 30%, 12%, 0.6);
   backdrop-filter: blur(4px);
-  z-index: 2000;
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.2s ease-out;
 }
 
 .custom-modal-overlay.show {
-  display: flex;
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .custom-modal {
   background: linear-gradient(135deg, 
-    hsla(35, 40%, 98%, 0.95), 
-    hsla(35, 30%, 96%, 0.9));
+    hsla(35, 40%, 98%, 0.98), 
+    hsla(35, 30%, 96%, 0.95));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 1.5rem;
-  border: 1px solid hsla(35, 25%, 88%, 0.5);
+  border: 2px solid hsla(35, 25%, 88%, 0.8);
   padding: 2rem;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 40px hsla(25, 30%, 12%, 0.3);
   max-width: 28rem;
   width: 90%;
+  max-width: calc(100% - 2rem);
   animation: slideDown 0.3s ease-out;
   text-align: center;
+  position: relative;
+  z-index: 10000;
+  margin: 1rem;
 }
 
 .custom-modal-icon {
@@ -2312,6 +2650,36 @@ tbody tr:hover {
 
 .custom-modal .btn {
   width: 100%;
+}
+
+/* Modal actions in custom modal */
+.custom-modal .modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .custom-modal {
+    padding: 1.5rem;
+    width: calc(100% - 2rem);
+    max-width: calc(100% - 2rem);
+    margin: 1rem;
+  }
+  .custom-modal-title {
+    font-size: 1.125rem;
+  }
+  .custom-modal-message {
+    font-size: 0.9rem;
+  }
+  .custom-modal .modal-actions {
+    flex-direction: column;
+  }
+  .custom-modal .btn {
+    width: 100%;
+  }
 }
 
 /* Trip info badge */
@@ -2725,7 +3093,7 @@ select:focus {
   gap: 1.5rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .agencies-grid {
     grid-template-columns: 1fr;
   }
@@ -2878,7 +3246,7 @@ select:focus {
   margin-bottom: 2rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .info-grid {
     grid-template-columns: 1fr;
   }
@@ -3107,7 +3475,7 @@ select:focus {
   margin-bottom: 1.5rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .calendar-grid-container {
     grid-template-columns: 1fr;
   }
@@ -3435,20 +3803,103 @@ select:focus {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .layout {
     flex-direction: column;
-    height: auto;
+    height: calc(100vh - 60px);
+    margin-top: 0.5rem;
   }
   
   .sidebar {
     width: 100%;
     max-height: 50vh;
+    min-height: 200px;
+    order: 2;
+    border-right: none;
+    border-top: 1px solid hsla(35, 25%, 88%, 0.6);
+    display: none; /* Hidden by default on mobile/tablet */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    box-shadow: 0 -4px 20px hsla(25, 30%, 12%, 0.15);
+  }
+  
+  .sidebar.show {
+    display: block !important;
   }
   
   #map {
-    height: 50vh;
-    min-height: 400px;
+    height: calc(100vh - 60px);
+    min-height: 300px;
+    order: 1;
+    width: 100%;
+    position: relative;
+  }
+  
+  /* Add toggle button for sidebar on mobile/tablet */
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 100;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 20px hsla(14, 72%, 55%, 0.4);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .sidebar-toggle:hover,
+  .sidebar-toggle:active {
+    transform: scale(1.1);
+    background: hsla(14, 72%, 50%, 1);
+    box-shadow: 0 6px 30px hsla(14, 72%, 55%, 0.5);
+  }
+}
+
+/* Bootstrap Responsive Table */
+@media (max-width: 1200px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  table {
+    min-width: 600px;
+  }
+}
+
+/* Bootstrap Grid Overrides - Ensure compatibility */
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.row > * {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+/* Responsive Cards */
+@media (max-width: 576px) {
+  .agency-card,
+  .traveller-card,
+  .destination-card,
+  .trip-card {
+    margin-bottom: 1rem;
+  }
+  
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 }
 

@@ -40,8 +40,8 @@
   </div>
 
   {% if user.role == 'AGENCY' %}
-  <!-- Agency Navigation Cards at Bottom -->
-  <div class="agency-cards-container">
+  <!-- Agency Navigation Cards at Bottom - Hidden on mobile/tablet, visible on desktop -->
+  <div class="agency-cards-container d-none d-xl-block">
     <div class="agency-cards-grid">
       <!-- My Activities -->
       <a href="{{ url_for('main.my_activities') }}" class="agency-card animate-fade-in delay-1">
@@ -73,38 +73,39 @@
     </div>
   </div>
   {% else %}
-  <!-- Traveller Navigation Cards at Bottom -->
-  <div class="traveller-cards-container">
-    <div class="traveller-cards-grid">
+  <!-- Traveller Navigation Cards at Bottom - Hidden on mobile, visible on desktop -->
+  <div class="agency-cards-container d-none d-xl-block">
+    <div class="agency-cards-grid">
       <!-- Manage your trips -->
-      <a href="{{ url_for('main.trips') }}" class="traveller-card animate-fade-in delay-1">
-        <div class="traveller-card-icon primary">🧳</div>
-        <h3 class="traveller-card-title">Manage your trips</h3>
-        <p class="traveller-card-subtitle">View and manage all your planned adventures</p>
+      <a href="{{ url_for('main.trips') }}" class="agency-card animate-fade-in delay-1">
+        <div class="agency-card-icon primary">🧳</div>
+        <h3 class="agency-card-title">Manage your trips</h3>
+        <p class="agency-card-subtitle">View and manage all your planned adventures</p>
       </a>
 
       <!-- View Itinerary -->
-      <a href="{{ url_for('main.itinerary_select') }}" class="traveller-card animate-fade-in delay-2">
-        <div class="traveller-card-icon gold">📅</div>
-        <h3 class="traveller-card-title">View Itinerary</h3>
-        <p class="traveller-card-subtitle">Check your day-by-day travel schedule</p>
+      <a href="{{ url_for('main.itinerary_select') }}" class="agency-card animate-fade-in delay-2">
+        <div class="agency-card-icon gold">📅</div>
+        <h3 class="agency-card-title">View Itinerary</h3>
+        <p class="agency-card-subtitle">Check your day-by-day travel schedule</p>
       </a>
 
       <!-- Browse Activities -->
-      <a href="{{ url_for('main.activities') }}" class="traveller-card animate-fade-in delay-3">
-        <div class="traveller-card-icon teal">🎯</div>
-        <h3 class="traveller-card-title">Browse Activities</h3>
-        <p class="traveller-card-subtitle">Discover unique experiences and tours</p>
+      <a href="{{ url_for('main.activities') }}" class="agency-card animate-fade-in delay-3">
+        <div class="agency-card-icon teal">🎯</div>
+        <h3 class="agency-card-title">Browse Activities</h3>
+        <p class="agency-card-subtitle">Discover unique experiences and tours</p>
       </a>
 
       <!-- Travel Agencies -->
-      <a href="{{ url_for('main.agencies') }}" class="traveller-card animate-fade-in delay-4">
-        <div class="traveller-card-icon secondary">🏢</div>
-        <h3 class="traveller-card-title">Travel Agencies</h3>
-        <p class="traveller-card-subtitle">Connect with trusted local partners</p>
+      <a href="{{ url_for('main.agencies') }}" class="agency-card animate-fade-in delay-4">
+        <div class="agency-card-icon secondary">🏢</div>
+        <h3 class="agency-card-title">Travel Agencies</h3>
+        <p class="agency-card-subtitle">Connect with trusted local partners</p>
       </a>
     </div>
   </div>
   {% endif %}
+  {% include 'partials/_bootstrap_js.html' %}
 </body>
 </html>

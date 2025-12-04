@@ -18,4 +18,14 @@ class Config:
         "DATABASE_URL",
         "postgresql://postgres.eoysewmdlgotspzgbpkb:Group1_ADDBS!@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require",
     )
+    # Connection pool settings to handle Supabase connection issues
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,  # Verify connections before using them
+        'pool_recycle': 300,   # Recycle connections after 5 minutes
+        'pool_size': 5,        # Number of connections to maintain
+        'max_overflow': 10,     # Maximum overflow connections
+        'connect_args': {
+            'connect_timeout': 10,  # Connection timeout in seconds
+        }
+    }
 

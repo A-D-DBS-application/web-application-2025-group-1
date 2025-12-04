@@ -33,7 +33,7 @@
           <h2>Edit Trip</h2>
           <p>Modify your adventure details</p>
         </div>
-        <a href="{{ url_for('main.travellers', trip_id=trip.trip_id) }}" class="btn btn-secondary" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">👥 Manage Travellers</a>
+        <a href="{{ url_for('main.travellers', trip_id=trip.trip_id) }}" class="btn btn-secondary manage-travellers-btn">👥 Manage Travellers</a>
       </div>
 
       <div class="trip-info-badge">
@@ -513,5 +513,6 @@
     }, 1000);
   })();
   </script>
+  {% include 'partials/_bootstrap_js.html' %}
 </body>
 </html>

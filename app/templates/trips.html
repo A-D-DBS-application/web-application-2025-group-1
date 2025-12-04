@@ -26,10 +26,10 @@
       </div>
 
         <!-- Your Trips List -->
-        <div class="trips-list">
+        <div class="trips-list row g-3">
         {% if trips %}
           {% for trip in trips %}
-            <div class="trip-card" data-trip-id="{{ trip.trip_id }}">
+            <div class="trip-card col-12 col-md-6 col-lg-4" data-trip-id="{{ trip.trip_id }}">
               <div class="trip-card-header">
                 <div>
                   <div class="trip-card-title">
@@ -106,13 +106,14 @@
     </div>
 
     <!-- Confirmation Modal for Delete -->
-    <div class="modal-overlay" id="confirmModal">
-      <div class="modal">
-        <div class="modal-title">Confirm Action</div>
-        <div class="modal-message" id="confirmMessage"></div>
+    <div class="custom-modal-overlay" id="confirmModal">
+      <div class="custom-modal">
+        <div class="custom-modal-icon">⚠️</div>
+        <div class="custom-modal-title">Attention Required</div>
+        <div class="custom-modal-message" id="confirmMessage"></div>
         <div class="modal-actions">
-          <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancel</button>
-          <button class="modal-btn modal-btn-confirm" id="confirmOk">OK</button>
+          <button class="btn btn-outline" id="confirmCancel">Cancel</button>
+          <button class="btn btn-primary" id="confirmOk">OK</button>
         </div>
       </div>
     </div>
@@ -458,5 +459,6 @@
     }
   });
   </script>
+  {% include 'partials/_bootstrap_js.html' %}
 </body>
 </html>

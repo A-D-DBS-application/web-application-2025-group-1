@@ -11,6 +11,7 @@
   {% include 'partials/_navbar.html' %}
 
   <!-- MAIN LAYOUT -->
+  <button class="sidebar-toggle d-xl-none" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
   <div class="layout">
 
     <!-- LEFT: ACTIVITIES LIST -->
@@ -298,5 +299,40 @@
     });
   </script>
 
+  <!-- Sidebar Toggle for Mobile -->
+  <script>
+    (function() {
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.querySelector('.sidebar');
+      
+      if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          sidebar.classList.toggle('show');
+          
+          // Update button text
+          if (sidebar.classList.contains('show')) {
+            sidebarToggle.textContent = '✕';
+            sidebarToggle.title = 'Hide activities';
+          } else {
+            sidebarToggle.textContent = '☰';
+            sidebarToggle.title = 'Show activities';
+          }
+        });
+        
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(e) {
+          if (sidebar.classList.contains('show') && 
+              !sidebar.contains(e.target) && 
+              !sidebarToggle.contains(e.target)) {
+            sidebar.classList.remove('show');
+            sidebarToggle.textContent = '☰';
+            sidebarToggle.title = 'Show activities';
+          }
+        });
+      }
+    })();
+  </script>
+  {% include 'partials/_bootstrap_js.html' %}
 </body>
 </html>

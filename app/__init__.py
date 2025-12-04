@@ -9,7 +9,11 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    # Initialize database
+    # Flask-SQLAlchemy 3.x automatically reads SQLALCHEMY_ENGINE_OPTIONS from config
+    # This handles Supabase connection issues where connections are closed unexpectedly
     db.init_app(app)
+    
     migrate.init_app(app, db)  # <— 3 verbinden van migratiesysteem koppel flask-migrate aan app en db
 
     from .routes import main
