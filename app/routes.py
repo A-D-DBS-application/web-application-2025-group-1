@@ -206,26 +206,7 @@ def logout():
     flash("You have been logged out.", "success")
     return redirect(url_for('main.index'))
 
-@main.route('/update-profile', methods=['GET', 'POST'])
-def update_profile():
-    user_id = session.get('user_id')
-    user = User.query.get(user_id)
 
-    if request.method == 'POST':
-        user.full_name = request.form.get('full_name')
-        user.email = request.form.get('email')
-        user.phone = request.form.get('phone')
-
-        try:
-            db.session.commit()
-            flash('Profile updated successfully!', 'success')
-        except:
-            db.session.rollback()
-            flash('Error updating profile.', 'error')
-
-        return redirect(url_for('main.update_profile'))
-
-    return render_template('update_profile.html', user=user)
 
 #hiermee kan de user een trip aanmaken
 @main.route('/trips', methods=['GET'])
