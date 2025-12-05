@@ -1,34 +1,66 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg">
   <div class="nav-inner container-fluid">
+    
+    <!-- Logo -->
     <a href="{{ url_for('main.home') }}" class="logo">
       <div class="logo-icon">🧭</div>
       <span>AfriGuide</span>
     </a>
+
+    <!-- Mobile Toggle -->
     <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon">☰</span>
     </button>
+
+    <!-- Navigation Items -->
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        {% set user_obj = user if user is defined else current_user if current_user is defined else none %}
-        {% set is_agency_user = (user_obj and user_obj.role == 'AGENCY') or (is_agency is defined and is_agency) %}
-        
+
+        {% set user_obj = user if user is defined else none %}
+        {% set is_agency_user = user_obj and user_obj.role == 'AGENCY' %}
+
         {% if user_obj and not is_agency_user %}
-        <li class="nav-item"><a class="nav-link{% if request.endpoint == 'main.trips' %} active{% endif %}" href="{{ url_for('main.trips') }}">🧭 Trips</a></li>
+          <li class="nav-item">
+            <a class="nav-link{% if request.endpoint == 'main.trips' %} active{% endif %}" href="{{ url_for('main.trips') }}">🧭 Trips</a>
+          </li>
         {% endif %}
+
         {% if is_agency_user %}
-        <li class="nav-item"><a class="nav-link{% if request.endpoint == 'main.my_activities' %} active{% endif %}" href="{{ url_for('main.my_activities') }}">🎯 My Activities</a></li>
+          <li class="nav-item">
+            <a class="nav-link{% if request.endpoint == 'main.my_activities' %} active{% endif %}" href="{{ url_for('main.my_activities') }}">🎯 My Activities</a>
+          </li>
         {% endif %}
-        <li class="nav-item"><a class="nav-link{% if request.endpoint == 'main.activities' %} active{% endif %}" href="{{ url_for('main.activities') }}">📍 Activities</a></li>
+
+        <li class="nav-item">
+          <a class="nav-link{% if request.endpoint == 'main.activities' %} active{% endif %}" href="{{ url_for('main.activities') }}">📍 Activities</a>
+        </li>
+
         {% if is_agency_user %}
-        <li class="nav-item"><a class="nav-link{% if request.endpoint == 'main.my_agency' %} active{% endif %}" href="{{ url_for('main.my_agency') }}">🏢 My Agency</a></li>
+          <li class="nav-item">
+            <a class="nav-link{% if request.endpoint == 'main.my_agency' %} active{% endif %}" href="{{ url_for('main.my_agency') }}">🏢 My Agency</a>
+          </li>
         {% endif %}
-        <li class="nav-item"><a class="nav-link{% if request.endpoint == 'main.agencies' %} active{% endif %}" href="{{ url_for('main.agencies') }}">🏢 Agencies</a></li>
+
+        <li class="nav-item">
+          <a class="nav-link{% if request.endpoint == 'main.agencies' %} active{% endif %}" href="{{ url_for('main.agencies') }}">🏢 Agencies</a>
+        </li>
+
         {% if user_obj %}
-        <li class="nav-item"><a class="nav-link btn-logout" href="{{ url_for('main.logout') }}">🚪 Logout</a></li>
+          <!-- ⭐ Update Profile Button -->
+          <li class="nav-item">
+            <a class="nav-link update-profile-button" href="{{ url_for('main.update_profile') }}">Update Profile</a>
+          </li>
+
+          <!-- Logout -->
+          <li class="nav-item">
+            <a class="nav-link btn-logout" href="{{ url_for('main.logout') }}">🚪 Logout</a>
+          </li>
         {% endif %}
+
       </ul>
     </div>
+
   </div>
 </nav>
 
