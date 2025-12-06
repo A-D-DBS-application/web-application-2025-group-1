@@ -460,6 +460,14 @@ body.traveller-home .flash-message-container .flash-success {
   background: transparent;
   z-index: 10;
 }
+/* On mobile, make cards scrollable instead of fixed */
+@media (max-width: 991px) {
+  .agency-cards-container {
+    position: relative;
+    padding: 1.5rem 1rem;
+    margin-top: 2rem;
+  }
+}
 
 /* Traveller horizontal cards layout */
 .traveller-cards-container {
@@ -470,6 +478,13 @@ body.traveller-home .flash-message-container .flash-success {
   padding: 1rem 2rem;
   background: transparent;
   z-index: 10;
+}
+@media (max-width: 991px) {
+  .traveller-cards-container {
+    position: relative;
+    padding: 1.5rem 1rem;
+    margin-top: 2rem;
+  }
 }
 .traveller-cards-grid {
   display: grid;
@@ -598,27 +613,29 @@ body.traveller-home .flash-message-container .flash-success {
   max-width: 90rem;
   margin: 0 auto;
 }
+/* Tablet: 2 columns */
 @media (max-width: 1200px) {
   .agency-cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 1200px) {
+/* Mobile: 2 columns but smaller */
+@media (max-width: 576px) {
   .agency-cards-grid { 
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
   }
   .agency-card {
-    padding: 0.875rem 1rem;
+    padding: 0.75rem;
   }
   .agency-card-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.25rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
   }
   .agency-card-title {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
   .agency-card-subtitle {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
   }
 }
 .agency-card {

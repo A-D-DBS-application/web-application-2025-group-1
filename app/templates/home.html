@@ -40,8 +40,8 @@
   </div>
 
   {% if user.role == 'AGENCY' %}
-  <!-- Agency Navigation Cards at Bottom - Hidden on mobile/tablet, visible on desktop -->
-  <div class="agency-cards-container d-none d-xl-block">
+  <!-- Agency Navigation Cards at Bottom -->
+  <div class="agency-cards-container">
     <div class="agency-cards-grid">
       <!-- My Activities -->
       <a href="{{ url_for('main.my_activities') }}" class="agency-card animate-fade-in delay-1">
@@ -73,8 +73,8 @@
     </div>
   </div>
   {% else %}
-  <!-- Traveller Navigation Cards at Bottom - Hidden on mobile, visible on desktop -->
-  <div class="agency-cards-container d-none d-xl-block">
+  <!-- Traveller Navigation Cards at Bottom -->
+  <div class="agency-cards-container">
     <div class="agency-cards-grid">
       <!-- Manage your trips -->
       <a href="{{ url_for('main.trips') }}" class="agency-card animate-fade-in delay-1">
