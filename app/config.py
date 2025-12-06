@@ -14,10 +14,16 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "your_secret_key")
-    SQLALCHEMY_DATABASE_URI = os.getenv(
+    
+    # Get database URL and convert to use psycopg3 driver if needed
+    _db_url = os.getenv(
         "DATABASE_URL",
         "postgresql://postgres.eoysewmdlgotspzgbpkb:Group1_ADDBS!@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require",
     )
+    # Convert postgresql:// to postgresql+psycopg:// to use psycopg3
+    if _db_url.startswith("postgresql://") and not _db_url.startswith("postgresql+psycopg://"):
+        _db_url = _db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    SQLALCHEMY_DATABASE_URI = _db_url
     # Connection pool settings to handle Supabase connection issues
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,  # Verify connections before using them
