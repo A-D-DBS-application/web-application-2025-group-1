@@ -88,7 +88,7 @@
             </div>
             {% if activity.picture %}
               <p class="current-file">
-                Current: <a href="{{ url_for('static', filename=activity.picture) }}" target="_blank">View current picture</a>
+                Current: <a href="{{ activity.picture|activity_image_url }}" target="_blank">View current picture</a>
               </p>
             {% endif %}
           </div>

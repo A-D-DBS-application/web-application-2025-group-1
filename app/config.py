@@ -35,4 +35,10 @@ class Config:
             'prepare_threshold': None,  # Disable prepared statements to avoid DuplicatePreparedStatement errors
         }
     }
+    
+    # Supabase Storage Configuration
+    SUPABASE_URL = os.getenv("SUPABASE_URL", "https://eoysewmdlgotspzgbpkb.supabase.co")
+    SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVveXNld21kbGdvdHNwemdvcGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4MDQxMTcsImV4cCI6MjA0ODM4MDExN30.P3FfxPOqLoR4y_dTwpzw1SXIlvPdYKlaCYO70GMRO_c")
+    SUPABASE_BUCKET_ACTIVITIES = "activities"
+    SUPABASE_BUCKET_LOGOS = "logos"
 

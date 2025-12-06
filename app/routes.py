@@ -10,6 +10,7 @@ from .models import (
     get_activity_types, get_difficulty_levels
 )
 from .utils import generate_itinerary
+from .storage import upload_file_to_supabase, delete_file_from_supabase, get_activity_image_url, get_logo_url
 
 
 # ⬇️ Maak een Blueprint aan i.p.v. rechtstreeks met app werken
@@ -663,24 +664,17 @@ def my_activities():
         duration_str = request.form.get('duration')
         duration = int(duration_str) if duration_str and duration_str.strip() else None
 
-        # Picture upload
+        # Picture upload to Supabase Storage
         picture_path = None
         if 'picture' in request.files:
             picture_file = request.files['picture']
             if picture_file and picture_file.filename:
-                # Create uploads/activities directory if it doesn't exist
-                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'activities')
-                os.makedirs(upload_dir, exist_ok=True)
-                
-                # Generate unique filename
-                filename = secure_filename(picture_file.filename)
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                unique_filename = f"{timestamp}_{filename}"
-                file_path = os.path.join(upload_dir, unique_filename)
-                
-                picture_file.save(file_path)
-                # Store relative path for database
-                picture_path = f"uploads/activities/{unique_filename}"
+                bucket_name = current_app.config.get('SUPABASE_BUCKET_ACTIVITIES', 'activities')
+                success, result = upload_file_to_supabase(picture_file, bucket_name)
+                if success:
+                    picture_path = result
+                else:
+                    flash(f"Warning: Could not upload image. {result}", "error")
 
         if not name or not type_ or not destination:
             flash("Please fill in all required fields.", "error")
@@ -777,29 +771,22 @@ def edit_activity(activity_id):
         duration_str = request.form.get('duration')
         activity.duration = int(duration_str) if duration_str and duration_str.strip() else None
 
-        # Picture upload
+        # Picture upload to Supabase Storage
         if 'picture' in request.files:
             picture_file = request.files['picture']
             if picture_file and picture_file.filename:
-                # Create uploads/activities directory if it doesn't exist
-                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'activities')
-                os.makedirs(upload_dir, exist_ok=True)
+                bucket_name = current_app.config.get('SUPABASE_BUCKET_ACTIVITIES', 'activities')
                 
                 # Delete old picture if exists
                 if activity.picture:
-                    old_picture_path = os.path.join(current_app.root_path, 'static', activity.picture)
-                    if os.path.exists(old_picture_path):
-                        os.remove(old_picture_path)
+                    delete_file_from_supabase(activity.picture, bucket_name)
                 
-                # Generate unique filename
-                filename = secure_filename(picture_file.filename)
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                unique_filename = f"{timestamp}_{filename}"
-                file_path = os.path.join(upload_dir, unique_filename)
-                
-                picture_file.save(file_path)
-                # Store relative path for database
-                activity.picture = f"uploads/activities/{unique_filename}"
+                # Upload new picture
+                success, result = upload_file_to_supabase(picture_file, bucket_name)
+                if success:
+                    activity.picture = result
+                else:
+                    flash(f"Warning: Could not upload image. {result}", "error")
 
         if not activity.name or not activity.type or not activity.destination:
             flash("Please fill in all required fields.", "error")
@@ -877,43 +864,8 @@ def agencies():
 
 @main.route('/my_agency', methods=['GET', 'POST'])
 def my_agency():
-    if 'user_id' not in session:
-        flash("You must be logged in to view your agency profile.", "error")
-        return redirect(url_for('main.login'))
-    
-    current_user = User.query.get(session['user_id'])
-    if not current_user or current_user.role != 'AGENCY':
-        flash("This page is only available for agencies.", "error")
-        return redirect(url_for('main.activities'))
-    
-    user_agency = TravelAgency.query.filter_by(user_id=current_user.user_id).first()
-    
-    if not user_agency:
-        # Create agency record if it doesn't exist
-        user_agency = TravelAgency(
-            name=current_user.name or "My Agency",
-            contact_info="",
-            website="",
-            user_id=current_user.user_id,
-            created_at=datetime.utcnow()
-        )
-        db.session.add(user_agency)
-        db.session.commit()
-    
-    if request.method == 'POST':
-        # Update agency information
-        website_url = request.form.get('website_url', '').strip()
-        logo_url = request.form.get('logo_url', '').strip()
-        
-        user_agency.website = website_url
-        user_agency.contact_info = logo_url  # Using contact_info to store logo URL
-        user_agency.updated_at = datetime.utcnow()
-        
-        db.session.commit()
-        flash("Agency information updated successfully!", "success")
-        return redirect(url_for('main.my_agency'))
-    
-    return render_template('my_agency.html', user=current_user, agency=user_agency)
+    """Redirect to profile page - agency info is now managed there"""
+    return redirect(url_for('main.profile'))
 
 @main.route('/generate_itinerary/<int:trip_id>')
 def generate(trip_id):
@@ -995,6 +947,22 @@ def profile():
         flash("User not found.", "error")
         return redirect(url_for('main.login'))
     
+    # Get agency if user is an agency
+    agency = None
+    if user.role == 'AGENCY':
+        agency = TravelAgency.query.filter_by(user_id=user.user_id).first()
+        if not agency:
+            # Create agency record if it doesn't exist
+            agency = TravelAgency(
+                name=user.name or "My Agency",
+                contact_info="",
+                website="",
+                user_id=user.user_id,
+                created_at=datetime.utcnow()
+            )
+            db.session.add(agency)
+            db.session.commit()
+    
     if request.method == 'POST':
         field = request.form.get('field', '')
         
@@ -1004,6 +972,9 @@ def profile():
                 flash("Name is required.", "error")
                 return redirect(url_for('main.profile'))
             user.name = name
+            # Also update agency name if user is an agency
+            if agency:
+                agency.name = name
             flash("Name updated successfully!", "success")
             
         elif field == 'email':
@@ -1024,6 +995,33 @@ def profile():
             user.phone_number = phone_number if phone_number else None
             flash("Phone number updated successfully!", "success")
         
+        elif field == 'website' and agency:
+            website = request.form.get('website', '').strip()
+            agency.website = website if website else None
+            agency.updated_at = datetime.utcnow()
+            flash("Website updated successfully!", "success")
+        
+        elif field == 'logo' and agency:
+            if 'logo' in request.files:
+                logo_file = request.files['logo']
+                if logo_file and logo_file.filename:
+                    bucket_name = current_app.config.get('SUPABASE_BUCKET_LOGOS', 'logos')
+                    
+                    # Delete old logo if exists
+                    if agency.contact_info:
+                        delete_file_from_supabase(agency.contact_info, bucket_name)
+                    
+                    # Upload new logo
+                    success, result = upload_file_to_supabase(logo_file, bucket_name)
+                    if success:
+                        agency.contact_info = result
+                        agency.updated_at = datetime.utcnow()
+                        flash("Logo updated successfully!", "success")
+                    else:
+                        flash(f"Could not upload logo: {result}", "error")
+                else:
+                    flash("Please select a file to upload.", "error")
+        
         db.session.commit()
         return redirect(url_for('main.profile'))
     
@@ -1032,7 +1030,7 @@ def profile():
     if user.role == 'TRAVELLER':
         trip_count = Trip.query.filter_by(user_id=user.user_id).count()
     
-    return render_template('profile.html', user=user, trip_count=trip_count)
+    return render_template('profile.html', user=user, agency=agency, trip_count=trip_count)
 
 
 @main.route('/itinerary/<int:trip_id>/share')

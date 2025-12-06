@@ -50,7 +50,7 @@
               data-activity-id="{{ act.activity.activity_type_id }}"
             >
               {% if act.activity.picture %}
-                <img src="{{ url_for('static', filename=act.activity.picture) }}" class="activity-image" alt="{{ act.activity.name }}">
+                <img src="{{ act.activity.picture|activity_image_url }}" class="activity-image" alt="{{ act.activity.name }}">
               {% else %}
                 <div class="activity-fallback-icon">🎯</div>
               {% endif %}

@@ -19,11 +19,7 @@
         <div class="agency-header">
           <div class="agency-avatar">
             {% if item.logo %}
-              {% if item.logo.startswith('http') %}
-                <img src="{{ item.logo }}" alt="{{ item.agency.name }} Logo" onerror="this.parentElement.innerHTML='🏢';">
-              {% else %}
-                <img src="{{ url_for('static', filename=item.logo) }}" alt="{{ item.agency.name }} Logo" onerror="this.parentElement.innerHTML='🏢';">
-              {% endif %}
+              <img src="{{ item.logo|logo_url }}" alt="{{ item.agency.name }} Logo" onerror="this.parentElement.innerHTML='🏢';">
             {% else %}
               🏢
             {% endif %}

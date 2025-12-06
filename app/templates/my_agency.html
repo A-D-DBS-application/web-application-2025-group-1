@@ -47,8 +47,8 @@
 
       {% if agency.contact_info %}
       <div class="logo-preview">
-        <div class="info-label" style="margin-bottom: 0.5rem;">Logo</div>
-        <img src="{{ agency.contact_info }}" alt="Agency Logo" onerror="this.style.display='none';">
+        <div class="info-label" style="margin-bottom: 0.5rem;">Current Logo</div>
+        <img src="{{ agency.contact_info|logo_url }}" alt="Agency Logo" onerror="this.style.display='none';">
       </div>
       {% endif %}
     </div>
@@ -60,7 +60,7 @@
         <h2>Update Agency Information</h2>
       </div>
 
-      <form method="POST" action="{{ url_for('main.my_agency') }}">
+      <form method="POST" action="{{ url_for('main.my_agency') }}" enctype="multipart/form-data">
         <label for="website_url">Website URL</label>
         <input 
           type="url" 
@@ -70,23 +70,30 @@
           value="{{ agency.website or '' }}"
         >
 
-        <label for="logo_url">Logo URL</label>
-        <input 
-          type="url" 
-          id="logo_url" 
-          name="logo_url" 
-          placeholder="https://example.com/logo.png"
-          value="{{ agency.contact_info or '' }}"
-        >
-        <small style="color: var(--muted-foreground); font-size: 0.875rem; display: block; margin-top: -0.75rem; margin-bottom: 1rem;">
-          Enter the full URL of your logo image
+        <label>Agency Logo</label>
+        <div style="position: relative; margin-bottom: 1rem;">
+          <input type="file" name="logo" accept="image/*" id="logoInput" style="position: absolute; opacity: 0; width: 0; height: 0;">
+          <label for="logoInput" class="file-input-label">
+            <span class="file-input-button">Choose File</span>
+            <span class="file-input-text" id="logoFileText">No file chosen</span>
+          </label>
+        </div>
+        <small style="color: var(--muted-foreground); font-size: 0.875rem; display: block; margin-top: -0.5rem; margin-bottom: 1rem;">
+          Upload your agency logo (PNG, JPG, or WebP recommended)
         </small>
 
         <button type="submit" class="btn btn-primary">💾 Save Changes</button>
       </form>
     </div>
   </div>
+
+  <script>
+    // Update file input text when file is selected
+    document.getElementById('logoInput').addEventListener('change', function(e) {
+      const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+      document.getElementById('logoFileText').textContent = fileName;
+    });
+  </script>
   {% include 'partials/_bootstrap_js.html' %}
 </body>
 </html>
-

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-{% set page_title = 'My Account' %}
+{% set page_title = 'My Agency' if user.role == 'AGENCY' else 'My Account' %}
 {% include 'partials/_head.html' %}
 <body>
   {% include 'partials/_background_blobs.html' %}
   {% include 'partials/_navbar.html' %}
 
-  {% set header_title = '<span class="text-gradient">My Account</span>' %}
-  {% set header_subtitle = 'Manage your personal information' %}
+  {% set header_title = '<span class="text-gradient">' + ('My Agency' if user.role == 'AGENCY' else 'My Account') + '</span>' %}
+  {% set header_subtitle = 'Manage your agency information' if user.role == 'AGENCY' else 'Manage your personal information' %}
   {% include 'partials/_page_header.html' %}
 
   <div class="container narrow">
@@ -29,9 +29,18 @@
 
       <div class="divider"></div>
 
-      <!-- Personal Information -->
+      <!-- Section Header - different for agencies vs travellers -->
       <div class="section-header">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
+          {% if user.role == 'AGENCY' %}
+          <div class="section-icon gold">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </div>
+          <h3>Agency Information</h3>
+          {% else %}
           <div class="section-icon primary">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -39,14 +48,15 @@
             </svg>
           </div>
           <h3>Personal Information</h3>
+          {% endif %}
         </div>
       </div>
 
-      <!-- Full Name -->
+      <!-- Agency Name / Full Name -->
       <div class="profile-field" id="field-name">
         <div class="profile-field-view">
           <div class="profile-field-info">
-            <label class="form-label">Full Name</label>
+            <label class="form-label">{% if user.role == 'AGENCY' %}Agency Name{% else %}Full Name{% endif %}</label>
             <div class="profile-field-value">{{ user.name or 'Not set' }}</div>
           </div>
           <button type="button" class="btn btn-outline btn-sm" onclick="editField('name')">Edit</button>
@@ -54,8 +64,8 @@
         <form class="profile-field-edit" method="POST" action="{{ url_for('main.profile') }}" style="display: none;">
           <input type="hidden" name="field" value="name">
           <div class="profile-field-input">
-            <label class="form-label">Full Name</label>
-            <input type="text" name="name" class="form-input" value="{{ user.name or '' }}" placeholder="Enter your full name" required>
+            <label class="form-label">{% if user.role == 'AGENCY' %}Agency Name{% else %}Full Name{% endif %}</label>
+            <input type="text" name="name" class="form-input" value="{{ user.name or '' }}" placeholder="{% if user.role == 'AGENCY' %}Enter agency name{% else %}Enter your full name{% endif %}" required>
           </div>
           <div class="profile-field-actions">
             <button type="button" class="btn btn-outline btn-sm" onclick="cancelEdit('name')">Cancel</button>
@@ -77,7 +87,7 @@
           <input type="hidden" name="field" value="email">
           <div class="profile-field-input">
             <label class="form-label">Email Address</label>
-            <input type="email" name="email" class="form-input" value="{{ user.email or '' }}" placeholder="Enter your email address" required>
+            <input type="email" name="email" class="form-input" value="{{ user.email or '' }}" placeholder="Enter email address" required>
           </div>
           <div class="profile-field-actions">
             <button type="button" class="btn btn-outline btn-sm" onclick="cancelEdit('email')">Cancel</button>
@@ -99,7 +109,7 @@
           <input type="hidden" name="field" value="phone">
           <div class="profile-field-input">
             <label class="form-label">Phone Number</label>
-            <input type="tel" name="phone_number" class="form-input" value="{{ user.phone_number or '' }}" placeholder="Enter your phone number">
+            <input type="tel" name="phone_number" class="form-input" value="{{ user.phone_number or '' }}" placeholder="Enter phone number">
           </div>
           <div class="profile-field-actions">
             <button type="button" class="btn btn-outline btn-sm" onclick="cancelEdit('phone')">Cancel</button>
@@ -107,6 +117,65 @@
           </div>
         </form>
       </div>
+
+      {% if user.role == 'AGENCY' and agency %}
+      <!-- Website (Agency only) -->
+      <div class="profile-field" id="field-website">
+        <div class="profile-field-view">
+          <div class="profile-field-info">
+            <label class="form-label">Website</label>
+            <div class="profile-field-value">
+              {% if agency.website %}
+                <a href="{{ agency.website }}" target="_blank" style="color: var(--primary); text-decoration: none;">{{ agency.website }}</a>
+              {% else %}
+                Not set
+              {% endif %}
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="editField('website')">Edit</button>
+        </div>
+        <form class="profile-field-edit" method="POST" action="{{ url_for('main.profile') }}" style="display: none;">
+          <input type="hidden" name="field" value="website">
+          <div class="profile-field-input">
+            <label class="form-label">Website URL</label>
+            <input type="url" name="website" class="form-input" value="{{ agency.website or '' }}" placeholder="https://example.com">
+          </div>
+          <div class="profile-field-actions">
+            <button type="button" class="btn btn-outline btn-sm" onclick="cancelEdit('website')">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Logo (Agency only) -->
+      <div class="profile-field" id="field-logo">
+        <div class="profile-field-view">
+          <div class="profile-field-info">
+            <label class="form-label">Agency Logo</label>
+            <div class="profile-field-value">
+              {% if agency.contact_info %}
+                <img src="{{ agency.contact_info|logo_url }}" alt="Agency Logo" style="max-height: 60px; border-radius: 0.5rem;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                <span style="display: none;">Logo uploaded</span>
+              {% else %}
+                Not set
+              {% endif %}
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="editField('logo')">Edit</button>
+        </div>
+        <form class="profile-field-edit" method="POST" action="{{ url_for('main.profile') }}" enctype="multipart/form-data" style="display: none;">
+          <input type="hidden" name="field" value="logo">
+          <div class="profile-field-input">
+            <label class="form-label">Upload Logo</label>
+            <input type="file" name="logo" accept="image/*" class="form-input" style="padding: 0.5rem;">
+          </div>
+          <div class="profile-field-actions">
+            <button type="button" class="btn btn-outline btn-sm" onclick="cancelEdit('logo')">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+          </div>
+        </form>
+      </div>
+      {% endif %}
 
       <div class="divider"></div>
 
@@ -150,17 +219,6 @@
           </div>
         </div>
       </div>
-
-      {% if user.role == 'TRAVELLER' %}
-      <div class="profile-field">
-        <div class="profile-field-view readonly">
-          <div class="profile-field-info">
-            <label class="form-label">Total Trips</label>
-            <div class="profile-field-value">{{ trip_count or 0 }}</div>
-          </div>
-        </div>
-      </div>
-      {% endif %}
     </div>
   </div>
 
@@ -169,7 +227,8 @@
       const field = document.getElementById('field-' + fieldName);
       field.querySelector('.profile-field-view').style.display = 'none';
       field.querySelector('.profile-field-edit').style.display = 'flex';
-      field.querySelector('.form-input').focus();
+      const input = field.querySelector('.form-input');
+      if (input) input.focus();
     }
     
     function cancelEdit(fieldName) {
