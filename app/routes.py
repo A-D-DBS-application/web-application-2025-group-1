@@ -372,7 +372,6 @@ def edit_trip(trip_id):
         destination = request.form.get('destination')
         start_date_str = request.form.get('start_date')
         end_date_str = request.form.get('end_date')
-        num_travellers = int(request.form.get('num_travellers'))
         preferences = request.form.get('preferences')
         required_activity_ids = request.form.get('required_activity_ids', '')
         excluded_activity_ids = request.form.get('excluded_activity_ids', '')
@@ -384,10 +383,21 @@ def edit_trip(trip_id):
             flash("End date cannot be before start date.", "error")
             return redirect(url_for('main.edit_trip', trip_id=trip_id))
 
+        # Check if destination changed - if so, clear all planned activities
+        old_destination = trip.destination
+        destination_changed = old_destination and old_destination != destination
+        
+        if destination_changed:
+            # Delete all planned activities for this trip
+            ActivityPlanned.query.filter_by(trip_id=trip_id).delete()
+            # Clear required/excluded activity IDs since they're from old destination
+            required_activity_ids = ''
+            excluded_activity_ids = ''
+            flash(f"Destination changed from {old_destination} to {destination}. All previously planned activities have been removed.", "info")
+
         trip.destination = destination
         trip.start_date = start_date
         trip.end_date = end_date
-        trip.number_of_travellers = num_travellers
         trip.preferences = preferences
         trip.required_activity_ids = required_activity_ids if required_activity_ids else None
         trip.excluded_activity_ids = excluded_activity_ids if excluded_activity_ids else None
@@ -400,6 +410,53 @@ def edit_trip(trip_id):
             "NATURE": int(request.form.get('pref_NATURE', 3))
         }
         trip.preference_scores = json.dumps(preference_scores)
+        
+        # Handle traveller updates
+        # 1. Delete removed travellers
+        deleted_ids = request.form.get('deleted_traveller_ids', '')
+        if deleted_ids:
+            for tid in deleted_ids.split(','):
+                if tid.strip():
+                    try:
+                        traveller = Traveller.query.get(int(tid))
+                        if traveller and traveller.trip_id == trip_id:
+                            db.session.delete(traveller)
+                    except ValueError:
+                        pass
+        
+        # 2. Update existing travellers
+        existing_travellers = Traveller.query.filter_by(trip_id=trip_id).all()
+        for traveller in existing_travellers:
+            name = request.form.get(f'traveller_name_{traveller.traveller_id}')
+            birth = request.form.get(f'traveller_birth_{traveller.traveller_id}')
+            fitness = request.form.get(f'traveller_fitness_{traveller.traveller_id}')
+            
+            if name:
+                traveller.name = name
+            if birth:
+                traveller.birth_date = datetime.strptime(birth, "%Y-%m-%d").date()
+            traveller.fitness = fitness if fitness else None
+        
+        # 3. Add new travellers
+        new_traveller_ids = request.form.getlist('new_traveller_ids')
+        for temp_id in new_traveller_ids:
+            name = request.form.get(f'new_traveller_name_{temp_id}')
+            birth = request.form.get(f'new_traveller_birth_{temp_id}')
+            fitness = request.form.get(f'new_traveller_fitness_{temp_id}')
+            
+            if name:
+                birth_date = datetime.strptime(birth, "%Y-%m-%d").date() if birth else None
+                new_traveller = Traveller(
+                    trip_id=trip_id,
+                    name=name,
+                    birth_date=birth_date,
+                    fitness=fitness if fitness else None
+                )
+                db.session.add(new_traveller)
+        
+        # Update number of travellers
+        db.session.flush()  # Ensure all changes are reflected
+        trip.number_of_travellers = Traveller.query.filter_by(trip_id=trip_id).count()
 
         db.session.commit()
         
@@ -453,6 +510,9 @@ def edit_trip(trip_id):
         except (json.JSONDecodeError, TypeError):
             preference_scores_dict = {}
     
+    # Check if trip has any planned activities
+    has_planned_activities = ActivityPlanned.query.filter_by(trip_id=trip_id).first() is not None
+    
     return render_template(
         'edit_trip.html', 
         trip=trip, 
@@ -461,7 +521,8 @@ def edit_trip(trip_id):
         preference_scores=preference_scores_dict, 
         user=user,
         destinations=_get_destinations_safe(),
-        activity_types=get_activity_types()
+        activity_types=get_activity_types(),
+        has_planned_activities=has_planned_activities
     )
 
 @main.route('/delete_trip/<int:trip_id>', methods=['POST'])

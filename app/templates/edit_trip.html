@@ -33,7 +33,6 @@
           <h2>Edit Trip</h2>
           <p>Modify your adventure details</p>
         </div>
-        <a href="{{ url_for('main.travellers', trip_id=trip.trip_id) }}" class="btn btn-secondary manage-travellers-btn">👥 Manage Travellers</a>
       </div>
 
       <div class="trip-info-badge">
@@ -105,17 +104,82 @@
             <div class="section-icon teal">👥</div>
             <div>
               <div class="section-title">Travellers</div>
-              <div class="section-subtitle">How many people are travelling?</div>
+              <div class="section-subtitle">Who's going on this trip?</div>
             </div>
           </div>
 
-          <label for="num_travellers">Number of travellers</label>
-          <input type="number" name="num_travellers" id="num_travellers" min="1" value="{{ trip.travellers|length or 1 }}" required>
-
-          <div class="info-notice">
-            <span class="info-notice-icon">💡</span>
-            <span>To add or edit individual traveller details, use the <strong>Manage Travellers</strong> page after saving your changes.</span>
+          <!-- Current Travellers -->
+          <div class="travellers-list" id="travellersList">
+            {% if trip.travellers %}
+              {% for traveller in trip.travellers %}
+              <div class="traveller-inline-card">
+                <div class="traveller-inline-header">
+                  <div class="traveller-avatar-small">{{ traveller.name[0]|upper if traveller.name else '?' }}</div>
+                  <span class="traveller-inline-name">{{ traveller.name }}</span>
+                  <button type="button" class="btn-icon-delete" onclick="deleteTraveller({{ traveller.traveller_id }})" title="Remove traveller">✕</button>
+                </div>
+                <div class="traveller-inline-fields">
+                  <div class="traveller-field">
+                    <label>Name</label>
+                    <input type="text" name="traveller_name_{{ traveller.traveller_id }}" value="{{ traveller.name }}" placeholder="Name">
+                  </div>
+                  <div class="traveller-field">
+                    <label>Birth Date</label>
+                    <input type="date" name="traveller_birth_{{ traveller.traveller_id }}" value="{{ traveller.birth_date }}">
+                  </div>
+                  <div class="traveller-field">
+                    <label>Fitness</label>
+                    <select name="traveller_fitness_{{ traveller.traveller_id }}">
+                      <option value="">-</option>
+                      <option value="LOW" {% if traveller.fitness == 'LOW' %}selected{% endif %}>Low</option>
+                      <option value="MEDIUM" {% if traveller.fitness == 'MEDIUM' %}selected{% endif %}>Medium</option>
+                      <option value="HIGH" {% if traveller.fitness == 'HIGH' %}selected{% endif %}>High</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="empty-travellers" id="emptyTravellers">
+                <span>👤</span> No travellers added yet
+              </div>
+            {% endif %}
           </div>
+
+          <!-- Add New Traveller -->
+          <div class="add-traveller-section">
+            <div class="add-traveller-header" onclick="toggleAddTraveller()">
+              <span>➕ Add Traveller</span>
+              <span class="toggle-arrow" id="addTravellerArrow">▼</span>
+            </div>
+            <div class="add-traveller-form" id="addTravellerForm" style="display: none;">
+              <div class="traveller-inline-fields">
+                <div class="traveller-field">
+                  <label>Name</label>
+                  <input type="text" id="newTravellerName" placeholder="Enter name">
+                </div>
+                <div class="traveller-field">
+                  <label>Birth Date</label>
+                  <input type="date" id="newTravellerBirth">
+                </div>
+                <div class="traveller-field">
+                  <label>Fitness</label>
+                  <select id="newTravellerFitness">
+                    <option value="">-</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                  </select>
+                </div>
+              </div>
+              <button type="button" class="btn btn-teal btn-sm" onclick="addTraveller()">➕ Add</button>
+            </div>
+          </div>
+
+          <!-- Hidden inputs for new travellers -->
+          <div id="newTravellersInputs"></div>
+          <!-- Hidden inputs for deleted travellers -->
+          <input type="hidden" name="deleted_traveller_ids" id="deletedTravellerIds" value="">
         </div>
 
         <!-- Preferences Section -->
@@ -180,13 +244,143 @@
     const dateError = document.getElementById("dateError");
     const destinationError = document.getElementById("destinationError");
     const form = document.getElementById("editTripForm");
-
-    // Date validation is handled by form-validation.js
-
-    // Destination cards and form validation are handled by external JS files
-
-    // Activity loading is handled by activity-loader.js
+    const destinationInput = document.getElementById("destinationInput");
+    
+    // Store original destination
+    const originalDestination = "{{ trip.destination or '' }}";
+    
+    // Override destination card click to show warning
+    document.querySelectorAll('.destination-card').forEach(card => {
+      card.addEventListener('click', function(e) {
+        const newDestination = this.dataset.value;
+        
+        // If destination is changing and there's an original destination
+        if (originalDestination && newDestination !== originalDestination) {
+          // Check if there are planned activities
+          const hasActivities = {{ 'true' if has_planned_activities else 'false' }};
+          
+          if (hasActivities) {
+            const confirmed = confirm(
+              `⚠️ Destination wijzigen?\n\n` +
+              `Je wilt de destination veranderen van "${originalDestination}" naar "${newDestination}".\n\n` +
+              `Let op: Alle geplande activiteiten worden verwijderd omdat ze niet meer passen bij de nieuwe bestemming.\n\n` +
+              `Wil je doorgaan?`
+            );
+            
+            if (!confirmed) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }
+          }
+        }
+      }, true); // Use capture to run before other handlers
+    });
   })();
+  
+  // Traveller management
+  let newTravellerCount = 0;
+  let deletedTravellerIds = [];
+  
+  function toggleAddTraveller() {
+    const form = document.getElementById('addTravellerForm');
+    const arrow = document.getElementById('addTravellerArrow');
+    if (form.style.display === 'none') {
+      form.style.display = 'block';
+      arrow.textContent = '▲';
+    } else {
+      form.style.display = 'none';
+      arrow.textContent = '▼';
+    }
+  }
+  
+  function addTraveller() {
+    const name = document.getElementById('newTravellerName').value.trim();
+    const birth = document.getElementById('newTravellerBirth').value;
+    const fitness = document.getElementById('newTravellerFitness').value;
+    
+    if (!name) {
+      alert('Please enter a name');
+      return;
+    }
+    
+    newTravellerCount++;
+    const tempId = 'new_' + newTravellerCount;
+    
+    // Hide empty message
+    const emptyMsg = document.getElementById('emptyTravellers');
+    if (emptyMsg) emptyMsg.style.display = 'none';
+    
+    // Add card to list
+    const list = document.getElementById('travellersList');
+    const card = document.createElement('div');
+    card.className = 'traveller-inline-card';
+    card.id = 'traveller-card-' + tempId;
+    card.innerHTML = `
+      <div class="traveller-inline-header">
+        <div class="traveller-avatar-small">${name[0].toUpperCase()}</div>
+        <span class="traveller-inline-name">${name}</span>
+        <button type="button" class="btn-icon-delete" onclick="removeNewTraveller('${tempId}')" title="Remove traveller">✕</button>
+      </div>
+      <div class="traveller-inline-fields">
+        <div class="traveller-field">
+          <label>Name</label>
+          <input type="text" name="new_traveller_name_${tempId}" value="${name}" placeholder="Name">
+        </div>
+        <div class="traveller-field">
+          <label>Birth Date</label>
+          <input type="date" name="new_traveller_birth_${tempId}" value="${birth}">
+        </div>
+        <div class="traveller-field">
+          <label>Fitness</label>
+          <select name="new_traveller_fitness_${tempId}">
+            <option value="">-</option>
+            <option value="LOW" ${fitness === 'LOW' ? 'selected' : ''}>Low</option>
+            <option value="MEDIUM" ${fitness === 'MEDIUM' ? 'selected' : ''}>Medium</option>
+            <option value="HIGH" ${fitness === 'HIGH' ? 'selected' : ''}>High</option>
+          </select>
+        </div>
+      </div>
+    `;
+    list.appendChild(card);
+    
+    // Add hidden input to track new traveller
+    const hiddenInputs = document.getElementById('newTravellersInputs');
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'new_traveller_ids';
+    input.value = tempId;
+    input.id = 'hidden-' + tempId;
+    hiddenInputs.appendChild(input);
+    
+    // Clear form
+    document.getElementById('newTravellerName').value = '';
+    document.getElementById('newTravellerBirth').value = '';
+    document.getElementById('newTravellerFitness').value = '';
+  }
+  
+  function removeNewTraveller(tempId) {
+    const card = document.getElementById('traveller-card-' + tempId);
+    if (card) card.remove();
+    const hidden = document.getElementById('hidden-' + tempId);
+    if (hidden) hidden.remove();
+  }
+  
+  function deleteTraveller(travellerId) {
+    if (!confirm('Remove this traveller?')) return;
+    
+    deletedTravellerIds.push(travellerId);
+    document.getElementById('deletedTravellerIds').value = deletedTravellerIds.join(',');
+    
+    // Find and hide the card
+    const cards = document.querySelectorAll('.traveller-inline-card');
+    cards.forEach(card => {
+      const nameInput = card.querySelector(`input[name="traveller_name_${travellerId}"]`);
+      if (nameInput) {
+        card.style.display = 'none';
+      }
+    });
+  }
   </script>
   <script src="{{ url_for('static', filename='js/activity-sliders.js') }}"></script>
   <script src="{{ url_for('static', filename='js/activity-loader.js') }}"></script>
