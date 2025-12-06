@@ -15,3 +15,9 @@
 
 - Krijg je `sqlalchemy.exc.OperationalError` met “could not translate host name”? Controleer de `DATABASE_URL`: meestal staat er een typefout in de hostnaam.
 - Voor lokaal testen zonder externe database kun je de regel `DATABASE_URL=sqlite:///app.db` gebruiken. Migreer daarna met `flask db upgrade`.
+
+Feedback sessie 1:
+https://ugentbe-my.sharepoint.com/personal/thomas_derave_ugent_be/_layouts/15/stream.aspx?id=%2Fpersonal%2Fthomas%5Fderave%5Fugent%5Fbe%2FDocuments%2FOpnamen%2FJaron%20Decaluw%C3%A9%20%2D%20Meeting%20Thomas%20Derave%2D20251127%5F133346%2DOpname%20van%20vergadering%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2E7264b892%2D29be%2D41c9%2Da5d9%2Dd56b98a0c98d 
+
+Feedback sessie 2:
+...
