@@ -20,3 +20,6 @@ def create_app():
     app.register_blueprint(main)
 
     return app
+
+# Create app instance for gunicorn (fallback for 'gunicorn app:app')
+app = create_app()
