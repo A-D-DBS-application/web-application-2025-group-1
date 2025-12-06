@@ -1,4 +1,6 @@
-User Stories – Travel Planner
+User Stories
+
+Travel Planner
 
 As a user, I want to enter my travel details (such as country, number of travelers, and travel period), so that the suggested itinerary fits my planned trip. (Priority: High)
 
@@ -10,7 +12,7 @@ As a user, I want to receive an automatically generated, optimized itinerary, so
 
 As a user, I want to adjust my input (such as preferences, period, or fitness level) after seeing the first proposal, so that I can refine the results to better suit my needs. (Priority: Medium)
 
-As a user, I want to save, download, and share the itinerary, so that I can use it offline and coordinate with other travelers. (Priority: Medium)
+As a user, I want to save, download, and share the itinerary, so that I can use it offline and coordinate with other travellers. (Priority: Medium)
 
 Travel Agency
 
