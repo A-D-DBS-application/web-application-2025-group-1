@@ -3941,6 +3941,650 @@ select:focus {
   }
 }
 
+/* Sidebar Actions (Itinerary page) */
+.sidebar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
+}
+
+/* Share Modal */
+.share-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: hsla(25, 30%, 12%, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.share-modal-overlay.show {
+  display: flex !important;
+}
+
+.share-modal {
+  background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.98), hsla(35, 30%, 96%, 0.95));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 1.5rem;
+  border: 2px solid hsla(35, 25%, 88%, 0.8);
+  box-shadow: 0 8px 40px hsla(25, 30%, 12%, 0.3);
+  max-width: 28rem;
+  width: 90%;
+  animation: slideDown 0.3s ease-out;
+  overflow: hidden;
+  margin: 1rem;
+}
+
+.share-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary), hsla(14, 72%, 50%, 1));
+  color: white;
+}
+
+.share-modal-header h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.share-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.share-modal-close:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.share-modal-body {
+  padding: 1.5rem;
+}
+
+.share-modal-subtitle {
+  font-size: 0.9375rem;
+  color: var(--muted-foreground);
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.share-link-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.share-link-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+
+.share-link-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px hsla(14, 72%, 55%, 0.15);
+}
+
+#copyLinkBtn {
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+#copyLinkBtn.copied {
+  background: var(--teal);
+}
+
+.share-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.share-options-two {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.share-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--foreground);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.share-option:hover {
+  background: var(--card);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.share-option-icon {
+  font-size: 1.5rem;
+}
+
+/* New styled share buttons */
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  border: none;
+}
+
+.share-btn-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.share-btn-whatsapp {
+  background: #25D366;
+  color: white;
+}
+
+.share-btn-whatsapp:hover {
+  background: #1da851;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+}
+
+.share-btn-print {
+  background: var(--secondary);
+  color: white;
+}
+
+.share-btn-print:hover {
+  background: hsla(195, 50%, 18%, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px hsla(195, 50%, 22%, 0.4);
+}
+
+/* Printable Itinerary (hidden on screen) */
+.printable-itinerary {
+  display: none;
+}
+
+/* Print Styles */
+@media print {
+  /* Hide everything except printable content */
+  body * {
+    visibility: hidden;
+  }
+  
+  .printable-itinerary,
+  .printable-itinerary * {
+    visibility: visible;
+  }
+  
+  .printable-itinerary {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white;
+    color: black;
+    padding: 2rem;
+  }
+  
+  /* Hide non-print elements */
+  .sidebar,
+  #map,
+  nav,
+  .sidebar-toggle,
+  .share-modal-overlay,
+  .bg-blob {
+    display: none !important;
+  }
+  
+  .print-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e5e5e5;
+  }
+  
+  .print-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .print-dates {
+    font-size: 1.125rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+  
+  .print-travellers {
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  .print-content {
+    margin-bottom: 2rem;
+  }
+  
+  .print-day {
+    margin-bottom: 1.5rem;
+    page-break-inside: avoid;
+  }
+  
+  .print-day-header {
+    background: #f5f5f5;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    border-left: 4px solid #e07550;
+  }
+  
+  .print-activity {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .print-activity:last-child {
+    border-bottom: none;
+  }
+  
+  .print-activity-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .print-activity-duration {
+    font-size: 0.875rem;
+    color: #2a9d8f;
+    margin-bottom: 0.25rem;
+  }
+  
+  .print-activity-desc {
+    font-size: 0.875rem;
+    color: #666;
+    line-height: 1.5;
+  }
+  
+  .print-footer {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e5e5;
+    font-size: 0.875rem;
+    color: #999;
+  }
+  
+  /* Page break settings */
+  @page {
+    margin: 1.5cm;
+  }
+}
+
+/* Shared/Public Itinerary Page Styles */
+.shared-itinerary-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.shared-itinerary-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--teal), hsla(168, 55%, 35%, 1));
+  color: white;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.share-badge-icon {
+  font-size: 1rem;
+}
+
+.shared-itinerary-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.shared-itinerary-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0 0 0.25rem 0;
+}
+
+.shared-itinerary-dates {
+  font-size: 0.9375rem;
+  color: var(--muted-foreground);
+  margin: 0 0 0.125rem 0;
+}
+
+.shared-itinerary-travellers {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+.shared-itinerary-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .shared-itinerary-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .shared-itinerary-actions {
+    width: 100%;
+  }
+  
+  .shared-itinerary-actions .btn {
+    flex: 1;
+  }
+}
+
+/* Public Layout adjustment */
+.public-layout {
+  height: calc(100vh - 180px);
+}
+
+@media (max-width: 768px) {
+  .public-layout {
+    height: calc(100vh - 220px);
+  }
+}
+
+/* CTA Banner for non-logged-in users */
+.cta-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, var(--primary), var(--gold), var(--teal));
+  padding: 1rem 0;
+  z-index: 40;
+  box-shadow: 0 -4px 20px hsla(25, 30%, 12%, 0.2);
+}
+
+.cta-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.cta-text h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.25rem 0;
+}
+
+.cta-text p {
+  font-size: 0.875rem;
+  color: hsla(255, 255%, 255%, 0.9);
+  margin: 0;
+}
+
+.cta-banner .btn-primary {
+  background: white;
+  color: var(--primary);
+  box-shadow: 0 4px 15px hsla(0, 0%, 0%, 0.2);
+}
+
+.cta-banner .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px hsla(0, 0%, 0%, 0.3);
+}
+
+@media (max-width: 768px) {
+  .cta-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .cta-banner .btn {
+    width: 100%;
+  }
+}
+
+/* Profile Page Styles */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.profile-avatar-large {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--gold));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 2rem;
+  text-transform: uppercase;
+  box-shadow: 0 4px 15px hsla(14, 72%, 55%, 0.3);
+  flex-shrink: 0;
+}
+
+.profile-header-info h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0 0 0.5rem 0;
+}
+
+.profile-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.profile-role-badge.traveller {
+  background: hsla(14, 72%, 55%, 0.15);
+  color: var(--primary);
+}
+
+.profile-role-badge.agency {
+  background: hsla(195, 50%, 22%, 0.15);
+  color: var(--secondary);
+}
+
+.profile-member-since {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin: 0.5rem 0 0 0;
+}
+
+.profile-form .section-header {
+  margin-bottom: 1.5rem;
+}
+
+.profile-form .section-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.profile-form .form-actions {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.form-actions-inline {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Profile Field Layout */
+.profile-field {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-field:last-child {
+  border-bottom: none;
+}
+
+.profile-field-view {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.profile-field-view.readonly {
+  background: var(--accent);
+  margin: 0 -1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.profile-field-info {
+  flex: 1;
+}
+
+.profile-field-info .form-label {
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+}
+
+.profile-field-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.profile-field-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-field-input .form-label {
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+}
+
+.profile-field-input .form-input {
+  margin-bottom: 0;
+}
+
+.profile-field-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .profile-field-view {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .profile-field-view .btn {
+    width: 100%;
+  }
+  
+  .profile-field-actions {
+    width: 100%;
+  }
+  
+  .profile-field-actions .btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .profile-form .form-actions {
+    flex-direction: column;
+  }
+  
+  .profile-form .form-actions .btn {
+    width: 100%;
+  }
+}
+
 /* Bootstrap Grid Overrides - Ensure compatibility */
 .row {
   margin-left: 0;

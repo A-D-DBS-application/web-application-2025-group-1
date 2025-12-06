@@ -981,3 +981,74 @@ def itinerary_select():
     
     trips = Trip.query.filter_by(user_id=user.user_id).all()
     return render_template('itinerary_select.html', trips=trips, user=user)
+
+
+@main.route('/profile', methods=['GET', 'POST'])
+def profile():
+    """User profile/account management page"""
+    if 'user_id' not in session:
+        flash("You must be logged in to view your profile.", "error")
+        return redirect(url_for('main.login'))
+    
+    user = User.query.get(session['user_id'])
+    if not user:
+        flash("User not found.", "error")
+        return redirect(url_for('main.login'))
+    
+    if request.method == 'POST':
+        field = request.form.get('field', '')
+        
+        if field == 'name':
+            name = request.form.get('name', '').strip()
+            if not name:
+                flash("Name is required.", "error")
+                return redirect(url_for('main.profile'))
+            user.name = name
+            flash("Name updated successfully!", "success")
+            
+        elif field == 'email':
+            email = request.form.get('email', '').strip()
+            if not email:
+                flash("Email is required.", "error")
+                return redirect(url_for('main.profile'))
+            # Check if email is already taken by another user
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user and existing_user.user_id != user.user_id:
+                flash("This email is already registered to another account.", "error")
+                return redirect(url_for('main.profile'))
+            user.email = email
+            flash("Email updated successfully!", "success")
+            
+        elif field == 'phone':
+            phone_number = request.form.get('phone_number', '').strip()
+            user.phone_number = phone_number if phone_number else None
+            flash("Phone number updated successfully!", "success")
+        
+        db.session.commit()
+        return redirect(url_for('main.profile'))
+    
+    # GET: Show profile page
+    trip_count = 0
+    if user.role == 'TRAVELLER':
+        trip_count = Trip.query.filter_by(user_id=user.user_id).count()
+    
+    return render_template('profile.html', user=user, trip_count=trip_count)
+
+
+@main.route('/itinerary/<int:trip_id>/share')
+def itinerary_public(trip_id):
+    """Public shareable view of an itinerary (no login required)"""
+    trip = Trip.query.get_or_404(trip_id)
+    activities = (
+        ActivityPlanned.query.filter_by(trip_id=trip_id)
+        .join(ActivityType)
+        .order_by(ActivityPlanned.date)
+        .all()
+    )
+    
+    # Get current user if logged in (for navbar display)
+    user = None
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+    
+    return render_template('itinerary_public.html', trip=trip, activities=activities, user=user, is_public=True)

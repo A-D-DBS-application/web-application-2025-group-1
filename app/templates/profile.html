@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+{% set page_title = 'My Account' %}
+{% include 'partials/_head.html' %}
+<body>
+  {% include 'partials/_background_blobs.html' %}
+  {% include 'partials/_navbar.html' %}
+
+  {% set header_title = '<span class="text-gradient">My Account</span>' %}
+  {% set header_subtitle = 'Manage your personal information' %}
+  {% include 'partials/_page_header.html' %}
+
+  <div class="container narrow">
+    {% include 'partials/_flash_messages.html' %}
+
+    <!-- Profile Card -->
+    <div class="glass-card animate-fade-in delay-1">
+      <div class="profile-header">
+        <div class="profile-avatar-large">
+          {{ user.name[0]|upper if user.name else 'U' }}
+        </div>
+        <div class="profile-header-info">
+          <h2>{{ user.name or 'User' }}</h2>
+          <span class="profile-role-badge {% if user.role == 'AGENCY' %}agency{% else %}traveller{% endif %}">
+            {% if user.role == 'AGENCY' %}🏢 Travel Agency{% else %}🧭 Traveller{% endif %}
+          </span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Personal Information -->
+      <div class="section-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="section-icon primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <h3>Personal Information</h3>
+        </div>
+      </div>
+
+      <!-- Full Name -->
+      <div class="profile-field" id="field-name">
+        <div class="profile-field-view">
+          <div class="profile-field-info">
+            <label class="form-label">Full Name</label>
+            <div class="profile-field-value">{{ user.name or 'Not set' }}</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="editField('name')">Edit</button>
+        </div>
+        <form class="profile-field-edit" method="POST" action="{{ url_for('main.profile') }}" style="display: none;">
+          <input type="hidden" name="field" value="name">
+          <div class="profile-field-input">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="name" class="form-input" value="{{ user.name or '' }}" placeholder="Enter your full name" required>
+          </div>
+          <div class="profile-field-actions">
+            <button type="button" class="btn btn-outline btn-sm" onclick="cancelEdit('name')">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Email -->
+      <div class="profile-field" id="field-email">
+        <div class="profile-field-view">
+          <div class="profile-field-info">
+            <label class="form-label">Email Address</label>
+            <div class="profile-field-value">{{ user.email or 'Not set' }}</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="editField('email')">Edit</button>
+        </div>
+        <form class="profile-field-edit" method="POST" action="{{ url_for('main.profile') }}" style="display: none;">
+          <input type="hidden" name="field" value="email">
+          <div class="profile-field-input">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" class="form-input" value="{{ user.email or '' }}" placeholder="Enter your email address" required>
+          </div>
+          <div class="profile-field-actions">
+            <button type="button" class="btn btn-outline btn-sm" onclick="cancelEdit('email')">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="profile-field" id="field-phone">
+        <div class="profile-field-view">
+          <div class="profile-field-info">
+            <label class="form-label">Phone Number</label>
+            <div class="profile-field-value">{{ user.phone_number or 'Not set' }}</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="editField('phone')">Edit</button>
+        </div>
+        <form class="profile-field-edit" method="POST" action="{{ url_for('main.profile') }}" style="display: none;">
+          <input type="hidden" name="field" value="phone">
+          <div class="profile-field-input">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" name="phone_number" class="form-input" value="{{ user.phone_number or '' }}" placeholder="Enter your phone number">
+          </div>
+          <div class="profile-field-actions">
+            <button type="button" class="btn btn-outline btn-sm" onclick="cancelEdit('phone')">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Account Information (Read-only) -->
+      <div class="section-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="section-icon teal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <h3>Account Information</h3>
+        </div>
+      </div>
+
+      <div class="profile-field">
+        <div class="profile-field-view readonly">
+          <div class="profile-field-info">
+            <label class="form-label">Account Type</label>
+            <div class="profile-field-value">{{ 'Travel Agency' if user.role == 'AGENCY' else 'Traveller' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-field">
+        <div class="profile-field-view readonly">
+          <div class="profile-field-info">
+            <label class="form-label">Account ID</label>
+            <div class="profile-field-value">#{{ user.user_id }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-field">
+        <div class="profile-field-view readonly">
+          <div class="profile-field-info">
+            <label class="form-label">Member Since</label>
+            <div class="profile-field-value">{{ user.created_at.strftime('%d %B %Y') if user.created_at else 'N/A' }}</div>
+          </div>
+        </div>
+      </div>
+
+      {% if user.role == 'TRAVELLER' %}
+      <div class="profile-field">
+        <div class="profile-field-view readonly">
+          <div class="profile-field-info">
+            <label class="form-label">Total Trips</label>
+            <div class="profile-field-value">{{ trip_count or 0 }}</div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    function editField(fieldName) {
+      const field = document.getElementById('field-' + fieldName);
+      field.querySelector('.profile-field-view').style.display = 'none';
+      field.querySelector('.profile-field-edit').style.display = 'flex';
+      field.querySelector('.form-input').focus();
+    }
+    
+    function cancelEdit(fieldName) {
+      const field = document.getElementById('field-' + fieldName);
+      field.querySelector('.profile-field-view').style.display = 'flex';
+      field.querySelector('.profile-field-edit').style.display = 'none';
+    }
+  </script>
+  {% include 'partials/_bootstrap_js.html' %}
+</body>
+</html>

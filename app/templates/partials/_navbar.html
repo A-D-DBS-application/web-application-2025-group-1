@@ -25,6 +25,7 @@
         {% endif %}
         <li class="nav-item"><a class="nav-link{% if request.endpoint == 'main.agencies' %} active{% endif %}" href="{{ url_for('main.agencies') }}">🏢 Agencies</a></li>
         {% if user_obj %}
+        <li class="nav-item"><a class="nav-link{% if request.endpoint == 'main.profile' %} active{% endif %}" href="{{ url_for('main.profile') }}">👤 Account</a></li>
         <li class="nav-item"><a class="nav-link btn-logout" href="{{ url_for('main.logout') }}">🚪 Logout</a></li>
         {% endif %}
       </ul>

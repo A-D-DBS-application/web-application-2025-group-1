@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+{% set page_title = 'Shared Itinerary | ' + trip.destination %}
+{% set extra_css = '<!-- Mapbox -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet"/>' %}
+{% include 'partials/_head.html' %}
+</head>
+<body class="no-bg-image">
+  {% include 'partials/_background_blobs.html' %}
+  {% include 'partials/_navbar.html' %}
+
+  <!-- Public Itinerary Header -->
+  <div class="container" style="padding-bottom: 1rem;">
+    <div class="glass-card animate-fade-in" style="margin-bottom: 0;">
+      <div class="shared-itinerary-header">
+        <div class="shared-itinerary-badge">
+          <span class="share-badge-icon">🌍</span>
+          <span>Shared Itinerary</span>
+        </div>
+        <div class="shared-itinerary-info">
+          <h1 class="shared-itinerary-title">{{ trip.destination }} Adventure</h1>
+          <p class="shared-itinerary-dates">📅 {{ trip.start_date }} — {{ trip.end_date }}</p>
+          <p class="shared-itinerary-travellers">👥 {{ trip.number_of_travellers }} Traveller{{ 's' if trip.number_of_travellers != 1 else '' }}</p>
+        </div>
+        <div class="shared-itinerary-actions">
+          <button type="button" class="btn btn-primary btn-sm" id="downloadSharedBtn">
+            📥 Download PDF
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" id="copyShareLinkBtn">
+            🔗 Copy Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <button class="sidebar-toggle d-xl-none" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+  <div class="layout public-layout">
+
+    <!-- LEFT: ACTIVITIES LIST -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">{{ trip.destination }} Itinerary</div>
+        <div class="sidebar-subtitle">
+          📅 {{ trip.start_date }} — {{ trip.end_date }}
+        </div>
+      </div>
+
+      {% if activities %}
+        {% set grouped = activities|groupby('date') %}
+        {% for group in grouped %}
+          {% set activity_date = group.grouper %}
+          {% set days_since_start = (activity_date - trip.start_date).days %}
+          {% set day_number = days_since_start + 1 %}
+          <div class="day-title">
+            <div class="day-title-main">Day {{ day_number }}</div>
+            <div class="day-title-date">{{ group.grouper }}</div>
+          </div>
+
+          {% for act in group.list %}
+            <div
+              class="activity-card"
+              id="activity-card-{{ act.activity.activity_type_id }}"
+              data-activity-id="{{ act.activity.activity_type_id }}"
+            >
+              {% if act.activity.picture %}
+                <img src="{{ url_for('static', filename=act.activity.picture) }}" class="activity-image" alt="{{ act.activity.name }}">
+              {% else %}
+                <div class="activity-fallback-icon">🎯</div>
+              {% endif %}
+
+              <div class="activity-info">
+                <h3>{{ act.activity.name }}</h3>
+                <div class="activity-meta">
+                  Day {{ day_number }} - {{ group.grouper }}
+                </div>
+                {% if act.activity.duration %}
+                  <div class="activity-duration">
+                    ⏱️ {{ act.activity.duration }} {% if act.activity.duration == 1 %}hour{% else %}hours{% endif %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% endfor %}
+      {% else %}
+        <p>No activities planned yet.</p>
+      {% endif %}
+    </div>
+
+  <!-- RIGHT: MAP -->
+  <div id="map"></div>
+
+  </div>
+
+  <!-- Call to Action for Non-logged-in Users -->
+  {% if not user %}
+  <div class="cta-banner animate-fade-in">
+    <div class="container">
+      <div class="cta-content">
+        <div class="cta-text">
+          <h3>Plan Your Own African Adventure!</h3>
+          <p>Create personalized itineraries with AfriGuide</p>
+        </div>
+        <a href="{{ url_for('main.register') }}" class="btn btn-primary">Get Started Free →</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Printable Itinerary (hidden, used for printing/PDF) -->
+  <div id="printableItinerary" class="printable-itinerary">
+    <div class="print-header">
+      <h1>{{ trip.destination }} Itinerary</h1>
+      <p class="print-dates">📅 {{ trip.start_date }} — {{ trip.end_date }}</p>
+      <p class="print-travellers">👥 {{ trip.number_of_travellers }} Traveller{{ 's' if trip.number_of_travellers != 1 else '' }}</p>
+    </div>
+    <div class="print-content">
+      {% if activities %}
+        {% set grouped = activities|groupby('date') %}
+        {% for group in grouped %}
+          {% set activity_date = group.grouper %}
+          {% set days_since_start = (activity_date - trip.start_date).days %}
+          {% set day_number = days_since_start + 1 %}
+          <div class="print-day">
+            <div class="print-day-header">
+              <strong>Day {{ day_number }}</strong> - {{ group.grouper }}
+            </div>
+            {% for act in group.list %}
+              <div class="print-activity">
+                <div class="print-activity-name">{{ act.activity.name }}</div>
+                {% if act.activity.duration %}
+                  <div class="print-activity-duration">⏱️ {{ act.activity.duration }} hour{{ 's' if act.activity.duration != 1 else '' }}</div>
+                {% endif %}
+                {% if act.activity.description %}
+                  <div class="print-activity-desc">{{ act.activity.description }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No activities planned yet.</p>
+      {% endif %}
+    </div>
+    <div class="print-footer">
+      <p>Generated by AfriGuide • {{ trip.start_date }}</p>
+    </div>
+  </div>
+
+  <!-- Trip start date for JavaScript -->
+  <script id="trip-start-date" type="application/json">{{ trip.start_date|tojson|safe }}</script>
+  
+  <!-- Activities Data for JavaScript -->
+  <script id="activities-data" type="application/json">
+    [
+      {% for act in activities %}
+      {
+        "date": "{{ act.date }}",
+        "activity": {
+          "activity_type_id": {{ act.activity.activity_type_id }},
+          "name": {{ act.activity.name|tojson }},
+          "latitude": {{ act.activity.latitude if act.activity.latitude else 'null' }},
+          "longitude": {{ act.activity.longitude if act.activity.longitude else 'null' }},
+          "duration": {{ act.activity.duration if act.activity.duration else 'null' }},
+          "description": {{ (act.activity.description or '')|tojson }},
+          "picture": {{ (act.activity.picture or '')|tojson }}
+        }
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ]
+  </script>
+
+  <!-- All JavaScript functionality -->
+  <script src="{{ url_for('static', filename='js/itinerary-mapbox.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/itinerary-sidebar.js') }}"></script>
+  <script>
+    // Simple export functions for public page
+    document.addEventListener('DOMContentLoaded', function() {
+      const downloadBtn = document.getElementById('downloadSharedBtn');
+      const copyLinkBtn = document.getElementById('copyShareLinkBtn');
+      
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+          window.print();
+        });
+      }
+      
+      if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', function() {
+          const url = window.location.href;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(() => {
+              const originalText = copyLinkBtn.innerHTML;
+              copyLinkBtn.innerHTML = '✓ Copied!';
+              setTimeout(() => {
+                copyLinkBtn.innerHTML = originalText;
+              }, 2000);
+            });
+          } else {
+            // Fallback
+            const input = document.createElement('input');
+            input.value = url;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            const originalText = copyLinkBtn.innerHTML;
+            copyLinkBtn.innerHTML = '✓ Copied!';
+            setTimeout(() => {
+              copyLinkBtn.innerHTML = originalText;
+            }, 2000);
+          }
+        });
+      }
+    });
+  </script>
+  {% include 'partials/_bootstrap_js.html' %}
+</body>
+</html>
+
