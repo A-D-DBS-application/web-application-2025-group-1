@@ -159,13 +159,18 @@
             </div>
             {% for act in group.list %}
               <div class="print-activity">
-                <div class="print-activity-name">{{ act.activity.name }}</div>
-                {% if act.activity.duration %}
-                  <div class="print-activity-duration">⏱️ {{ act.activity.duration }} hour{{ 's' if act.activity.duration != 1 else '' }}</div>
+                {% if act.activity.picture %}
+                  <img src="{{ act.activity.picture|activity_image_url }}" class="print-activity-image" alt="{{ act.activity.name }}">
                 {% endif %}
-                {% if act.activity.description %}
-                  <div class="print-activity-desc">{{ act.activity.description }}</div>
-                {% endif %}
+                <div class="print-activity-content">
+                  <div class="print-activity-name">{{ act.activity.name }}</div>
+                  {% if act.activity.duration %}
+                    <div class="print-activity-duration">⏱️ {{ act.activity.duration }} hour{{ 's' if act.activity.duration != 1 else '' }}</div>
+                  {% endif %}
+                  {% if act.activity.description %}
+                    <div class="print-activity-desc">{{ act.activity.description }}</div>
+                  {% endif %}
+                </div>
               </div>
             {% endfor %}
           </div>

@@ -4244,24 +4244,41 @@ select:focus {
   }
   
   .print-activity {
-    padding: 0.75rem 1rem;
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
     border-bottom: 1px solid #eee;
+    page-break-inside: avoid;
   }
   
   .print-activity:last-child {
     border-bottom: none;
   }
   
+  .print-activity-image {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  
+  .print-activity-content {
+    flex: 1;
+  }
+  
   .print-activity-name {
     font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+    margin-bottom: 0.35rem;
+    color: #333;
   }
   
   .print-activity-duration {
-    font-size: 0.875rem;
-    color: #2a9d8f;
-    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    color: #e07550;
+    margin-bottom: 0.35rem;
+    font-weight: 500;
   }
   
   .print-activity-desc {
@@ -4281,6 +4298,17 @@ select:focus {
   /* Page break settings */
   @page {
     margin: 1.5cm;
+  }
+  
+  /* Ensure images print */
+  img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .print-activity-image {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 
