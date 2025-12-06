@@ -594,20 +594,101 @@ def activities():
     destinations = _get_destinations_safe()
     destination_names = [d.name for d in destinations]
     
-    # Check if a specific destination was requested
+    # Get filter parameters (support multiple values)
     selected_destination = request.args.get('destination', None)
+    selected_difficulties = request.args.getlist('difficulty')  # Multiple values
+    selected_types = request.args.getlist('type')  # Multiple values
+    selected_durations = request.args.getlist('duration')  # Multiple values
+    selected_ages = request.args.getlist('age')  # Multiple values
+    selected_agencies = request.args.getlist('agency')  # Multiple values
+    view_mode = request.args.get('view', 'list')  # 'list' or 'map'
+    
+    # Apply filters
     activities = all_activities
+    
     if selected_destination:
-        activities = [a for a in all_activities if a.destination == selected_destination]
+        activities = [a for a in activities if a.destination == selected_destination]
+    
+    if selected_difficulties:
+        activities = [a for a in activities if a.difficulty in selected_difficulties]
+    
+    if selected_types:
+        activities = [a for a in activities if a.type in selected_types]
+    
+    if selected_durations:
+        # Duration ranges: '1-2', '3-4', '5+'
+        def matches_duration(activity):
+            if not activity.duration:
+                return False
+            for dur in selected_durations:
+                if dur == '1-2' and 1 <= activity.duration <= 2:
+                    return True
+                elif dur == '3-4' and 3 <= activity.duration <= 4:
+                    return True
+                elif dur == '5+' and activity.duration >= 5:
+                    return True
+            return False
+        activities = [a for a in activities if matches_duration(a)]
+    
+    if selected_ages:
+        # Age ranges: 'kids' (0-12), 'teens' (13-17), 'adults' (18+)
+        def matches_age(activity):
+            for age in selected_ages:
+                if age == 'kids' and (activity.min_age is None or activity.min_age <= 12):
+                    return True
+                elif age == 'teens' and (activity.min_age is None or activity.min_age <= 17) and (activity.max_age is None or activity.max_age >= 13):
+                    return True
+                elif age == 'adults' and (activity.min_age is None or activity.min_age <= 65):
+                    return True
+            return False
+        activities = [a for a in activities if matches_age(a)]
+    
+    if selected_agencies:
+        agency_ids = []
+        for ag in selected_agencies:
+            try:
+                agency_ids.append(int(ag))
+            except ValueError:
+                pass
+        if agency_ids:
+            activities = [a for a in activities if a.agency_id in agency_ids]
+    
+    # Prepare activities data for map view (JSON)
+    activities_json = []
+    for a in activities:
+        if a.latitude and a.longitude:
+            # Build picture URL using the proper helper function
+            picture_url = get_activity_image_url(a.picture) if a.picture else None
+            
+            activities_json.append({
+                'id': a.activity_type_id,
+                'name': a.name,
+                'type': a.type,
+                'destination': a.destination,
+                'latitude': a.latitude,
+                'longitude': a.longitude,
+                'difficulty': a.difficulty,
+                'duration': a.duration,
+                'description': a.description,
+                'picture': picture_url,
+                'agency': a.agency.name if a.agency else None
+            })
 
     return render_template(
         'activities.html',
         activities=activities,
+        activities_json=activities_json,
         agencies=agencies,
         current_user=current_user,
         is_agency=is_agency,
         destinations=destination_names,
         selected_destination=selected_destination,
+        selected_difficulties=selected_difficulties,
+        selected_types=selected_types,
+        selected_durations=selected_durations,
+        selected_ages=selected_ages,
+        selected_agencies=selected_agencies,
+        view_mode=view_mode,
         difficulty_levels=get_difficulty_levels(),
         activity_types=get_activity_types()
     )

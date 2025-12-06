@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 {% set page_title = 'Activities' %}
+{% set extra_css = '<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">' %}
 {% include 'partials/_head.html' %}
 <body>
   {% include 'partials/_background_blobs.html' %}
@@ -78,8 +79,8 @@
             <input type="hidden" name="destination" id="destinationInput">
             <div class="dest-buttons">
               {% for dest in destinations %}
-              <button type="button" class="dest-btn" data-value="{{ dest.name }}">
-                {% if dest.flag_emoji %}{{ dest.flag_emoji }} {% endif %}{{ dest.name }}
+              <button type="button" class="dest-btn" data-value="{{ dest.name if dest.name else dest }}">
+                {% if dest.flag_emoji %}{{ dest.flag_emoji }} {% endif %}{{ dest.name if dest.name else dest }}
               </button>
               {% endfor %}
             </div>
@@ -133,58 +134,274 @@
     </div>
     {% endif %}
 
-    <!-- Activities Table / Destination View -->
-    <div class="glass-card animate-fade-in delay-2">
-      {% if not selected_destination and not is_my_activities %}
-        <!-- Destination Overview -->
-        <div class="section-header">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div class="section-icon primary">🌍</div>
-            <h2>Destinations</h2>
+    <!-- Main Content with Filters -->
+    <div class="activities-layout animate-fade-in delay-2">
+      
+      <!-- Filters Sidebar -->
+      {% if not is_my_activities %}
+      <aside class="filters-sidebar glass-card">
+        <div class="filters-header">
+          <h3>🔍 Filters</h3>
+          <div class="filters-header-actions">
+            {% if selected_destination or selected_difficulties or selected_types or selected_durations or selected_ages or selected_agencies %}
+            <a href="{{ url_for('main.activities', view=view_mode) }}" class="clear-filters">Clear all</a>
+            {% endif %}
+            <button type="button" class="filters-toggle-btn" onclick="toggleAllFilters()">
+              <span class="toggle-icon">▼</span>
+            </button>
           </div>
         </div>
 
-         {% if destinations %}
-           <div class="destinations-grid">
-             {% for destination in destinations %}
-               <a href="{{ url_for('main.activities', destination=destination) }}" class="destination-card animate-fade-in delay-{{ loop.index }}">
-                 {% if destination == 'South Africa' %}
-                   <img src="{{ url_for('static', filename='img/south-africa.webp') }}" alt="South Africa" />
-                 {% elif destination == 'Morocco' %}
-                   <img src="{{ url_for('static', filename='img/morocco.jpg') }}" alt="Morocco" />
-                 {% else %}
-                   <img src="{{ url_for('static', filename='img/default-destination.jpg') }}" alt="{{ destination }}" />
-                 {% endif %}
-                 <div class="destination-info">
-                   <div class="destination-name">{{ destination }}</div>
-                   <span class="destination-arrow">→</span>
+        <form method="GET" action="{{ url_for('main.activities') }}" id="filterForm">
+          <!-- Preserve view mode -->
+          <input type="hidden" name="view" value="{{ view_mode }}">
+          
+          <div class="filters-content">
+            <!-- Country Filter (single select dropdown) -->
+            <div class="filter-group">
+              <button type="button" class="filter-group-toggle" onclick="toggleFilterGroup(this)">
+                <span class="filter-label">🌍 Country</span>
+                <span class="toggle-arrow">▼</span>
+              </button>
+              <div class="filter-group-content">
+                <select name="destination" class="filter-select" onchange="this.form.submit()">
+                  <option value="">All Countries</option>
+                  {% for dest in destinations %}
+                  <option value="{{ dest }}" {% if selected_destination == dest %}selected{% endif %}>{{ dest }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            
+            <!-- Type Filter (multi-select checkboxes) -->
+            <div class="filter-group">
+              <button type="button" class="filter-group-toggle" onclick="toggleFilterGroup(this)">
+                <span class="filter-label">🎯 Type</span>
+                <span class="toggle-arrow">▼</span>
+              </button>
+              <div class="filter-group-content">
+                <div class="filter-checkboxes">
+                  {% for t in activity_types %}
+                  <label class="filter-checkbox {% if t.value in selected_types %}checked{% endif %}">
+                    <input type="checkbox" name="type" value="{{ t.value }}" 
+                           {% if t.value in selected_types %}checked{% endif %}
+                           onchange="document.getElementById('filterForm').submit()">
+                    <span class="checkbox-label">{{ t.icon }} {{ t.label }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Difficulty Filter (multi-select checkboxes) -->
+            <div class="filter-group">
+              <button type="button" class="filter-group-toggle" onclick="toggleFilterGroup(this)">
+                <span class="filter-label">💪 Difficulty</span>
+                <span class="toggle-arrow">▼</span>
+              </button>
+              <div class="filter-group-content">
+                <div class="filter-checkboxes">
+                  {% for d in difficulty_levels %}
+                  <label class="filter-checkbox {% if d.value in selected_difficulties %}checked{% endif %}">
+                    <input type="checkbox" name="difficulty" value="{{ d.value }}" 
+                           {% if d.value in selected_difficulties %}checked{% endif %}
+                           onchange="document.getElementById('filterForm').submit()">
+                    <span class="checkbox-label">{{ d.label }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Duration Filter (multi-select checkboxes) -->
+            <div class="filter-group">
+              <button type="button" class="filter-group-toggle" onclick="toggleFilterGroup(this)">
+                <span class="filter-label">⏱️ Duration</span>
+                <span class="toggle-arrow">▼</span>
+              </button>
+              <div class="filter-group-content">
+                <div class="filter-checkboxes">
+                  <label class="filter-checkbox {% if '1-2' in selected_durations %}checked{% endif %}">
+                    <input type="checkbox" name="duration" value="1-2" 
+                           {% if '1-2' in selected_durations %}checked{% endif %}
+                           onchange="document.getElementById('filterForm').submit()">
+                    <span class="checkbox-label">1-2 hours</span>
+                  </label>
+                  <label class="filter-checkbox {% if '3-4' in selected_durations %}checked{% endif %}">
+                    <input type="checkbox" name="duration" value="3-4" 
+                           {% if '3-4' in selected_durations %}checked{% endif %}
+                           onchange="document.getElementById('filterForm').submit()">
+                    <span class="checkbox-label">3-4 hours</span>
+                  </label>
+                  <label class="filter-checkbox {% if '5+' in selected_durations %}checked{% endif %}">
+                    <input type="checkbox" name="duration" value="5+" 
+                           {% if '5+' in selected_durations %}checked{% endif %}
+                           onchange="document.getElementById('filterForm').submit()">
+                    <span class="checkbox-label">5+ hours</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Age Suitability Filter (multi-select checkboxes) -->
+            <div class="filter-group">
+              <button type="button" class="filter-group-toggle" onclick="toggleFilterGroup(this)">
+                <span class="filter-label">👥 Suitable For</span>
+                <span class="toggle-arrow">▼</span>
+              </button>
+              <div class="filter-group-content">
+                <div class="filter-checkboxes">
+                  <label class="filter-checkbox {% if 'kids' in selected_ages %}checked{% endif %}">
+                    <input type="checkbox" name="age" value="kids" 
+                           {% if 'kids' in selected_ages %}checked{% endif %}
+                           onchange="document.getElementById('filterForm').submit()">
+                    <span class="checkbox-label">Kids (0-12)</span>
+                  </label>
+                  <label class="filter-checkbox {% if 'teens' in selected_ages %}checked{% endif %}">
+                    <input type="checkbox" name="age" value="teens" 
+                           {% if 'teens' in selected_ages %}checked{% endif %}
+                           onchange="document.getElementById('filterForm').submit()">
+                    <span class="checkbox-label">Teens (13-17)</span>
+                  </label>
+                  <label class="filter-checkbox {% if 'adults' in selected_ages %}checked{% endif %}">
+                    <input type="checkbox" name="age" value="adults" 
+                           {% if 'adults' in selected_ages %}checked{% endif %}
+                           onchange="document.getElementById('filterForm').submit()">
+                    <span class="checkbox-label">Adults (18+)</span>
+                  </label>
+                </div>
+              </div>
                  </div>
-               </a>
+            
+            <!-- Agency Filter (multi-select checkboxes) -->
+            <div class="filter-group">
+              <button type="button" class="filter-group-toggle" onclick="toggleFilterGroup(this)">
+                <span class="filter-label">🏢 Travel Agency</span>
+                <span class="toggle-arrow">▼</span>
+              </button>
+              <div class="filter-group-content">
+                <div class="filter-checkboxes {% if agencies|length > 6 %}filter-checkboxes-scroll{% endif %}">
+                  {% for agency in agencies %}
+                  <label class="filter-checkbox {% if agency.agency_id|string in selected_agencies %}checked{% endif %}">
+                    <input type="checkbox" name="agency" value="{{ agency.agency_id }}" 
+                           {% if agency.agency_id|string in selected_agencies %}checked{% endif %}
+                           onchange="document.getElementById('filterForm').submit()">
+                    <span class="checkbox-label">{{ agency.name }}</span>
+                  </label>
              {% endfor %}
            </div>
-        {% else %}
-          <div class="empty-state">
-            <div class="empty-state-icon">🌍</div>
-            <h3>No destinations available</h3>
-            <p>Check back soon for exciting travel destinations!</p>
+              </div>
+            </div>
           </div>
-        {% endif %}
-      {% else %}
-        <!-- Activities List for Selected Destination or My Activities -->
-        {% if selected_destination and not is_my_activities %}
-          <a href="{{ url_for('main.activities') }}" class="back-to-destinations">← Back to Destinations</a>
+        </form>
+      </aside>
+      
+      <script>
+        // Toggle individual filter group
+        function toggleFilterGroup(btn) {
+          const group = btn.closest('.filter-group');
+          group.classList.toggle('collapsed');
+        }
+        
+        // Toggle all filters (for mobile)
+        function toggleAllFilters() {
+          const sidebar = document.querySelector('.filters-sidebar');
+          sidebar.classList.toggle('collapsed');
+        }
+        
+        // On mobile, start with filters collapsed
+        function initFilters() {
+          if (window.innerWidth <= 991) {
+            document.querySelector('.filters-sidebar').classList.add('collapsed');
+          }
+        }
+        
+        document.addEventListener('DOMContentLoaded', initFilters);
+      </script>
         {% endif %}
 
-        <div class="section-header">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div class="section-icon teal">🎯</div>
-            <h2>{% if is_my_activities %}My Activities{% elif selected_destination %}{{ selected_destination }} Activities{% else %}All Activities{% endif %}</h2>
+      <!-- Main Content Area -->
+      <div class="activities-main">
+        <!-- View Toggle & Header -->
+        <div class="activities-toolbar glass-card">
+          <div class="toolbar-left">
+        {% if selected_destination and not is_my_activities %}
+            <a href="{{ url_for('main.activities', view=view_mode) }}" class="back-link">← Back</a>
+            {% endif %}
+            <h2>
+              {% if is_my_activities %}My Activities
+              {% elif selected_destination %}{{ selected_destination }} Activities
+              {% else %}All Activities
+        {% endif %}
+              <span class="activity-count">({{ activities|length }})</span>
+            </h2>
           </div>
+          
+          <div class="toolbar-right">
           {% if is_my_activities %}
           <button type="button" class="btn btn-primary" id="toggleAddActivityBtn">➕ Add Activity</button>
+            {% else %}
+            <!-- View Toggle -->
+            <div class="view-toggle">
+              <a href="{{ url_for('main.activities', destination=selected_destination, view='list') }}{% for t in selected_types %}&type={{ t }}{% endfor %}{% for d in selected_difficulties %}&difficulty={{ d }}{% endfor %}{% for dur in selected_durations %}&duration={{ dur }}{% endfor %}{% for a in selected_ages %}&age={{ a }}{% endfor %}{% for ag in selected_agencies %}&agency={{ ag }}{% endfor %}" 
+                 class="view-btn {% if view_mode == 'list' %}active{% endif %}" title="List View">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                List
+              </a>
+              <a href="{{ url_for('main.activities', destination=selected_destination, view='map') }}{% for t in selected_types %}&type={{ t }}{% endfor %}{% for d in selected_difficulties %}&difficulty={{ d }}{% endfor %}{% for dur in selected_durations %}&duration={{ dur }}{% endfor %}{% for a in selected_ages %}&age={{ a }}{% endfor %}{% for ag in selected_agencies %}&agency={{ ag }}{% endfor %}" 
+                 class="view-btn {% if view_mode == 'map' %}active{% endif %}" title="Map View">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                  <line x1="8" y1="2" x2="8" y2="18"></line>
+                  <line x1="16" y1="6" x2="16" y2="22"></line>
+                </svg>
+                Map
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        
+        {% if view_mode == 'map' and not is_my_activities %}
+        <!-- Map View - Redesigned -->
+        <div class="map-view-container">
+          {% if activities_json|length > 0 %}
+          <div class="map-wrapper">
+            <div id="activitiesMap" class="activities-map"></div>
+          </div>
+          
+          <!-- Activity Card at Bottom -->
+          <div class="map-activity-card" id="mapActivityCard">
+            <div class="map-card-header">
+              <button type="button" class="map-nav-btn" id="mapPrevBtn" disabled>←</button>
+              <div class="map-card-counter">
+                <span id="mapCurrentIndex">1</span> / <span id="mapTotalCount">{{ activities_json|length }}</span>
+              </div>
+              <button type="button" class="map-nav-btn" id="mapNextBtn">→</button>
+            </div>
+            <div class="map-card-content" id="mapCardContent">
+              <!-- Will be filled by JavaScript -->
+            </div>
+          </div>
+          {% else %}
+          <div class="map-empty-state glass-card">
+            <div class="map-empty-icon">🗺️</div>
+            <h3>No activities with coordinates</h3>
+            <p>Activities need latitude and longitude coordinates to appear on the map.</p>
+            <p class="map-empty-hint">{{ activities|length }} activities found, but none have coordinates set.</p>
+          </div>
           {% endif %}
         </div>
-
+        {% else %}
+        <!-- List View -->
+        <div class="glass-card">
         <div class="table-wrapper table-responsive">
           <table>
             <thead>
@@ -192,15 +409,13 @@
                 <th>Name</th>
                 <th>Type</th>
                 <th>Difficulty</th>
-                {% if not selected_destination %}
+                  {% if not selected_destination and not is_my_activities %}
                 <th>Destination</th>
                 {% endif %}
                 <th>Suitable Age</th>
                 <th>Duration</th>
                 {% if is_my_activities %}
                 <th>Actions</th>
-                {% elif is_agency %}
-                <th>Travel Agency</th>
                 {% else %}
                 <th>Travel Agency</th>
                 {% endif %}
@@ -221,7 +436,7 @@
                       <span style="color: var(--muted-foreground);">–</span>
                       {% endif %}
                     </td>
-                    {% if not selected_destination %}
+                      {% if not selected_destination and not is_my_activities %}
                     <td>{{ a.destination }}</td>
                     {% endif %}
                     <td>
@@ -255,17 +470,169 @@
                 {% endfor %}
               {% else %}
                 <tr>
-                  <td colspan="{% if not selected_destination %}7{% else %}6{% endif %}" style="text-align: center; color: var(--muted-foreground); padding: 2rem;">
+                    <td colspan="{% if not selected_destination and not is_my_activities %}7{% else %}6{% endif %}" style="text-align: center; color: var(--muted-foreground); padding: 2rem;">
                     No activities found
                   </td>
                 </tr>
               {% endif %}
             </tbody>
           </table>
+          </div>
         </div>
       {% endif %}
+      </div>
     </div>
   </div>
+
+  {% if view_mode == 'map' and not is_my_activities and activities_json|length > 0 %}
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const activitiesData = {{ activities_json|tojson|safe }};
+      let currentIndex = 0;
+      let markers = [];
+      
+      mapboxgl.accessToken = 'pk.eyJ1IjoiYXJ2ZXJib3YiLCJhIjoiY21pb2Uyc3VkMDB0aTNmc2MzaXY3aDZxeCJ9.BFBZ5hFN3SbOivGbGlCnnw';
+      
+      // Type colors
+      const typeColors = {
+        'CULTURE': '#8B5CF6',
+        'ADVENTURE': '#F59E0B',
+        'RELAXATION': '#10B981',
+        'NATURE': '#22C55E'
+      };
+      const typeEmojis = {
+        'CULTURE': '🏛️',
+        'ADVENTURE': '🧗',
+        'RELAXATION': '🧘',
+        'NATURE': '🌿'
+      };
+      
+      // Calculate bounds
+      const bounds = new mapboxgl.LngLatBounds();
+      activitiesData.forEach(a => bounds.extend([a.longitude, a.latitude]));
+      
+      const map = new mapboxgl.Map({
+        container: 'activitiesMap',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        bounds: bounds,
+        fitBoundsOptions: { padding: 60 }
+      });
+      
+      map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      
+      // Elements
+      const cardContent = document.getElementById('mapCardContent');
+      const currentIndexEl = document.getElementById('mapCurrentIndex');
+      const prevBtn = document.getElementById('mapPrevBtn');
+      const nextBtn = document.getElementById('mapNextBtn');
+      
+      // Update card content
+      function updateCard(index) {
+        const activity = activitiesData[index];
+        const color = typeColors[activity.type] || '#6366F1';
+        
+        cardContent.innerHTML = `
+          <div class="map-card-inner">
+            ${activity.picture ? `<img src="${activity.picture}" alt="${activity.name}" class="map-card-image">` : ''}
+            <div class="map-card-info">
+              <span class="map-card-type" style="background: ${color};">${typeEmojis[activity.type] || '📍'} ${activity.type}</span>
+              <h3 class="map-card-title">${activity.name}</h3>
+              <div class="map-card-meta">
+                ${activity.duration ? `<span>⏱️ ${activity.duration}h</span>` : ''}
+                ${activity.difficulty ? `<span>💪 ${activity.difficulty}</span>` : ''}
+                ${activity.agency ? `<span>🏢 ${activity.agency}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+        
+        currentIndexEl.textContent = index + 1;
+        // Never disable buttons - navigation is circular
+        prevBtn.disabled = false;
+        nextBtn.disabled = false;
+        
+        // Highlight active marker
+        markers.forEach((m, i) => {
+          const el = m.getElement();
+          if (i === index) {
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+          }
+        });
+      }
+      
+      // Navigate to activity (circular navigation)
+      function goToActivity(index) {
+        // Loop around: if past end, go to start; if before start, go to end
+        if (index >= activitiesData.length) {
+          index = 0;
+        } else if (index < 0) {
+          index = activitiesData.length - 1;
+        }
+        
+        currentIndex = index;
+        updateCard(index);
+        
+        const activity = activitiesData[index];
+        map.flyTo({
+          center: [activity.longitude, activity.latitude],
+          zoom: 12,
+          duration: 600
+        });
+      }
+      
+      // Navigation buttons
+      prevBtn.addEventListener('click', () => goToActivity(currentIndex - 1));
+      nextBtn.addEventListener('click', () => goToActivity(currentIndex + 1));
+      
+      // Swipe support for card
+      let touchStartX = 0;
+      const card = document.getElementById('mapActivityCard');
+      card.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+      });
+      card.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) goToActivity(currentIndex + 1); // swipe left = next
+          else goToActivity(currentIndex - 1); // swipe right = prev
+        }
+      });
+      
+      // Wait for map to load
+      map.on('load', function() {
+        // Add simple circular markers with emojis
+        activitiesData.forEach((activity, index) => {
+          const color = typeColors[activity.type] || '#6366F1';
+          const emoji = typeEmojis[activity.type] || '📍';
+          
+          // Create simple circular marker
+          const el = document.createElement('div');
+          el.className = 'emoji-marker';
+          el.style.background = color;
+          el.innerHTML = emoji;
+          
+          const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+            .setLngLat([activity.longitude, activity.latitude])
+            .addTo(map);
+          
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            goToActivity(index);
+          });
+          
+          markers.push(marker);
+        });
+        
+        // Show first activity
+        updateCard(0);
+      });
+    });
+  </script>
+  {% endif %}
 
   <script src="{{ url_for('static', filename='js/activity-sliders.js') }}"></script>
   {% include 'partials/_bootstrap_js.html' %}
