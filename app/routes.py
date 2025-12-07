@@ -1153,6 +1153,48 @@ def profile():
     return render_template('profile.html', user=user, agency=agency, trip_count=trip_count)
 
 
+@main.route('/test-supabase')
+def test_supabase():
+    """Test route to check Supabase configuration"""
+    from .storage import get_supabase_client
+    
+    results = {
+        'package_installed': False,
+        'config_url': None,
+        'config_key': None,
+        'client_initialized': False,
+        'error': None
+    }
+    
+    # Check if package is installed
+    try:
+        import supabase
+        results['package_installed'] = True
+    except ImportError as e:
+        results['error'] = f"Supabase package not installed: {e}"
+        return f"<h1>Supabase Test</h1><pre>{json.dumps(results, indent=2)}</pre>"
+    
+    # Check configuration
+    try:
+        results['config_url'] = current_app.config.get('SUPABASE_URL', 'Not set')
+        results['config_key'] = 'Set' if current_app.config.get('SUPABASE_KEY') else 'Not set'
+    except Exception as e:
+        results['error'] = f"Error reading config: {e}"
+        return f"<h1>Supabase Test</h1><pre>{json.dumps(results, indent=2)}</pre>"
+    
+    # Try to initialize client
+    try:
+        client = get_supabase_client()
+        if client:
+            results['client_initialized'] = True
+        else:
+            results['error'] = "Client returned None"
+    except Exception as e:
+        results['error'] = f"Error initializing client: {e}"
+    
+    return f"<h1>Supabase Test</h1><pre>{json.dumps(results, indent=2)}</pre>"
+
+
 @main.route('/itinerary/<int:trip_id>/share')
 def itinerary_public(trip_id):
     """Public shareable view of an itinerary (no login required)"""

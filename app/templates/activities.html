@@ -135,7 +135,7 @@
     {% endif %}
 
     <!-- Main Content with Filters -->
-    <div class="activities-layout animate-fade-in delay-2">
+    <div class="activities-layout {% if is_my_activities %}no-sidebar{% endif %} animate-fade-in delay-2">
       
       <!-- Filters Sidebar -->
       {% if not is_my_activities %}

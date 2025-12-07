@@ -203,6 +203,21 @@ nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 90rem; ma
 
 /* Responsive Navbar */
 @media (max-width: 991.98px) {
+  nav {
+    padding: 0.75rem;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .nav-inner.container-fluid {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    box-sizing: border-box;
+  }
+  
   .navbar-toggler {
     display: block;
   }
@@ -233,6 +248,14 @@ nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 90rem; ma
   
   .nav-inner {
     flex-wrap: wrap;
+  }
+  
+  .page-header {
+    width: calc(100% - 1.5rem);
+    max-width: calc(100% - 1.5rem);
+    padding: 0 0.75rem;
+    box-sizing: border-box;
+    margin: 0 auto;
   }
 }
 body.agency-home .nav-inner {
@@ -4672,6 +4695,7 @@ select:focus {
   grid-template-columns: 1fr;
 }
 
+
 /* Filters Sidebar */
 .filters-sidebar {
   position: sticky;
@@ -4886,6 +4910,17 @@ select:focus {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
+}
+
+/* Ensure activities table card is full width like Add Activity form */
+.activities-main .glass-card {
+  width: 100%;
+}
+
+/* When there's no sidebar (My Activities page), make layout full width */
+.activities-layout:not(:has(.filters-sidebar)) {
+  grid-template-columns: 1fr;
 }
 
 /* Activities Toolbar */

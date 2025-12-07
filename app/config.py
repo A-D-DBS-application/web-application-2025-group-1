@@ -37,8 +37,9 @@ class Config:
     }
     
     # Supabase Storage Configuration
+    # Note: Using service_role key for server-side uploads (has full access)
     SUPABASE_URL = os.getenv("SUPABASE_URL", "https://eoysewmdlgotspzgbpkb.supabase.co")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVveXNld21kbGdvdHNwemdvcGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4MDQxMTcsImV4cCI6MjA0ODM4MDExN30.P3FfxPOqLoR4y_dTwpzw1SXIlvPdYKlaCYO70GMRO_c")
+    SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVveXNld21kbGdvdHNwemdicGtiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDY0OTA1OCwiZXhwIjoyMDc2MjI1MDU4fQ.Wowf1phhVcv4aE0qzQ_PnnK7VcL1Pm_7xf6S8XxeYvE")
     SUPABASE_BUCKET_ACTIVITIES = "activities"
     SUPABASE_BUCKET_LOGOS = "logos"
 

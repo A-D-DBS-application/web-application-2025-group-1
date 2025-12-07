@@ -13,18 +13,47 @@ _supabase_client = None
 def get_supabase_client():
     """Get or create the Supabase client instance."""
     global _supabase_client
-    if _supabase_client is None:
-        try:
-            from supabase import create_client
-            url = current_app.config.get('SUPABASE_URL')
-            key = current_app.config.get('SUPABASE_KEY')
-            if url and key:
+    
+    try:
+        # Always try to get config values (in case they changed)
+        url = current_app.config.get('SUPABASE_URL')
+        key = current_app.config.get('SUPABASE_KEY')
+        
+        if not url:
+            print("Error: SUPABASE_URL not found in configuration")
+            _supabase_client = None
+            return None
+        if not key:
+            print("Error: SUPABASE_KEY not found in configuration")
+            _supabase_client = None
+            return None
+        
+        # If client doesn't exist, create new client
+        if _supabase_client is None:
+            try:
+                from supabase import create_client
                 _supabase_client = create_client(url, key)
-        except ImportError:
-            print("Warning: supabase package not installed. Using local storage.")
-        except Exception as e:
-            print(f"Warning: Could not initialize Supabase client: {e}")
-    return _supabase_client
+                print(f"Supabase client initialized successfully with URL: {url}")
+            except ImportError as e:
+                print(f"Error: supabase package not installed: {e}")
+                print("Please install it with: pip install supabase")
+                _supabase_client = None
+                return None
+            except Exception as e:
+                print(f"Error: Could not initialize Supabase client: {e}")
+                print(f"URL: {url}")
+                print(f"Key: {'Set' if key else 'Not set'}")
+                _supabase_client = None
+                return None
+        
+        return _supabase_client
+    except RuntimeError as e:
+        # Outside of application context
+        print(f"Error: Cannot access Flask application context: {e}")
+        return None
+    except Exception as e:
+        print(f"Error: Unexpected error in get_supabase_client: {e}")
+        return None
 
 
 def upload_file_to_supabase(file, bucket_name, folder=""):
@@ -43,10 +72,26 @@ def upload_file_to_supabase(file, bucket_name, folder=""):
     if not file or not file.filename:
         return False, "No file provided"
     
+    # Check if supabase package is installed
+    try:
+        import supabase as supabase_module
+    except ImportError:
+        return False, "Supabase package not installed. Please run: pip install supabase"
+    
     supabase = get_supabase_client()
     
     if supabase is None:
-        return False, "Supabase client not available. Please check SUPABASE_URL and SUPABASE_KEY configuration."
+        # Get more specific error information
+        try:
+            url = current_app.config.get('SUPABASE_URL')
+            key = current_app.config.get('SUPABASE_KEY')
+            if not url:
+                return False, "SUPABASE_URL not configured. Please check your configuration."
+            if not key:
+                return False, "SUPABASE_KEY not configured. Please check your configuration."
+            return False, "Supabase client initialization failed. Check console for details."
+        except Exception as e:
+            return False, f"Error accessing configuration: {e}"
     
     try:
         # Generate unique filename
