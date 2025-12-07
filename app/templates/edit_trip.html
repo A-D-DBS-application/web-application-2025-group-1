@@ -3,9 +3,8 @@
 {% set page_title = 'Edit Trip' %}
 {% include 'partials/_head.html' %}
 </head>
-<body class="no-bg-image">
-  <div class="bg-overlay"></div>
-
+<body>
+  {% include 'partials/_background_blobs.html' %}
   {% include 'partials/_navbar.html' %}
   {% set header_title = '<span class="text-gradient">Edit</span> Your Trip' %}
   {% set header_subtitle = 'Update your trip details and preferences' %}
@@ -17,11 +16,9 @@
 
   <div class="container narrow">
     <!-- Navigation buttons above the card -->
-    <div class="form-actions" style="margin-bottom: 1.5rem; padding: 0; border-top: none; border-bottom: 1px solid var(--border);">
-      <a href="{{ url_for('main.trips') }}" class="btn btn-outline">← Back to Trips</a>
-      <div class="form-actions-right">
-        <button type="submit" form="editTripForm" class="btn btn-teal">💾 Save Changes</button>
-      </div>
+    <div class="form-actions" style="margin-bottom: 1.5rem; padding: 0; border-top: none; border-bottom: none; display: flex; gap: 1rem; justify-content: space-between;">
+      <a href="{{ url_for('main.trips') }}" class="btn btn-primary">← Back to Trips</a>
+      <button type="submit" form="editTripForm" class="btn btn-primary">💾 Save Changes</button>
     </div>
 
     <div class="glass-card">
@@ -211,8 +208,7 @@
               <div class="interest-scale"><span>Not my thing</span><span>Absolutely yes!</span></div>
             </div>
             {% endfor %}
-              <div class="interest-scale"><span>Not my thing</span><span>Absolutely yes!</span></div>
-            </div>
+          </div>
           </div>
         </div>
 
