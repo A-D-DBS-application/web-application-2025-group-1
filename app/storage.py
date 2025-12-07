@@ -30,6 +30,7 @@ def get_supabase_client():
 def upload_file_to_supabase(file, bucket_name, folder=""):
     """
     Upload a file to Supabase Storage.
+    All uploads must go to Supabase - no local fallback.
     
     Args:
         file: FileStorage object from Flask request
@@ -42,13 +43,12 @@ def upload_file_to_supabase(file, bucket_name, folder=""):
     if not file or not file.filename:
         return False, "No file provided"
     
+    supabase = get_supabase_client()
+    
+    if supabase is None:
+        return False, "Supabase client not available. Please check SUPABASE_URL and SUPABASE_KEY configuration."
+    
     try:
-        supabase = get_supabase_client()
-        
-        if supabase is None:
-            # Fallback to local storage if Supabase is not available
-            return upload_file_locally(file, bucket_name, folder)
-        
         # Generate unique filename
         original_filename = secure_filename(file.filename)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -77,50 +77,9 @@ def upload_file_to_supabase(file, bucket_name, folder=""):
         return True, file_path
         
     except Exception as e:
-        print(f"Error uploading to Supabase: {e}")
-        # Fallback to local storage
-        file.seek(0)  # Reset file pointer
-        return upload_file_locally(file, bucket_name, folder)
-
-
-def upload_file_locally(file, bucket_name, folder=""):
-    """
-    Fallback: Upload file to local static folder.
-    
-    Args:
-        file: FileStorage object from Flask request
-        bucket_name: Used as subfolder name
-        folder: Optional additional folder path
-    
-    Returns:
-        tuple: (success: bool, file_path: str or error_message: str)
-    """
-    try:
-        # Generate unique filename
-        original_filename = secure_filename(file.filename)
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        unique_filename = f"{timestamp}_{original_filename}"
-        
-        # Build local path
-        if folder:
-            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', bucket_name, folder)
-            relative_path = f"uploads/{bucket_name}/{folder}/{unique_filename}"
-        else:
-            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', bucket_name)
-            relative_path = f"uploads/{bucket_name}/{unique_filename}"
-        
-        # Create directory if needed
-        os.makedirs(upload_dir, exist_ok=True)
-        
-        # Save file
-        file_path = os.path.join(upload_dir, unique_filename)
-        file.save(file_path)
-        
-        # Return relative path with LOCAL: prefix to indicate local storage
-        return True, f"LOCAL:{relative_path}"
-        
-    except Exception as e:
-        return False, f"Error saving file locally: {e}"
+        error_msg = f"Error uploading to Supabase: {e}"
+        print(error_msg)
+        return False, error_msg
 
 
 def delete_file_from_supabase(file_path, bucket_name):
@@ -134,12 +93,19 @@ def delete_file_from_supabase(file_path, bucket_name):
     Returns:
         bool: True if successful, False otherwise
     """
+    if not file_path:
+        return False
+    
+    # Skip if it's a full URL (external file)
+    if file_path.startswith("http://") or file_path.startswith("https://"):
+        return True
+    
     try:
         supabase = get_supabase_client()
         
-        if supabase is None or file_path.startswith("LOCAL:"):
-            # Delete locally if Supabase not available or file is local
-            return delete_file_locally(file_path)
+        if supabase is None:
+            print("Supabase client not available. Cannot delete file.")
+            return False
         
         supabase.storage.from_(bucket_name).remove([file_path])
         return True
@@ -149,34 +115,9 @@ def delete_file_from_supabase(file_path, bucket_name):
         return False
 
 
-def delete_file_locally(file_path):
-    """
-    Delete a file from local storage.
-    
-    Args:
-        file_path: Path to the file (may have LOCAL: prefix)
-    
-    Returns:
-        bool: True if successful, False otherwise
-    """
-    try:
-        # Remove LOCAL: prefix if present
-        if file_path.startswith("LOCAL:"):
-            file_path = file_path[6:]
-        
-        full_path = os.path.join(current_app.root_path, 'static', file_path)
-        if os.path.exists(full_path):
-            os.remove(full_path)
-        return True
-        
-    except Exception as e:
-        print(f"Error deleting local file: {e}")
-        return False
-
-
 def get_public_url(file_path, bucket_name):
     """
-    Get the public URL for a file.
+    Get the public URL for a file from Supabase Storage.
     
     Args:
         file_path: Path to the file (from database)
@@ -188,21 +129,11 @@ def get_public_url(file_path, bucket_name):
     if not file_path:
         return None
     
-    # Check if it's a local file
-    if file_path.startswith("LOCAL:"):
-        # Return Flask static URL path
-        local_path = file_path[6:]  # Remove "LOCAL:" prefix
-        return f"/static/{local_path}"
-    
-    # Check if it's an old-style local path (backwards compatibility)
-    if file_path.startswith("uploads/"):
-        return f"/static/{file_path}"
-    
     # Check if it's already a full URL
     if file_path.startswith("http://") or file_path.startswith("https://"):
         return file_path
     
-    # Build Supabase public URL
+    # All files must be in Supabase - build Supabase public URL
     try:
         supabase_url = current_app.config.get('SUPABASE_URL')
         if supabase_url:
@@ -211,8 +142,8 @@ def get_public_url(file_path, bucket_name):
         # Outside of application context
         pass
     
-    # Fallback: assume it's a local path
-    return f"/static/{file_path}"
+    # If no Supabase URL configured, return None (should not happen in production)
+    return None
 
 
 def get_activity_image_url(file_path):
