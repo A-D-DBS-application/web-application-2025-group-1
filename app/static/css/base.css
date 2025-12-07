@@ -257,6 +257,53 @@ nav { position: sticky; top: 0; z-index: 50; padding: 1rem; max-width: 90rem; ma
     box-sizing: border-box;
     margin: 0 auto;
   }
+  
+  /* My Activities page - match navbar width */
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .activities-main .glass-card {
+    width: calc(100% - 1.5rem);
+    max-width: calc(100% - 1.5rem);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  
+  .table-wrapper {
+    overflow-x: visible;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .table-wrapper table {
+    width: 100%;
+    min-width: auto;
+    table-layout: fixed;
+  }
+  
+  /* Make table cells smaller and wrap text on mobile */
+  .table-wrapper table th,
+  .table-wrapper table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Hide less important columns on mobile for My Activities */
+  .activities-main .table-wrapper table th:nth-child(4),
+  .activities-main .table-wrapper table td:nth-child(4),
+  .activities-main .table-wrapper table th:nth-child(5),
+  .activities-main .table-wrapper table td:nth-child(5) {
+    display: none;
+  }
 }
 body.agency-home .nav-inner {
   background: linear-gradient(135deg, hsla(35, 40%, 98%, 0.9), hsla(35, 30%, 96%, 0.85));
@@ -5253,6 +5300,53 @@ select:focus {
 }
 
 @media (max-width: 576px) {
+  /* My Activities page - match navbar width exactly */
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .activities-main .glass-card {
+    width: calc(100% - 1.5rem);
+    max-width: calc(100% - 1.5rem);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  
+  .table-wrapper {
+    overflow-x: visible !important;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .table-wrapper table {
+    width: 100% !important;
+    min-width: auto !important;
+    table-layout: fixed;
+  }
+  
+  /* Make table cells fit on mobile */
+  .table-wrapper table th,
+  .table-wrapper table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Hide less important columns on mobile for My Activities */
+  .activities-main .table-wrapper table th:nth-child(4),
+  .activities-main .table-wrapper table td:nth-child(4),
+  .activities-main .table-wrapper table th:nth-child(5),
+  .activities-main .table-wrapper table td:nth-child(5) {
+    display: none;
+  }
+  
   .activities-toolbar {
     flex-direction: column;
     align-items: stretch;
