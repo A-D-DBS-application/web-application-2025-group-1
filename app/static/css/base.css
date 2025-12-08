@@ -1900,6 +1900,27 @@ tbody tr:hover {
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
+  color: var(--foreground);
+}
+
+/* Override text-gradient in step titles to be black instead of white */
+.step-title .text-gradient {
+  background: linear-gradient(135deg, var(--foreground), var(--foreground), var(--foreground));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: none;
+}
+
+/* Fallback for browsers that don't support background-clip in step titles */
+@supports not (-webkit-background-clip: text) {
+  .step-title .text-gradient {
+    background: none;
+    -webkit-text-fill-color: initial;
+    color: var(--foreground);
+    text-shadow: none;
+  }
 }
 
 .step-subtitle {
