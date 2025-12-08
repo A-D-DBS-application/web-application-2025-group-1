@@ -1,0 +1,82 @@
+create table public."User" (
+  user_id bigserial not null,
+  "Name" text null,
+  "Email" text null,
+  "Phone_Number" text null,
+  created_at timestamp with time zone not null,
+  "Role" public.user_role not null,
+  constraint User_pkey primary key (user_id),
+  constraint User_Email_key unique ("Email")
+) TABLESPACE pg_default;
+
+create table public."Trip" (
+  "Trip_id" bigserial not null,
+  "Start_Date" date null,
+  "End_Date" date null,
+  "Number_Of_Travellers" numeric null,
+  preferences public.pref_kind null,
+  "User_id" bigint null,
+  created_at timestamp with time zone not null,
+  "Destination" text null,
+  "Required_Activity_IDS" text null,
+  "Excluded_Activity_Ids" text null,
+  "Preference_Scores" text null,
+  constraint Trip_pkey primary key ("Trip_id"),
+  constraint Trip_User_id_fkey foreign KEY ("User_id") references "User" (user_id) on update CASCADE on delete CASCADE
+) TABLESPACE pg_default;
+
+create table public."Travellers" (
+  "Traveller_id" bigserial not null,
+  fitness public.fitness_level_enum null,
+  "Trip_id" bigint null,
+  created_at timestamp with time zone not null,
+  birth_date date not null,
+  "Name" text null,
+  constraint Travellers_pkey primary key ("Traveller_id"),
+  constraint Travellers_Trip_id_fkey foreign KEY ("Trip_id") references "Trip" ("Trip_id") on update CASCADE on delete CASCADE
+) TABLESPACE pg_default;
+
+create table public."Activity_type" (
+  "Activity_type_id" bigserial not null,
+  name character varying(120) not null,
+  type character varying(30) not null,
+  destination character varying(50) not null,
+  difficulty character varying(20) null,
+  "Agency_id" bigint not null,
+  created_at timestamp without time zone null,
+  description text null,
+  score_culture integer null default 3,
+  score_adventure integer null default 3,
+  score_relaxation integer null default 3,
+  score_nature integer null default 3,
+  latitude double precision null,
+  longitude double precision null,
+  "Min_Age" bigint null,
+  "Max_Age" bigint null,
+  "Duration" bigint null,
+  "Picture" text null,
+  constraint Activity_type_pkey primary key ("Activity_type_id"),
+  constraint Activity_type_Agency_id_fkey foreign KEY ("Agency_id") references "Travel_agencies_id" ("Agency_id") on update CASCADE on delete CASCADE
+) TABLESPACE pg_default;
+
+create table public."Activity_planned" (
+  "Trip_id" bigint not null,
+  "Activity_type_id" bigint not null,
+  date date null,
+  created_at timestamp with time zone not null,
+  constraint Activity_planned_pkey primary key ("Trip_id", "Activity_type_id"),
+  constraint Activity_planned_Activity_type_id_fkey foreign KEY ("Activity_type_id") references "Activity_type" ("Activity_type_id") on update CASCADE on delete CASCADE,
+  constraint Activity_planned_Trip_id_fkey foreign KEY ("Trip_id") references "Trip" ("Trip_id") on update CASCADE on delete CASCADE
+) TABLESPACE pg_default;
+
+create table public."Travel_agencies_id" (
+  "Agency_id" bigserial not null,
+  name text not null,
+  contact_info text null,
+  website text null,
+  created_at timestamp with time zone not null,
+  updated_at timestamp with time zone null,
+  "User_id" bigint not null,
+  constraint Travel_agencies_pkey primary key ("Agency_id"),
+  constraint Travel_agencies_id_User_id_fkey foreign KEY ("User_id") references "User" (user_id) on update CASCADE on delete CASCADE
+) TABLESPACE pg_default;
