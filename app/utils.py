@@ -430,8 +430,10 @@ def generate_itinerary(trip):
             # Not enough days left, skip this activity
             continue
         
-        # Plan activity for the first day (or multiple days if it's a multiday activity)
-        # For multiday activities, we mark the start date
+        # Plan activity for the start date
+        # Note: ActivityPlanned has composite primary key (trip_id, activity_type_id),
+        # so we can only store one record per activity. The template will calculate
+        # and display the day range based on the activity duration.
         planned = ActivityPlanned(
             trip_id=trip.trip_id,
             activity_type_id=act.activity_type_id,

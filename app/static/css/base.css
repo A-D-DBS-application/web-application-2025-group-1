@@ -1281,6 +1281,16 @@ textarea {
 .btn-outline:hover {
   background: var(--accent);
 }
+.btn-orange {
+  background: linear-gradient(135deg, #F59E0B, #E67E22);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+.btn-orange:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, #E67E22, #D97706);
+}
 
 /* Destination buttons */
 .dest-buttons {

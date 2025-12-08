@@ -47,6 +47,14 @@ def create_app():
     @app.context_processor
     def inject_mapbox_token():
         return dict(MAPBOX_ACCESS_TOKEN=app.config.get('MAPBOX_ACCESS_TOKEN', ''))
+    
+    @app.template_filter('add_days')
+    def add_days_filter(date, days):
+        """Template filter to add days to a date."""
+        from datetime import timedelta
+        if date and days:
+            return date + timedelta(days=days)
+        return date
 
     return app
 

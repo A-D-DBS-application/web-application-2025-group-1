@@ -38,12 +38,27 @@
           {% set activity_date = group.grouper %}
           {% set days_since_start = (activity_date - trip.start_date).days %}
           {% set day_number = days_since_start + 1 %}
-          <div class="day-title">
-            <div class="day-title-main">Day {{ day_number }}</div>
-            <div class="day-title-date">{{ group.grouper }}</div>
-          </div>
-
+          
           {% for act in group.list %}
+            {# Calculate day range for multiday activities #}
+            {% set activity_duration_hours = act.activity.duration if act.activity.duration else 0 %}
+            {% set activity_duration_days = ((activity_duration_hours + 23) // 24) if activity_duration_hours > 0 else 1 %}
+            {% set end_day_number = day_number + activity_duration_days - 1 %}
+            {% set end_date = (activity_date|add_days(activity_duration_days - 1)) if activity_duration_days > 1 else activity_date %}
+            
+            {# Show day header only for the first day of multiday activities or single-day activities #}
+            {% if loop.first %}
+              <div class="day-title">
+                {% if activity_duration_days > 1 %}
+                  <div class="day-title-main">Day {{ day_number }}-{{ end_day_number }}</div>
+                  <div class="day-title-date">{{ group.grouper }} — {{ end_date }}</div>
+                {% else %}
+                  <div class="day-title-main">Day {{ day_number }}</div>
+                  <div class="day-title-date">{{ group.grouper }}</div>
+                {% endif %}
+              </div>
+            {% endif %}
+            
             <div
               class="activity-card"
               id="activity-card-{{ act.activity.activity_type_id }}"
@@ -58,7 +73,11 @@
               <div class="activity-info">
                 <h3>{{ act.activity.name }}</h3>
                 <div class="activity-meta">
-                  Day {{ day_number }} - {{ group.grouper }}
+                  {% if activity_duration_days > 1 %}
+                    Day {{ day_number }}-{{ end_day_number }} - {{ group.grouper }} — {{ end_date }}
+                  {% else %}
+                    Day {{ day_number }} - {{ group.grouper }}
+                  {% endif %}
                 </div>
                 {% if act.activity.duration %}
                   <div class="activity-duration">
