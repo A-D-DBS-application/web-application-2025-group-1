@@ -236,10 +236,19 @@
     travellers.push({ name, birthDate, fitness });
     renderTravellers();
     
+    // Clear form and close the add traveller section
     nameEl.value = '';
     birthDateEl.value = '';
     if (fitnessEl) {
       fitnessEl.value = '';
+    }
+    
+    // Close the add traveller form after adding
+    const form = document.getElementById('addTravellerForm');
+    const arrow = document.getElementById('addTravellerArrow');
+    if (form && arrow) {
+      form.style.display = 'none';
+      arrow.textContent = '▼';
     }
   }
 
@@ -260,31 +269,56 @@
     
     list.innerHTML = '';
     
+    if (travellers.length === 0) {
+      list.innerHTML = '<div class="empty-travellers"><span>👤</span> No travellers added yet</div>';
+      return;
+    }
+    
     travellers.forEach((traveller, index) => {
       const item = document.createElement('div');
-      item.className = 'traveller-item';
+      item.className = 'traveller-inline-card';
+      const firstLetter = traveller.name ? traveller.name.charAt(0).toUpperCase() : '?';
+      const fitnessDisplay = traveller.fitness || '-';
       item.innerHTML = `
-        <div class="traveller-item-header">
-          <span class="traveller-item-title">${traveller.name}</span>
-          <button type="button" class="btn-remove-traveller" onclick="window.createTripWizard.removeTraveller(${index})">Remove</button>
+        <div class="traveller-inline-header">
+          <div class="traveller-avatar-small">${firstLetter}</div>
+          <span class="traveller-inline-name">${traveller.name}</span>
+          <button type="button" class="btn-icon-delete" onclick="window.createTripWizard.removeTraveller(${index})" title="Remove traveller">✕</button>
         </div>
-        <div class="form-row">
-          <div>
+        <div class="traveller-inline-fields">
+          <div class="traveller-field">
             <label>Name</label>
-            <input type="text" name="traveller_name[]" value="${traveller.name}" readonly>
+            <input type="text" value="${traveller.name}" readonly>
           </div>
-          <div>
-            <label>Date of Birth</label>
-            <input type="date" name="traveller_birth_date[]" value="${traveller.birthDate}" readonly>
+          <div class="traveller-field">
+            <label>Birth Date</label>
+            <input type="date" value="${traveller.birthDate}" readonly>
           </div>
-          <div>
-            <label>Fitness Level</label>
-            <input type="text" name="traveller_fitness[]" value="${traveller.fitness || 'Not specified'}" readonly>
+          <div class="traveller-field">
+            <label>Fitness</label>
+            <input type="text" value="${fitnessDisplay}" readonly>
           </div>
         </div>
       `;
       list.appendChild(item);
     });
+  }
+  
+  /**
+   * Toggle add traveller form
+   */
+  function toggleAddTraveller() {
+    const form = document.getElementById('addTravellerForm');
+    const arrow = document.getElementById('addTravellerArrow');
+    if (!form || !arrow) return;
+    
+    if (form.style.display === 'none') {
+      form.style.display = 'block';
+      arrow.textContent = '▲';
+    } else {
+      form.style.display = 'none';
+      arrow.textContent = '▼';
+    }
   }
 
   /**
@@ -590,6 +624,7 @@
     addTraveller: addTraveller,
     removeTraveller: removeTraveller,
     prepareOverview: prepareOverview,
+    toggleAddTraveller: toggleAddTraveller,
     getTravellers: () => travellers,
     setTravellers: (t) => { travellers = t; window.travellers = t; },
     getSelectedDestination: () => selectedDestination,
@@ -600,6 +635,7 @@
   window.changeStep = changeStep;
   window.addTraveller = addTraveller;
   window.prepareOverview = prepareOverview;
+  window.toggleAddTraveller = toggleAddTraveller;
 
 })();
 

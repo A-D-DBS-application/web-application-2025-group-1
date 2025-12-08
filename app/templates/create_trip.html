@@ -122,28 +122,35 @@
           <h2 class="step-title">Add <span class="text-gradient">Travellers</span></h2>
           <p class="step-subtitle">Enter details for all travellers</p>
           
-          <div id="travellerList" class="traveller-list"></div>
+          <!-- Current Travellers -->
+          <div id="travellerList" class="travellers-list"></div>
           
-          <div class="traveller-form">
-            <h3 style="margin-bottom: 1rem; font-size: 1rem;">Add New Traveller</h3>
-            <div class="form-row">
-              <div>
-                <label for="new_traveller_name">Name</label>
-                <input type="text" id="new_traveller_name" placeholder="Enter name">
-              </div>
-              <div>
-                <label for="new_traveller_birth_date">Date of Birth</label>
-                <input type="date" id="new_traveller_birth_date">
-              </div>
-              <div>
-                <label for="new_traveller_fitness">Fitness Level</label>
-                <select id="new_traveller_fitness">
-                  <option value="">Select fitness</option>
-                  <option value="LOW">Low</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="HIGH">High</option>
-                </select>
-                <button type="button" class="btn btn-primary" onclick="addTraveller()" style="margin-top: 1rem; width: 100%;">💾 Save Traveller</button>
+          <!-- Add New Traveller -->
+          <div class="add-traveller-section">
+            <div class="add-traveller-header" onclick="toggleAddTraveller()">
+              <span>➕ Add Traveller</span>
+              <span class="toggle-arrow" id="addTravellerArrow">▼</span>
+            </div>
+            <div class="add-traveller-form" id="addTravellerForm" style="display: none;">
+              <div class="traveller-inline-fields">
+                <div class="traveller-field">
+                  <label>Name</label>
+                  <input type="text" id="new_traveller_name" placeholder="Enter name">
+                </div>
+                <div class="traveller-field">
+                  <label>Birth Date</label>
+                  <input type="date" id="new_traveller_birth_date">
+                </div>
+                <div class="traveller-field">
+                  <label>Fitness</label>
+                  <select id="new_traveller_fitness">
+                    <option value="">-</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                  </select>
+                  <button type="button" class="btn btn-orange btn-sm" onclick="addTraveller()" style="margin-top: 1rem; align-self: flex-end; margin-left: auto;">💾 Save changes</button>
+                </div>
               </div>
             </div>
           </div>
