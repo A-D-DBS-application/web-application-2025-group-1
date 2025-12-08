@@ -322,23 +322,39 @@ nav ul li a:hover { background: var(--accent); color: var(--foreground); }
 
 /* Page header */
 .page-header { text-align: center; margin-bottom: 2.5rem; padding: 0 1rem; animation: fadeIn 0.5s ease-out; }
-.page-header h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; margin-bottom: 0.5rem; color: var(--foreground); }
+.page-header h1 { 
+  font-size: clamp(2rem, 5vw, 3.5rem); 
+  font-weight: 700; 
+  margin-bottom: 0.5rem; 
+  color: #ffffff; 
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+}
 .text-gradient { 
-  background: linear-gradient(135deg, var(--primary), var(--gold), var(--teal)); 
+  /* White text with subtle glow for better visibility on light backgrounds */
+  background: linear-gradient(135deg, #ffffff, #ffffff, #ffffff); 
   -webkit-background-clip: text; 
   -webkit-text-fill-color: transparent; 
   background-clip: text; 
   display: inline-block;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
 }
 /* Fallback for browsers that don't support background-clip */
 @supports not (-webkit-background-clip: text) {
   .text-gradient {
     background: none;
     -webkit-text-fill-color: initial;
-    color: var(--foreground);
+    color: #ffffff;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
   }
 }
-.page-header p { font-size: 1.125rem; color: var(--muted-foreground); max-width: 36rem; margin: 0 auto; }
+.page-header p { 
+  font-size: 1.125rem; 
+  color: #ffffff; 
+  max-width: 36rem; 
+  margin: 0 auto; 
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.12);
+}
 
 /* Agency header styling - same style as rest of website */
 body.agency-home .page-header {
@@ -361,32 +377,36 @@ body.agency-home .page-header h1 {
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
-  color: white;
-  text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 body.agency-home .page-header h1 .welcome-text {
   display: block;
-  font-size: clamp(1.75rem, 5vw, 3.5rem);
-  color: white;
-  text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
+  font-size: clamp(2.25rem, 6.5vw, 5rem);
+  background: linear-gradient(135deg, #ffffff, #ffffff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
   font-weight: 700;
 }
 body.agency-home .page-header h1 .text-gradient {
   display: block;
   font-size: clamp(2.25rem, 6.5vw, 5rem);
-  color: white;
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: white;
-  background-clip: unset;
-  text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #ffffff, #ffffff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
   font-weight: 700;
 }
 body.agency-home .page-header p {
-  color: white;
+  color: #ffffff;
   font-size: clamp(0.875rem, 1.75vw, 1.0625rem);
   margin-top: 1.5rem;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.12);
   font-weight: 400;
 }
 
@@ -416,6 +436,40 @@ body.trips-page .page-header {
   opacity: 1;
   text-align: center;
 }
+body.trips-page .page-header h1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: #ffffff;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+body.trips-page .page-header h1 .welcome-text {
+  display: block;
+  font-size: clamp(2.25rem, 6.5vw, 5rem);
+  background: linear-gradient(135deg, #ffffff, #ffffff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
+  font-weight: 700;
+}
+body.trips-page .page-header h1 .text-gradient {
+  display: block;
+  font-size: clamp(2.25rem, 6.5vw, 5rem);
+  background: linear-gradient(135deg, #ffffff, #ffffff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
+  font-weight: 700;
+}
+body.trips-page .page-header p {
+  color: #ffffff;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.12);
+}
 body.traveller-home .page-header h1 {
   font-size: clamp(2.25rem, 6.5vw, 5rem);
   font-weight: 700;
@@ -425,32 +479,36 @@ body.traveller-home .page-header h1 {
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
-  color: white;
-  text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 body.traveller-home .page-header h1 .welcome-text {
   display: block;
-  font-size: clamp(1.75rem, 5vw, 3.5rem);
-  color: white;
-  text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
+  font-size: clamp(2.25rem, 6.5vw, 5rem);
+  background: linear-gradient(135deg, #ffffff, #ffffff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
   font-weight: 700;
 }
 body.traveller-home .page-header h1 .text-gradient {
   display: block;
   font-size: clamp(2.25rem, 6.5vw, 5rem);
-  color: white;
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: white;
-  background-clip: unset;
-  text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 6px 25px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #ffffff, #ffffff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
   font-weight: 700;
 }
 body.traveller-home .page-header p {
-  color: white;
+  color: #ffffff;
   font-size: clamp(0.875rem, 1.75vw, 1.0625rem);
   margin-top: 1.5rem;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.12);
   font-weight: 400;
 }
 
@@ -5582,4 +5640,5 @@ select:focus {
     flex-wrap: wrap;
   }
 }
+
 
