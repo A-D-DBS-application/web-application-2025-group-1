@@ -492,7 +492,13 @@
       let currentIndex = 0;
       let markers = [];
       
-      mapboxgl.accessToken = '{{ MAPBOX_ACCESS_TOKEN }}';
+      const mapboxToken = {{ MAPBOX_ACCESS_TOKEN|tojson|safe }};
+      if (!mapboxToken) {
+        console.error('Mapbox access token is not configured. Please set MAPBOX_ACCESS_TOKEN environment variable.');
+        document.getElementById('activitiesMap').innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Map unavailable: Mapbox token not configured</div>';
+        return;
+      }
+      mapboxgl.accessToken = mapboxToken;
       
       // Type colors
       const typeColors = {

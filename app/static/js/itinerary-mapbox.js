@@ -289,6 +289,20 @@
     // Check if mapboxgl is available
     if (typeof mapboxgl === 'undefined') {
       console.error('Mapbox GL JS is not loaded');
+      const mapContainer = document.getElementById('map');
+      if (mapContainer) {
+        mapContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Map unavailable: Mapbox GL JS library not loaded</div>';
+      }
+      return;
+    }
+
+    // Check if access token is available
+    if (!MAPBOX_ACCESS_TOKEN || MAPBOX_ACCESS_TOKEN.trim() === '') {
+      console.error('Mapbox access token is not configured. Please set MAPBOX_ACCESS_TOKEN environment variable.');
+      const mapContainer = document.getElementById('map');
+      if (mapContainer) {
+        mapContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Map unavailable: Mapbox token not configured. Please set MAPBOX_ACCESS_TOKEN environment variable on Render.</div>';
+      }
       return;
     }
 
