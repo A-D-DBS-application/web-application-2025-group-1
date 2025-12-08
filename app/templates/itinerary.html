@@ -95,7 +95,8 @@
           "longitude": {{ act.activity.longitude if act.activity.longitude else 'null' }},
           "duration": {{ act.activity.duration if act.activity.duration else 'null' }},
           "description": {{ (act.activity.description or '')|tojson }},
-          "picture": {{ (act.activity.picture or '')|tojson }}
+          "picture": {{ (act.activity.picture or '')|tojson }},
+          "picture_url": {{ (act.activity.picture|activity_image_url if act.activity.picture else None)|tojson }}
         }
       }{% if not loop.last %},{% endif %}
       {% endfor %}

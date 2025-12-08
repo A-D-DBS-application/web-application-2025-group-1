@@ -165,7 +165,7 @@ def get_public_url(file_path, bucket_name):
     Get the public URL for a file from Supabase Storage.
     
     Args:
-        file_path: Path to the file (from database)
+        file_path: Path to the file (from database) - should be just the filename
         bucket_name: Name of the Supabase storage bucket
     
     Returns:
@@ -179,6 +179,7 @@ def get_public_url(file_path, bucket_name):
         return file_path
     
     # All files must be in Supabase - build Supabase public URL
+    # Note: file_path should already be cleaned (just filename) after database migration
     try:
         supabase_url = current_app.config.get('SUPABASE_URL')
         if supabase_url:

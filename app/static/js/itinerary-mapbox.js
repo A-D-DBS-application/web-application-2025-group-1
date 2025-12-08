@@ -84,9 +84,13 @@
         </div>
         ${p.image ? `
           <div class="popup-image-wrap">
-            <img src="${p.image}" alt="${p.name}">
+            <img src="${p.image}" alt="${p.name}" onerror="this.parentElement.innerHTML='<div style=\\'text-align: center; padding: 2rem; font-size: 3rem; background: #f0f0f0; border-radius: 0.5rem;\\'>🎯</div>'">
           </div>
-        ` : ''}
+        ` : `
+          <div class="popup-image-wrap" style="text-align: center; padding: 2rem; font-size: 3rem; background: #f0f0f0; border-radius: 0.5rem;">
+            🎯
+          </div>
+        `}
         <div class="popup-body">
           <div class="popup-title">${p.name}</div>
           <div class="popup-meta-row">
@@ -243,7 +247,7 @@
           day: dateToDay[dateStr] || 1,
           duration: act.activity.duration !== null && act.activity.duration !== undefined ? act.activity.duration : null,
           description: act.activity.description || '',
-          image: act.activity.picture ? '/static/' + act.activity.picture : null
+          image: (act.activity.picture_url && act.activity.picture_url.trim() !== '' && act.activity.picture_url !== 'null') ? act.activity.picture_url : null
         };
       });
   }

@@ -25,17 +25,8 @@ def create_app():
     @app.template_filter('activity_image_url')
     def activity_image_url_filter(file_path):
         """Template filter to get activity image URL from Supabase."""
-        if not file_path:
-            return None
-        # Handle full URLs
-        if file_path.startswith("http"):
-            return file_path
-        # Build Supabase URL
-        supabase_url = app.config.get('SUPABASE_URL')
-        bucket = app.config.get('SUPABASE_BUCKET_ACTIVITIES', 'activities')
-        if supabase_url:
-            return f"{supabase_url}/storage/v1/object/public/{bucket}/{file_path}"
-        return None
+        from .storage import get_activity_image_url
+        return get_activity_image_url(file_path)
     
     @app.template_filter('logo_url')
     def logo_url_filter(file_path):
