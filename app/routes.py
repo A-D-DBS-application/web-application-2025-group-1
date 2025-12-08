@@ -72,8 +72,12 @@ def _create_default_destinations():
 def index():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
+        # If user doesn't exist (e.g., database was reset), clear session
+        if not user:
+            session.pop('user_id', None)
+            return render_template('index.html')
         # Agencies should only see activities, not trips
-        if user and user.role == 'AGENCY':
+        if user.role == 'AGENCY':
             return redirect(url_for('main.activities'))
         trips = Trip.query.filter_by(user_id=user.user_id).all()
         return render_template('trips.html', trips=trips, user=user, activity_types=get_activity_types())
@@ -85,8 +89,14 @@ def home():
         return redirect(url_for('main.login'))
     
     user = User.query.get(session['user_id'])
+    # If user doesn't exist (e.g., database was reset), clear session and redirect
+    if not user:
+        session.pop('user_id', None)
+        flash("Your session has expired. Please log in again.", "info")
+        return redirect(url_for('main.login'))
+    
     # Agencies should see agency homepage
-    if user and user.role == 'AGENCY':
+    if user.role == 'AGENCY':
         return render_template('home.html', user=user)
     
     trips = Trip.query.filter_by(user_id=user.user_id).all()

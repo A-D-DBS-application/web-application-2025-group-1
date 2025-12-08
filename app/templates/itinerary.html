@@ -3,7 +3,8 @@
 {% set page_title = 'Itinerary | ' + trip.destination %}
 {% set extra_css = '<!-- Mapbox -->
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet"/>' %}
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet"/>
+  <script>window.MAPBOX_ACCESS_TOKEN = {{ MAPBOX_ACCESS_TOKEN|tojson|safe }};</script>' %}
 {% include 'partials/_head.html' %}
 </head>
 <body class="no-bg-image">

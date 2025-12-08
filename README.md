@@ -1,23 +1,108 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/DxqGQVx4)
+# AfriGuide - African Travel Itinerary Planner
 
-## Local setup
+A Flask-based web application for planning and managing personalized African travel itineraries.
 
-1. Maak een `.env` bestand in de projectroot met minimaal:
-   ```
-   SECRET_KEY=iets_unieks
-   DATABASE_URL=postgresql://postgres:Group1_ADDBS!@jouw-supabase-host.supabase.co:5432/postgres?sslmode=require
-   ```
-   Tip: open Supabase → Project Settings → Database → Connection String en kopieer de volledige URL (hostnaam, gebruikersnaam, wachtwoord).
-2. Installeer dependencies: `python -m pip install -r requirements.txt`.
-3. Start de app: `flask --app run.py run` of `python run.py`.
+## Features
 
-### Problemen oplossen
+- 🗺️ Interactive map-based itinerary planning
+- 📍 Activity management with filtering
+- 👥 Multi-traveller support
+- 🏢 Travel agency integration
+- 📸 Image storage via Supabase Storage
+- 🎨 Modern, responsive UI
 
-- Krijg je `sqlalchemy.exc.OperationalError` met “could not translate host name”? Controleer de `DATABASE_URL`: meestal staat er een typefout in de hostnaam.
-- Voor lokaal testen zonder externe database kun je de regel `DATABASE_URL=sqlite:///app.db` gebruiken. Migreer daarna met `flask db upgrade`.
+## Setup
 
-Feedback sessie 1:
-https://ugentbe-my.sharepoint.com/personal/thomas_derave_ugent_be/_layouts/15/stream.aspx?id=%2Fpersonal%2Fthomas%5Fderave%5Fugent%5Fbe%2FDocuments%2FOpnamen%2FJaron%20Decaluw%C3%A9%20%2D%20Meeting%20Thomas%20Derave%2D20251127%5F133346%2DOpname%20van%20vergadering%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2E7264b892%2D29be%2D41c9%2Da5d9%2Dd56b98a0c98d 
+### Prerequisites
 
-Feedback sessie 2:
-...
+- Python 3.8+
+- PostgreSQL database (Supabase)
+- Supabase account for storage
+- Mapbox account for maps
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd web-application-2025-group-1
+```
+
+2. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Set up environment variables:
+Create a `.env` file in the root directory with the following variables:
+
+```env
+SECRET_KEY=your_secret_key_here
+DATABASE_URL=postgresql://user:password@host:port/database
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your_supabase_service_role_key
+MAPBOX_ACCESS_TOKEN=your_mapbox_access_token
+```
+
+**Important:** Never commit the `.env` file to version control!
+
+### Database Setup
+
+Run migrations:
+```bash
+flask db upgrade
+```
+
+### Running the Application
+
+Development:
+```bash
+python run.py
+```
+
+Production (with Gunicorn):
+```bash
+gunicorn app:app
+```
+
+## Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `SECRET_KEY` | Flask secret key for sessions | Yes |
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `SUPABASE_URL` | Supabase project URL | Yes |
+| `SUPABASE_KEY` | Supabase service_role key | Yes |
+| `MAPBOX_ACCESS_TOKEN` | Mapbox API access token | Yes |
+
+## Project Structure
+
+```
+app/
+├── __init__.py          # Flask app factory
+├── config.py            # Configuration
+├── models.py            # Database models
+├── routes.py            # Application routes
+├── storage.py           # Supabase Storage utilities
+├── templates/           # Jinja2 templates
+├── static/              # CSS, JS, images
+└── utils.py             # Utility functions
+```
+
+## Deployment
+
+### Render.com
+
+1. Connect your GitHub repository
+2. Set all required environment variables in Render dashboard
+3. Deploy!
+
+## License
+
+[Your License Here]

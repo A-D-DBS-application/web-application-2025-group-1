@@ -6,8 +6,9 @@
 (function() {
   'use strict';
 
-  // Mapbox access token (should ideally be in environment variable)
-  const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYXJ2ZXJib3YiLCJhIjoiY21pb2Uyc3VkMDB0aTNmc2MzaXY3aDZxeCJ9.BFBZ5hFN3SbOivGbGlCnnw';
+  // Mapbox access token - should be set via environment variable or config
+  // For now, using a placeholder - this should be injected from server-side config
+  const MAPBOX_ACCESS_TOKEN = window.MAPBOX_ACCESS_TOKEN || '';
 
   let map = null;
   const markers = {};

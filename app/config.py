@@ -16,30 +16,44 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "your_secret_key")
     
     # Get database URL and convert to use psycopg3 driver
-    _db_url = os.getenv(
-        "DATABASE_URL",
-        "postgresql://postgres.eoysewmdlgotspzgbpkb:Group1_ADDBS!@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require",
-    )
-    # Convert postgresql:// to postgresql+psycopg:// to use psycopg3 (required by requirements.txt)
-    if _db_url.startswith("postgresql://") and not _db_url.startswith("postgresql+psycopg://"):
-        _db_url = _db_url.replace("postgresql://", "postgresql+psycopg://", 1)
-    SQLALCHEMY_DATABASE_URI = _db_url
-    # Connection pool settings to handle Supabase connection issues
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,  # Verify connections before using them
-        'pool_recycle': 300,   # Recycle connections after 5 minutes
-        'pool_size': 5,        # Number of connections to maintain
-        'max_overflow': 10,     # Maximum overflow connections
-        'connect_args': {
-            'connect_timeout': 10,  # Connection timeout in seconds
-            'prepare_threshold': None,  # Disable prepared statements to avoid DuplicatePreparedStatement errors
+    # DATABASE_URL must be set via environment variable (or use SQLite for local dev)
+    _db_url = os.getenv("DATABASE_URL")
+    if not _db_url:
+        # Fallback to SQLite for local development if DATABASE_URL not set
+        _db_url = "sqlite:///app.db"
+    
+    # Connection pool settings - only for PostgreSQL (Supabase)
+    # SQLite doesn't need these settings
+    if _db_url.startswith("postgresql"):
+        # Convert postgresql:// to postgresql+psycopg:// to use psycopg3 (required by requirements.txt)
+        if _db_url.startswith("postgresql://") and not _db_url.startswith("postgresql+psycopg://"):
+            _db_url = _db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            'pool_pre_ping': True,  # Verify connections before using them
+            'pool_recycle': 300,   # Recycle connections after 5 minutes
+            'pool_size': 5,        # Number of connections to maintain
+            'max_overflow': 10,     # Maximum overflow connections
+            'connect_args': {
+                'connect_timeout': 10,  # Connection timeout in seconds
+                'prepare_threshold': None,  # Disable prepared statements to avoid DuplicatePreparedStatement errors
+            }
         }
-    }
+    else:
+        # SQLite doesn't need connection pool settings
+        SQLALCHEMY_ENGINE_OPTIONS = {}
+    
+    SQLALCHEMY_DATABASE_URI = _db_url
     
     # Supabase Storage Configuration
     # Note: Using service_role key for server-side uploads (has full access)
-    SUPABASE_URL = os.getenv("SUPABASE_URL", "https://eoysewmdlgotspzgbpkb.supabase.co")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVveXNld21kbGdvdHNwemdicGtiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDY0OTA1OCwiZXhwIjoyMDc2MjI1MDU4fQ.Wowf1phhVcv4aE0qzQ_PnnK7VcL1Pm_7xf6S8XxeYvE")
+    # SUPABASE_URL and SUPABASE_KEY should be set via environment variables
+    # For local development, these can be None (but features requiring Supabase won't work)
+    SUPABASE_URL = os.getenv("SUPABASE_URL")
+    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
     SUPABASE_BUCKET_ACTIVITIES = "activities"
     SUPABASE_BUCKET_LOGOS = "logos"
+    
+    # Mapbox Configuration
+    # MAPBOX_ACCESS_TOKEN should be set via environment variable
+    MAPBOX_ACCESS_TOKEN = os.getenv("MAPBOX_ACCESS_TOKEN", "")
 

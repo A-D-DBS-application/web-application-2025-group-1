@@ -42,6 +42,11 @@ def create_app():
         if supabase_url:
             return f"{supabase_url}/storage/v1/object/public/{bucket}/{file_path}"
         return None
+    
+    # Make Mapbox token available to all templates
+    @app.context_processor
+    def inject_mapbox_token():
+        return dict(MAPBOX_ACCESS_TOKEN=app.config.get('MAPBOX_ACCESS_TOKEN', ''))
 
     return app
 
