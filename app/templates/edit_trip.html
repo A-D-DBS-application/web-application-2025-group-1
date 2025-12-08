@@ -384,6 +384,24 @@
   <script src="{{ url_for('static', filename='js/activity-loader.js') }}"></script>
   <script src="{{ url_for('static', filename='js/destination-cards.js') }}"></script>
   <script src="{{ url_for('static', filename='js/form-validation.js') }}"></script>
+  <!-- Loading Overlay -->
+  {% include 'partials/_loading_overlay.html' %}
+  
+  <!-- Show loading overlay when form is submitted -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('editTripForm');
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      
+      if (form && loadingOverlay) {
+        form.addEventListener('submit', function(e) {
+          // Show loading overlay
+          loadingOverlay.style.display = 'flex';
+        });
+      }
+    });
+  </script>
+  
   {% include 'partials/_bootstrap_js.html' %}
 </body>
 </html>
