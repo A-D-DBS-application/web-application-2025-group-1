@@ -14,7 +14,7 @@
   <script type="application/json" id="activities-data">{{ activities|tojson|safe }}</script>
   <script type="application/json" id="travellers-data">{{ travellers_data|tojson|safe }}</script>
 
-  <div class="container narrow">
+  <div class="container narrow edit-trip-container">
     <!-- Navigation buttons above the card -->
     <div class="form-actions" style="margin-bottom: 1.5rem; padding: 0; border-top: none; border-bottom: none; display: flex; gap: 1rem; justify-content: space-between;">
       <a href="{{ url_for('main.trips') }}" class="btn btn-primary">← Back to Trips</a>
@@ -214,11 +214,13 @@
 
         <!-- Activity Selection Section -->
         <div class="form-section">
-          <div class="section-header">
-            <div class="section-icon teal">🎯</div>
-            <div>
-              <div class="section-title">Activity Selection</div>
-              <div class="section-subtitle">Mark activities that must be included or should be excluded</div>
+          <div class="activity-header-bar">
+            <div class="section-header">
+              <div class="section-icon teal">🎯</div>
+              <div>
+                <div class="section-title">Activity Selection</div>
+                <div class="section-subtitle">Mark activities that must be included or should be excluded</div>
+              </div>
             </div>
           </div>
 

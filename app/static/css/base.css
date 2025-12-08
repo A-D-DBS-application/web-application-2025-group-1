@@ -1176,6 +1176,21 @@ nav ul li a.active {
   color: var(--foreground);
 }
 
+/* Activity header bar for Activity Selection */
+.activity-header-bar {
+  display: block;
+  background: linear-gradient(90deg, var(--primary), hsl(14, 72%, 45%));
+  color: var(--primary-foreground);
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.activity-header-bar .section-header { margin-bottom: 0; }
+.activity-header-bar .section-title { color: var(--primary-foreground); }
+.activity-header-bar .section-subtitle { color: rgba(255,255,255,0.95); font-weight: 500; }
+
 /* Form elements */
 label {
   display: block;
@@ -3054,6 +3069,18 @@ select:focus {
 /* Container variations */
 .container.narrow {
   max-width: 50rem;
+}
+
+/* Wider layout for Edit Trip page: make bars and blocks appear broader */
+.container.narrow.edit-trip-container {
+  max-width: 80rem;
+}
+.container.narrow.edit-trip-container .glass-card {
+  padding: 2.5rem;
+}
+.container.narrow.edit-trip-container .activity-header-bar {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 /* Back button wrapper */
