@@ -47,9 +47,11 @@ Create a `.env` file in the root directory with the following variables:
 SECRET_KEY=your_secret_key_here
 DATABASE_URL=postgresql://user:password@host:port/database
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your_supabase_service_role_key
+SUPABASE_KEY=your_supabase_anon_key
 MAPBOX_ACCESS_TOKEN=your_mapbox_access_token
 ```
+
+**Note:** Use the **anon key** (not service_role key) for public deployments. Storage bucket policies must be configured in Supabase to allow anon uploads.
 
 **Important:** Never commit the `.env` file to version control!
 
@@ -79,7 +81,7 @@ gunicorn app:app
 | `SECRET_KEY` | Flask secret key for sessions | Yes |
 | `DATABASE_URL` | PostgreSQL connection string | Yes |
 | `SUPABASE_URL` | Supabase project URL | Yes |
-| `SUPABASE_KEY` | Supabase service_role key | Yes |
+| `SUPABASE_KEY` | Supabase anon key (for public deployments) | Yes |
 | `MAPBOX_ACCESS_TOKEN` | Mapbox API access token | Yes |
 
 ## Project Structure

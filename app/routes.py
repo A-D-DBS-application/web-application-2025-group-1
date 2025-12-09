@@ -927,17 +927,37 @@ def edit_activity(activity_id):
         if 'picture' in request.files:
             picture_file = request.files['picture']
             if picture_file and picture_file.filename:
+                # Debug logging
+                print(f"[EDIT ACTIVITY] Picture upload attempt:")
+                print(f"  Filename: {picture_file.filename}")
+                print(f"  Content type: {picture_file.content_type}")
+                print(f"  Content length: {picture_file.content_length if hasattr(picture_file, 'content_length') else 'unknown'}")
+                
                 bucket_name = current_app.config.get('SUPABASE_BUCKET_ACTIVITIES', 'activities')
+                print(f"  Bucket: {bucket_name}")
+                
+                # Check Supabase config
+                supabase_url = current_app.config.get('SUPABASE_URL')
+                supabase_key = current_app.config.get('SUPABASE_KEY')
+                print(f"  SUPABASE_URL: {supabase_url}")
+                print(f"  SUPABASE_KEY present: {bool(supabase_key)}")
+                if supabase_key:
+                    print(f"  SUPABASE_KEY length: {len(supabase_key)}")
+                    print(f"  SUPABASE_KEY starts with eyJ: {supabase_key.startswith('eyJ')}")
                 
                 # Delete old picture if exists
                 if activity.picture:
+                    print(f"  Deleting old picture: {activity.picture}")
                     delete_file_from_supabase(activity.picture, bucket_name)
                 
                 # Upload new picture
+                print(f"  Starting upload...")
                 success, result = upload_file_to_supabase(picture_file, bucket_name)
                 if success:
+                    print(f"  ✅ Upload successful: {result}")
                     activity.picture = result
                 else:
+                    print(f"  ❌ Upload failed: {result}")
                     flash(f"Warning: Could not upload image. {result}", "error")
 
         if not activity.name or not activity.type or not activity.destination:

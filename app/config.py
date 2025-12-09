@@ -45,11 +45,16 @@ class Config:
     SQLALCHEMY_DATABASE_URI = _db_url
     
     # Supabase Storage Configuration
-    # Note: Using service_role key for server-side uploads (has full access)
-    # SUPABASE_URL and SUPABASE_KEY should be set via environment variables
+    # Note: Using anon key for public deployments (requires Storage policies to be configured)
+    # SUPABASE_URL and SUPABASE_KEY (anon key) should be set via environment variables
     # For local development, these can be None (but features requiring Supabase won't work)
-    SUPABASE_URL = os.getenv("SUPABASE_URL")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+    # IMPORTANT: You must configure Storage bucket policies in Supabase to allow anon uploads
+    _supabase_url = os.getenv("SUPABASE_URL")
+    _supabase_key = os.getenv("SUPABASE_KEY")
+    
+    # Clean and validate Supabase credentials (remove whitespace/newlines)
+    SUPABASE_URL = _supabase_url.strip() if _supabase_url and isinstance(_supabase_url, str) else None
+    SUPABASE_KEY = _supabase_key.strip() if _supabase_key and isinstance(_supabase_key, str) else None
     SUPABASE_BUCKET_ACTIVITIES = "activities"
     SUPABASE_BUCKET_LOGOS = "logos"
     
