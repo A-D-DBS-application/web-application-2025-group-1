@@ -39,11 +39,6 @@ def score_activity(activity: ActivityType, trip, travellers=None):
     import json
     score = 0
 
-    # Bestemming match
-    if trip.destination and activity.destination:
-        if trip.destination.strip().lower() == activity.destination.strip().lower():
-            score += 20
-
     # Fitness level matching (if travellers provided)
     if travellers and activity.difficulty:
         # Map fitness levels to difficulty levels
