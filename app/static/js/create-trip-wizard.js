@@ -601,9 +601,42 @@
     const form = document.getElementById('tripForm');
     if (form) {
       form.addEventListener('submit', function(e) {
+        // Prepare activities first
         if (window.prepareActivities) {
           window.prepareActivities();
         }
+        
+        // Add travellers to form as hidden inputs
+        // Remove any existing traveller inputs first
+        form.querySelectorAll('input[name^="traveller_name"], input[name^="traveller_birth_date"], input[name^="traveller_fitness"]').forEach(input => {
+          input.remove();
+        });
+        
+        // Add travellers as hidden inputs
+        travellers.forEach((traveller, index) => {
+          if (traveller.name && traveller.birthDate) {
+            // Add name
+            const nameInput = document.createElement('input');
+            nameInput.type = 'hidden';
+            nameInput.name = 'traveller_name[]';
+            nameInput.value = traveller.name;
+            form.appendChild(nameInput);
+            
+            // Add birth date
+            const birthInput = document.createElement('input');
+            birthInput.type = 'hidden';
+            birthInput.name = 'traveller_birth_date[]';
+            birthInput.value = traveller.birthDate;
+            form.appendChild(birthInput);
+            
+            // Add fitness (if provided)
+            const fitnessInput = document.createElement('input');
+            fitnessInput.type = 'hidden';
+            fitnessInput.name = 'traveller_fitness[]';
+            fitnessInput.value = traveller.fitness || '';
+            form.appendChild(fitnessInput);
+          }
+        });
       });
     }
     

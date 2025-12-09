@@ -402,7 +402,8 @@
         {% else %}
         <!-- List View -->
         <div class="glass-card">
-        <div class="table-wrapper table-responsive">
+        <!-- Desktop/Tablet Table View (hidden on mobile) -->
+        <div class="table-wrapper table-responsive activities-table-view">
           <table>
             <thead>
               <tr>
@@ -477,6 +478,79 @@
               {% endif %}
             </tbody>
           </table>
+          </div>
+          
+          <!-- Mobile Card View (hidden on desktop/tablet) -->
+          <div class="activities-cards-view">
+            {% if activities %}
+              {% for a in activities %}
+                <div class="activity-card">
+                  <div class="activity-card-header">
+                    <h3 class="activity-card-name">{{ a.name }}</h3>
+                    <div class="activity-card-badges">
+                      <span class="type-badge type-{{ a.type|lower }}">{{ a.type }}</span>
+                      {% if a.difficulty %}
+                      <span class="difficulty-badge difficulty-{{ a.difficulty|lower }}">{{ a.difficulty }}</span>
+                      {% endif %}
+                    </div>
+                    {% if a.picture %}
+                    <div class="activity-card-image-wrapper">
+                      <img src="{{ a.picture|activity_image_url }}" alt="{{ a.name }}" class="activity-card-image">
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div class="activity-card-body">
+                    {% if not selected_destination and not is_my_activities %}
+                    <div class="activity-card-row">
+                      <span class="activity-card-label">📍 Destination:</span>
+                      <span class="activity-card-value">{{ a.destination }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="activity-card-row">
+                      <span class="activity-card-label">👥 Suitable Age:</span>
+                      <span class="activity-card-value">
+                        {% if a.min_age is not none or a.max_age is not none %}
+                          {% if a.min_age is not none and a.max_age is not none %}
+                            {{ a.min_age }} - {{ a.max_age }} years
+                          {% elif a.min_age is not none %}
+                            {{ a.min_age }}+ years
+                          {% elif a.max_age is not none %}
+                            Up to {{ a.max_age }} years
+                          {% endif %}
+                        {% else %}
+                          All ages
+                        {% endif %}
+                      </span>
+                    </div>
+                    <div class="activity-card-row">
+                      <span class="activity-card-label">⏱️ Duration:</span>
+                      <span class="activity-card-value">
+                        {% if a.duration is not none %}
+                          {{ a.duration }} {% if a.duration == 1 %}hour{% else %}hours{% endif %}
+                        {% else %}
+                          –
+                        {% endif %}
+                      </span>
+                    </div>
+                    {% if not is_my_activities %}
+                    <div class="activity-card-row">
+                      <span class="activity-card-label">🏢 Travel Agency:</span>
+                      <span class="activity-card-value">{{ a.agency.name if a.agency else '–' }}</span>
+                    </div>
+                    {% endif %}
+                  </div>
+                  {% if is_my_activities %}
+                  <div class="activity-card-footer">
+                    <a class="btn btn-outline btn-sm" href="{{ url_for('main.edit_activity', activity_id=a.activity_type_id) }}">Edit</a>
+                  </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="activity-card-empty">
+                <p style="text-align: center; color: var(--muted-foreground); padding: 2rem;">No activities found</p>
+              </div>
+            {% endif %}
           </div>
         </div>
       {% endif %}
