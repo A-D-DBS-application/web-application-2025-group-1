@@ -3903,14 +3903,15 @@ select:focus {
   background: transparent;
 }
 
-.calendar-day:hover:not(.disabled):not(.other-month) {
-  background: var(--accent);
+.calendar-day:hover:not(.disabled):not(.other-month):not(.range-start):not(.range-end):not(.in-range) {
+  background: hsla(25, 50%, 75%, 0.6);
 }
 
-.calendar-day.today {
-  background: var(--primary);
-  color: var(--primary-foreground);
+.calendar-day.today:not(.range-start):not(.range-end):not(.in-range) {
+  background: hsla(25, 20%, 70%, 0.5);
+  color: var(--foreground);
   font-weight: 600;
+  border: 2px solid hsla(25, 30%, 55%, 0.6);
 }
 
 .calendar-day.disabled {
