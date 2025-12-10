@@ -108,8 +108,6 @@ def build_distance_matrix(activities):
     """
     Maakt een NxN-matrix met afstanden tussen alle activiteiten.
 
-    We gebruiken hier een Haversine-gebaseerde matrix, maar bouwen 'm
-    vectorized met NumPy en SciPy.
     """
     if len(activities) == 0:
         return np.array([[]])
@@ -120,10 +118,7 @@ def build_distance_matrix(activities):
         dtype=float
     )
 
-    # SciPy distance_matrix werkt standaard euclidisch.
-    # We gebruiken 'm om indices te combineren, maar vullen de echte
-    # Haversine-afstanden in.
-    base = distance_matrix(coords, coords)
+    base = np.zeros((len(coords), len(coords)), dtype=float)
 
     # Vervang euclidische afstand door Haversine (km)
     n = coords.shape[0]
