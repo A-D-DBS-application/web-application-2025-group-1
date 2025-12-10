@@ -387,14 +387,50 @@
   <!-- Loading Overlay -->
   {% include 'partials/_loading_overlay.html' %}
   
+  <!-- No Travellers Warning Modal -->
+  <div class="modal-overlay" id="noTravellersModal">
+    <div class="modal">
+      <div class="modal-title">👥 No Travellers Added</div>
+      <div class="modal-message">You need to add at least one traveller before saving this trip.</div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" onclick="closeNoTravellersModal()">OK</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Show loading overlay when form is submitted -->
   <script>
+    function closeNoTravellersModal() {
+      document.getElementById('noTravellersModal').classList.remove('show');
+    }
+    
+    function countActiveTravellers() {
+      // Count existing travellers that are not deleted (visible cards)
+      const existingCards = document.querySelectorAll('.traveller-inline-card');
+      let count = 0;
+      existingCards.forEach(card => {
+        if (card.style.display !== 'none') {
+          count++;
+        }
+      });
+      return count;
+    }
+    
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('editTripForm');
       const loadingOverlay = document.getElementById('loadingOverlay');
       
       if (form && loadingOverlay) {
         form.addEventListener('submit', function(e) {
+          // Check if there are any travellers
+          const travellerCount = countActiveTravellers();
+          
+          if (travellerCount === 0) {
+            e.preventDefault();
+            document.getElementById('noTravellersModal').classList.add('show');
+            return false;
+          }
+          
           // Show loading overlay
           loadingOverlay.style.display = 'flex';
         });
