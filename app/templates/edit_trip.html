@@ -128,9 +128,9 @@
                     <label>Fitness</label>
                     <select name="traveller_fitness_{{ traveller.traveller_id }}">
                       <option value="">-</option>
-                      <option value="LOW" {% if traveller.fitness == 'LOW' %}selected{% endif %}>Low</option>
-                      <option value="MEDIUM" {% if traveller.fitness == 'MEDIUM' %}selected{% endif %}>Medium</option>
-                      <option value="HIGH" {% if traveller.fitness == 'HIGH' %}selected{% endif %}>High</option>
+                      <option value="LOW" {% if traveller.fitness == 'LOW' %}selected{% endif %}>LOW</option>
+                      <option value="MEDIUM" {% if traveller.fitness == 'MEDIUM' %}selected{% endif %}>MEDIUM</option>
+                      <option value="HIGH" {% if traveller.fitness == 'HIGH' %}selected{% endif %}>HIGH</option>
                     </select>
                   </div>
                 </div>
@@ -163,8 +163,9 @@
                   <label>Fitness</label>
                   <select id="newTravellerFitness">
                     <option value="">-</option>
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
+                    <option value="LOW">LOW</option>
+                    <option value="MEDIUM">MEDIUM</option>
+                    <option value="HIGH">HIGH</option>
                     <option value="HIGH">High</option>
                   </select>
                   <button type="button" class="btn btn-orange btn-sm" onclick="addTraveller()" style="margin-top: 1rem; align-self: flex-end; margin-left: auto;">💾 Save changes</button>
@@ -333,9 +334,9 @@
           <label>Fitness</label>
           <select name="new_traveller_fitness_${tempId}">
             <option value="">-</option>
-            <option value="LOW" ${fitness === 'LOW' ? 'selected' : ''}>Low</option>
-            <option value="MEDIUM" ${fitness === 'MEDIUM' ? 'selected' : ''}>Medium</option>
-            <option value="HIGH" ${fitness === 'HIGH' ? 'selected' : ''}>High</option>
+            <option value="LOW" ${fitness === 'LOW' ? 'selected' : ''}>LOW</option>
+            <option value="MEDIUM" ${fitness === 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
+            <option value="HIGH" ${fitness === 'HIGH' ? 'selected' : ''}>HIGH</option>
           </select>
         </div>
       </div>
