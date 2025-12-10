@@ -6,6 +6,7 @@ from scipy.spatial import distance_matrix
 from sqlalchemy import func
 
 from .models import db, ActivityType, ActivityPlanned, Traveller
+import json
 
 
 # -----------------------------------------
@@ -36,7 +37,6 @@ def score_activity(activity: ActivityType, trip, travellers=None):
     Improved scoring: uses all preference scores for better matching.
     Now also considers fitness level matching with activity difficulty.
     """
-    import json
     score = 0
 
     # Fitness level matching (if travellers provided)
