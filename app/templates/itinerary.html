@@ -113,6 +113,7 @@
         "activity": {
           "activity_type_id": {{ act.activity.activity_type_id }},
           "name": {{ act.activity.name|tojson }},
+          "type": {{ (act.activity.type or '')|tojson }},
           "latitude": {{ act.activity.latitude if act.activity.latitude else 'null' }},
           "longitude": {{ act.activity.longitude if act.activity.longitude else 'null' }},
           "duration": {{ act.activity.duration if act.activity.duration else 'null' }},

@@ -17,6 +17,20 @@
   let points = [];
   let activitiesData = [];
 
+  // Type colors and emojis (same as activities page)
+  const typeColors = {
+    'CULTURE': '#8B5CF6',
+    'ADVENTURE': '#F59E0B',
+    'RELAXATION': '#10B981',
+    'NATURE': '#22C55E'
+  };
+  const typeEmojis = {
+    'CULTURE': '🏛️',
+    'ADVENTURE': '🧗',
+    'RELAXATION': '🧘',
+    'NATURE': '🌿'
+  };
+
   /**
    * Truncate text to max length
    */
@@ -120,6 +134,7 @@
 
     currentPopup = popup;
     setActiveCard(p.id);
+    updateMarkerActiveState(p.id);
 
     // Buttons koppelen nadat popup in DOM zit
     setTimeout(() => {
@@ -242,6 +257,7 @@
         return {
           id: act.activity.activity_type_id,
           name: act.activity.name || '',
+          type: act.activity.type || '',
           lat: act.activity.latitude,
           lng: act.activity.longitude,
           date: dateStr,
@@ -258,13 +274,41 @@
    */
   function createMarkers() {
     points.forEach((p, idx) => {
-      const marker = new mapboxgl.Marker({ color: '#E67E22' })
+      // Get color and emoji based on activity type
+      const color = typeColors[p.type] || '#6366F1';
+      const emoji = typeEmojis[p.type] || '📍';
+      
+      // Create custom emoji marker element (same style as activities page)
+      const el = document.createElement('div');
+      el.className = 'emoji-marker';
+      el.style.background = color;
+      el.innerHTML = emoji;
+      
+      const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
         .setLngLat([p.lng, p.lat])
         .addTo(map);
-      marker.getElement().addEventListener('click', () => {
+      
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
         openPopupByIndex(idx);
       });
+      
       markers[p.id] = marker;
+    });
+  }
+
+  /**
+   * Update marker active state
+   */
+  function updateMarkerActiveState(activeId) {
+    Object.keys(markers).forEach(id => {
+      const marker = markers[id];
+      const el = marker.getElement();
+      if (parseInt(id) === activeId) {
+        el.classList.add('active');
+      } else {
+        el.classList.remove('active');
+      }
     });
   }
 
