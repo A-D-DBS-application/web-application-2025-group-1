@@ -388,20 +388,23 @@
   {% include 'partials/_loading_overlay.html' %}
   
   <!-- No Travellers Warning Modal -->
-  <div class="modal-overlay" id="noTravellersModal">
-    <div class="modal">
-      <div class="modal-title">👥 No Travellers Added</div>
-      <div class="modal-message">You need to add at least one traveller before saving this trip.</div>
-      <div class="modal-actions">
-        <button type="button" class="modal-btn modal-btn-cancel" onclick="closeNoTravellersModal()">OK</button>
-      </div>
+  <div class="custom-modal-overlay" id="noTravellersModal">
+    <div class="custom-modal">
+      <div class="custom-modal-icon">⚠️</div>
+      <div class="custom-modal-title">Attention Required</div>
+      <div class="custom-modal-message">Please add at least one traveller before continuing</div>
+      <button type="button" class="btn btn-primary" onclick="closeNoTravellersModal()">OK</button>
     </div>
   </div>
 
   <!-- Show loading overlay when form is submitted -->
   <script>
     function closeNoTravellersModal() {
-      document.getElementById('noTravellersModal').classList.remove('show');
+      document.getElementById('noTravellersModal').style.display = 'none';
+    }
+    
+    function showNoTravellersModal() {
+      document.getElementById('noTravellersModal').style.display = 'flex';
     }
     
     function countActiveTravellers() {
@@ -427,7 +430,7 @@
           
           if (travellerCount === 0) {
             e.preventDefault();
-            document.getElementById('noTravellersModal').classList.add('show');
+            showNoTravellersModal();
             return false;
           }
           
