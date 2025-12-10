@@ -3904,14 +3904,14 @@ select:focus {
 }
 
 .calendar-day:hover:not(.disabled):not(.other-month):not(.range-start):not(.range-end):not(.in-range) {
-  background: hsla(25, 50%, 75%, 0.6);
+  background: hsla(20, 75%, 70%, 0.5);
 }
 
 .calendar-day.today:not(.range-start):not(.range-end):not(.in-range) {
-  background: hsla(25, 20%, 70%, 0.5);
-  color: var(--foreground);
-  font-weight: 600;
-  border: 2px solid hsla(25, 30%, 55%, 0.6);
+  background: transparent;
+  color: var(--primary);
+  font-weight: 700;
+  border: 2.5px solid var(--primary);
 }
 
 .calendar-day.disabled {
