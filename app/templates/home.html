@@ -21,7 +21,7 @@
     {% else %}
     <p>Discover the magic of Africa. Plan your perfect adventure with personalized itineraries and local experiences.</p>
     {% if user.role != 'AGENCY' %}
-    <a href="{{ url_for('main.create_trip') }}" class="create-trip-button" role="button" aria-label="Create Your Trip">Create Your Trip</a>
+    <a href="{{ url_for('main.create_trip') }}" class="create-trip-button">Create Your Trip</a>
     {% endif %}
     {% endif %}
   </div>
