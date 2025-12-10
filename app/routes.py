@@ -484,7 +484,7 @@ def edit_trip(trip_id):
                 max_age = max(traveller_ages) if traveller_ages else 0
                 flash(f"Trip updated successfully! Note: No activities found suitable for traveller age ({max_age} years). Activities may have age restrictions that exclude this traveller.", "success")
             elif result is False:
-                flash("Trip updated successfully! Note: No suitable activities found for itinerary. Please check that activities exist for this destination with coordinates.", "success")
+                flash("Age Restriction Conflict: One or more selected activities have age restrictions that do not match the ages of your travelers.", "success")
             elif result:
                 flash("Trip updated and itinerary regenerated successfully!", "success")
         else:
