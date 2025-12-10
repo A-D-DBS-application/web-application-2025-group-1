@@ -429,10 +429,29 @@ body.traveller-home .page-header {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
+  max-width: 100vw;
   padding: 0 1rem;
   margin: 0;
   animation: none;
   opacity: 1;
+  box-sizing: border-box;
+  /* iPad Safari fixes */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iPad specific layout fix */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body.traveller-home .page-header,
+  body.agency-home .page-header {
+    top: 35%;
+    padding: 0 2rem;
+  }
+  
+  .create-trip-button {
+    margin-top: 1.5rem;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
 }
 
 /* Trips page header - positioned at top */
@@ -756,17 +775,38 @@ body.traveller-home .flash-message-container .flash-success {
 
 /* Create Trip Button for Travellers */
 .create-trip-button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 2rem;
-  padding: clamp(1rem, 2.5vw, 1.25rem) clamp(2rem, 5vw, 3rem);
-  background: white;
-  color: var(--primary);
-  text-decoration: none;
+  padding: 1rem 2.5rem;
+  min-width: 200px;
+  min-height: 50px;
+  background: #ffffff;
+  background-color: #ffffff !important;
+  color: hsl(14, 72%, 50%) !important;
+  text-decoration: none !important;
   border-radius: 0.75rem;
   font-weight: 600;
-  font-size: clamp(1rem, 2.5vw, 1.375rem);
+  font-size: 1.125rem;
+  line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s;
+  /* Safari/iOS fixes */
+  -webkit-appearance: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 10;
+  /* Ensure text is visible on iOS */
+  -webkit-text-fill-color: hsl(14, 72%, 50%);
+  text-align: center;
+  white-space: nowrap;
+  /* Prevent text from disappearing on iOS Safari */
+  overflow: visible;
+  text-overflow: clip;
+  letter-spacing: normal;
+  word-spacing: normal;
 }
 
 /* Ensure create trip button is visible on mobile/tablet */
@@ -774,6 +814,38 @@ body.traveller-home .flash-message-container .flash-success {
   .create-trip-button {
     display: inline-block !important;
     margin-top: 1.5rem;
+  }
+}
+
+/* iPad Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .create-trip-button {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  body.traveller-home .page-header,
+  body.agency-home .page-header {
+    -webkit-transform: translate(-50%, -50%) translateZ(0);
+  }
+}
+
+/* Hide any Safari autofill/autocomplete overlays */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+/* Ensure navbar collapse is properly hidden when expanded */
+@media (min-width: 992px) {
+  .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto;
+  }
+  .navbar-toggler {
+    display: none !important;
   }
 }
 .create-trip-button:hover {
