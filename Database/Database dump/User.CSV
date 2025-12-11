@@ -1,0 +1,44 @@
+user_id,Name,Email,Phone_Number,created_at,Role
+1,Axelle Vanbesien,axelle.vanbesien2@gmail.com,0468461073,2025-11-11 09:30:35.035784+00,TRAVELLER
+2,Ma jalja,amlajfja@khkjh,0482278237,2025-11-11 10:06:05.19046+00,TRAVELLER
+3,Lore,lore@gmail.com,0497337,2025-11-11 12:25:30.333765+00,TRAVELLER
+4,Arthur Verboven,Arthur.verboven@telenet.be,0492159865,2025-11-11 23:14:27.087783+00,TRAVELLER
+5,Jaron DecaluwÃ©,jaron.decaluwe@gmail.c,0492456899,2025-11-14 18:01:13.152953+00,TRAVELLER
+6,S V,S.V@hotmal.com,+32 938398497,2025-11-15 18:49:27.546391+00,TRAVELLER
+9,Alexander Vandewal,alex.vandewal@hotmail.com,0473283809,2025-11-23 17:28:18.633215+00,TRAVELLER
+10,Simon Desmedt,desmedt.simon@outlook.com,0483403574,2025-11-24 15:07:09.853563+00,TRAVELLER
+17,Reiswinkeltje,reis@winkel,0123456789,2025-11-26 17:37:10.490545+00,AGENCY
+18,BestOfTravel,best@travel,987654321,2025-11-26 18:06:07.090024+00,AGENCY
+19,agency0,email@0,tel0,2025-11-26 22:04:33.60392+00,AGENCY
+20,Axelle Vanbesien,nvermeersch@telenet.be,9933003,2025-11-27 13:14:25.1809+00,AGENCY
+21,Arthur Verboven,arthur@be,0112,2025-11-27 13:33:43.158124+00,AGENCY
+23,Safari Horizons,agency1@example.com,+27 21 555 0101,2025-11-28 13:01:36.845902+00,AGENCY
+24,Cape Adventure Co.,agency2@example.com,+27 21 441 8899,2025-11-28 13:01:36.845902+00,AGENCY
+25,African Heritage Tours,agency3@example.com,+27 11 430 7766,2025-11-28 13:01:36.845902+00,AGENCY
+26,Wild Coast Experiences,agency4@example.com,+27 43 781 4420,2025-11-28 13:01:36.845902+00,AGENCY
+27,Atlas Adventures,contact@atlasadventures.ma,+212 522 33 44 11,2025-11-28 13:34:57.749167+00,AGENCY
+28,Sahara Nomad Tours,info@saharanomadtours.ma,+212 535 67 88 44,2025-11-28 13:34:57.749167+00,AGENCY
+29,Marrakech Cultural Experiences,hello@marrakechculture.ma,+212 524 55 33 22,2025-11-28 13:34:57.749167+00,AGENCY
+30,Jaron DecaluwÃ©,Jaron.decaluwe@ugent.be,,2025-11-29 12:00:52.273541+00,AGENCY
+31,Merel,merel@test,012121212,2025-11-29 16:27:31.11792+00,TRAVELLER
+32,Diyor Travel,DiyorTravel@reizen.com,,2025-11-29 19:27:37.978214+00,AGENCY
+33,Ann,ann.lezy@test.be,,2025-11-30 14:21:27.683796+00,TRAVELLER
+34,AV,AV@gmail.com,04444,2025-12-03 19:58:44.406034+00,TRAVELLER
+35,clÃ©mence,vanbesien.clemence@icloud.com,0468461073,2025-12-06 08:22:06.083449+00,TRAVELLER
+36,Merel,1204@test.be,120402,2025-12-06 08:33:14.92724+00,TRAVELLER
+37,Georges Forgeron,georges.forgeron@afriguide.com,,2025-12-06 08:34:11.871487+00,TRAVELLER
+38,Lucas Brinckman,brinckman.lucas@gmail.com,0468342034,2025-12-06 10:04:39.346367+00,TRAVELLER
+39,Kaat Slosse,slosse.kaat@gmail.com,0492105429,2025-12-06 10:45:14.26833+00,TRAVELLER
+41,"Aloha ",ol@ho,123456789,2025-12-06 10:53:49.627628+00,TRAVELLER
+42,Michiel Goddyn,goddynmichiel@gmail.com,0471111754,2025-12-06 12:13:47.133532+00,TRAVELLER
+43,Simon Werkers,swe@outlook.be,Da krijgt ge nie zene,2025-12-06 13:52:50.759194+00,TRAVELLER
+47,Jaron DecaluwÃ©,jaron.decaluwe@gmail.com,0492456899,2025-12-06 21:05:23.415376+00,TRAVELLER
+48,Caroline Covemaeker,caroline.covemaeker@telenet.be,0473696350,2025-12-07 15:11:30.863765+00,TRAVELLER
+50,a,a@kk.com,a,2025-12-07 17:00:55.09326+00,AGENCY
+51,Ronny,ronny@wingene.be,+3212345678,2025-12-07 18:45:34.492361+00,TRAVELLER
+52,Thomas Derave,thomasderave@test.com,04737839749,2025-12-08 09:34:12.218962+00,TRAVELLER
+53,Nathalie Vermeersch,jonaaxcl@icloud.com,479423275,2025-12-08 13:07:08.50504+00,TRAVELLER
+54,Ward,ward.lokere@ugent.be,0468437499,2025-12-09 14:16:42.328561+00,TRAVELLER
+55,Emile,emile@telenet.be,,2025-12-09 14:57:43.15417+00,TRAVELLER
+56,"Arthur ",arthur.verboven@telenet.be,,2025-12-09 15:43:01.681762+00,TRAVELLER
+57,Test,test@test.be,100,2025-12-09 19:02:33.778771+00,TRAVELLER
