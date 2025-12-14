@@ -2813,12 +2813,12 @@ body.traveller-home .trips-count {
 
 .activity-item.required {
   border-color: var(--teal);
-  background: hsla(168, 55%, 40%, 0.05);
+  background: var(--card);
 }
 
 .activity-item.excluded {
   border-color: hsl(0, 72%, 55%);
-  background: hsla(0, 72%, 55%, 0.05);
+  background: var(--card);
   opacity: 0.7;
 }
 
