@@ -102,10 +102,17 @@ app/
 
 ### Render.com
 
-1. Connect your GitHub repository
-2. Set all required environment variables in Render dashboard
-3. Deploy!
+https://web-application-2025-group-1-162u.onrender.com/
 
 ## License
 
-[Your License Here]
+This project was developed as part of an academic collaboration and is subject
+to a Technology/IP Transfer and Non-Compete Agreement with a collaborating entity.
+
+All intellectual property rights to the developed MVP are governed by this
+agreement.
+
+This codebase is proprietary. No use, reproduction, modification, distribution,
+or publication of this software or its underlying concepts is permitted, except
+by parties explicitly authorized under the aforementioned agreement, or with
+prior written permission from the rights holder(s).
