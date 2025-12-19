@@ -1,18 +1,1 @@
-# User Stories 
 
-## ✈️ Travel Planner (User)
-
-### 🔴 High Priority
-* **Travel Details:** As a user, I want to enter my travel details (such as country, number of travelers, and travel period), so that the suggested itinerary fits my planned trip.
-* **Traveler Characteristics:** As a user, I want to enter traveler characteristics (such as ages and fitness levels), so that the suggested activities match our physical abilities.
-* **Preferences:** As a user, I want to specify my preferences (for example, culture, adventure, relaxation, or nature), so that the itinerary aligns with our interests.
-* **Automated Itinerary:** As a user, I want to receive an automatically generated, optimized itinerary, so that I get a complete travel plan without needing to research everything myself.
-
-### 🟡 Medium Priority
-* **Refinement:** As a user, I want to adjust my input (such as preferences, period, or fitness level) after seeing the first proposal, so that I can refine the results to better suit my needs.
-* **Share & Save:** As a user, I want to save, download, and share the itinerary, so that I can use it offline and coordinate with other travellers.
-
----
-
-## 🏢 Travel Agency
-* **Data Management:** As a travel agency, I want to provide and update destination and activity data in the database (such as tags for difficulty, activity type, and age suitability), so that the suggestions remain accurate and relevant.
