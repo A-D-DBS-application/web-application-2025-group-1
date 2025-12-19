@@ -1,3 +1,19 @@
-# User Stories
+User Stories
 
-![User Stories](..app/static/img/UserStories.png)
+As a User, I want to provide my travel details (country, number of travellers, period/length of stay), so that the itinerary fits my planned trip. (Priority: High)
+
+As a User, I want to enter traveller characteristics (ages and fitness levels), so that the itinerary suggests activities suited to our abilities. (Priority: High)
+
+As a User, I want to specify my preferences (e.g., culture, adventure, relaxation, nature), so that the itinerary matches our interests. (Priority: High)
+
+As a User, I want to receive an automatically generated optimized itinerary, so that I get a complete travel plan without needing to research everything myself. (Priority: High)
+
+As a User, I want to adjust my input (preferences, period, fitness, etc.) after seeing the first proposal, so that I can refine the results to better fit my needs. (Priority: Medium)
+
+As a User, I want to save, download, and share the itinerary, so that I can use it offline and coordinate with other travellers. (Priority: Medium)
+
+As a Travel agency, I want to provide and update destination and activity data in the database (with tags like difficulty, type, age suitability), so that itineraries generated are accurate and relevant. (Priority: Low)
+
+
+
+For the picture of this: app --> static --> img --> UserStories.png
